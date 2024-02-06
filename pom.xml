@@ -118,6 +118,8 @@
             <artifactId>junit-jupiter-params</artifactId>
             <scope>test</scope>
         </dependency>
+
+
     </dependencies>
 
     <build>
@@ -278,7 +280,7 @@
                         <dependency>
                             <groupId>com.puppycrawl.tools</groupId>
                             <artifactId>checkstyle</artifactId>
-                            <version>${checkstyle.version}</version>
+                            <version>10.9.1</version>
                         </dependency>
                     </dependencies>
                     <configuration>
