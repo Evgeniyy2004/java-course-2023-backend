@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 @SpringBootApplication
 @EnableConfigurationProperties(ApplicationConfig.class)
@@ -27,6 +28,31 @@ public class BotApplication {
     public static void start(String id){
         if (allForAll.containsKey(id)) log.info("Вы уже зарегистрированы");
         allForAll.put(id, Collections.synchronizedSet(new HashSet<>()));
+    }
+
+    public static void command(String command, String id){
+        Pattern pattern1 = Pattern.compile("(\\/list)( +)");
+        if (pattern1.matcher(command).find()) {
+            list(id);
+        }
+        Pattern pattern2 = Pattern.compile("(\\/start)( +)");
+        if (pattern2.matcher(command).find()) {
+            start(id);
+        }
+        Pattern pattern3 = Pattern.compile("(/track)( +)");
+        if (pattern3.matcher(command).find()) {
+            track(id);
+        }
+        Pattern pattern4 = Pattern.compile("(/untrack)( +)");
+        if (pattern4.matcher(command).find()) {
+            untrack(id);
+        }
+        Pattern pattern5 = Pattern.compile("(/help)( +)");
+        if (pattern5.matcher(command).find()) {
+            help();
+        }
+        log.info("Команда не распознана." +
+            "Введите /help, чтобы ознакомиться с допустимыми командами.");
     }
 
     public static void list(String id){
