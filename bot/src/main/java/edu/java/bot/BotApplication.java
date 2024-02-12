@@ -16,6 +16,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @SpringBootApplication
 @EnableConfigurationProperties(ApplicationConfig.class)
 @Log4j2
+@SuppressWarnings("MultipleStringLiterals")
 public class BotApplication {
     static ConcurrentHashMap<String, Set<String>> allForAll = new ConcurrentHashMap<>();
 
@@ -34,32 +35,32 @@ public class BotApplication {
         Pattern pattern2 = Pattern.compile("( +)(\\/start)( +)");
         if (pattern2.matcher(command).find()) {
             start(id);
-            return;
-        }
-        if (!allForAll.containsKey(id)) {
-            return;
-        }
-        Pattern pattern1 = Pattern.compile("( +)(\\/list)( +)");
-        if (pattern1.matcher(command).find()) {
-            list(id);
-            return;
-        }
-        Pattern pattern3 = Pattern.compile("( +)(\\/track)( +)");
-        if (pattern3.matcher(command).find()) {
-            track(id);
-            return;
-        }
-        Pattern pattern4 = Pattern.compile("( +)(\\/untrack)( +)");
-        if (pattern4.matcher(command).find()) {
-            untrack(id);
-        }
-        Pattern pattern5 = Pattern.compile("( +)(\\/help)( +)");
-        if (pattern5.matcher(command).find()) {
-            help();
-        }
-        else {
-            log.info("Команда не распознана." +
-                "Введите /help, чтобы ознакомиться с допустимыми командами.");
+        } else {
+            if (!allForAll.containsKey(id)) {
+                log.info("Зарегиструйтесь с помощью команды /start");
+            } else {
+                Pattern pattern1 = Pattern.compile("( +)(\\/list)( +)");
+                if (pattern1.matcher(command).find()) {
+                    list(id);
+                }
+                Pattern pattern3 = Pattern.compile("( +)(\\/track)( +)");
+                if (pattern3.matcher(command).find()) {
+                    track(id);
+                    return;
+                }
+                Pattern pattern4 = Pattern.compile("( +)(\\/untrack)( +)");
+                if (pattern4.matcher(command).find()) {
+                    untrack(id);
+                } else {
+                    Pattern pattern5 = Pattern.compile("( +)(\\/help)( +)");
+                    if (pattern5.matcher(command).find()) {
+                        help();
+                    } else {
+                        log.info("Команда не распознана."
+                            + "Введите /help, чтобы ознакомиться с допустимыми командами.");
+                    }
+                }
+            }
         }
     }
 
@@ -87,8 +88,8 @@ public class BotApplication {
                 allForAll.get(id).add(link);
 
             } catch (MalformedURLException | IllegalArgumentException e) {
-                log.info("Не удалось подключиться к заданному ресурсу." +
-                    "Проверьте корректность ссылки.");
+                log.info("Не удалось подключиться к заданному ресурсу."
+                    + "Проверьте корректность ссылки.");
             }
         }
     }
@@ -113,8 +114,8 @@ public class BotApplication {
                 allForAll.get(id).remove(link);
 
             } catch (MalformedURLException | IllegalArgumentException e) {
-                log.info("Не удалось подключиться к заданному ресурсу." +
-                    "Проверьте корректность ссылки.");
+                log.info("Не удалось подключиться к заданному ресурсу."
+                    + "Проверьте корректность ссылки.");
             }
         }
     }
