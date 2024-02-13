@@ -33,32 +33,35 @@ public class BotApplication {
     }
 
     public static void command(String command, String id) {
-        Pattern pattern2 = Pattern.compile("( +)(\\/start)( +)");
+        Pattern pattern1 = Pattern.compile("( *)(/list)( *)");
+        Pattern pattern2 = Pattern.compile("( *)(/start)( *)");
+        Pattern pattern3 = Pattern.compile("( *)(/track)( *)");
+        Pattern pattern4 = Pattern.compile("( *)(/untrack)( *)");
+        Pattern pattern5 = Pattern.compile("( *)(/help)( *)");
+        if (!pattern1.matcher(command).find() && !pattern2.matcher(command).find()
+            && !pattern3.matcher(command).find() && !pattern4.matcher(command).find()
+            && !pattern5.matcher(command).find()) {
+            log.info("Команда не распознана."
+                + "Введите /help, чтобы ознакомиться с допустимыми командами.");
+            return;
+        }
         if (pattern2.matcher(command).find()) {
             start(id);
         } else {
             if (!allForAll.containsKey(id)) {
                 log.info("Зарегиструйтесь с помощью команды /start");
             } else {
-                Pattern pattern1 = Pattern.compile("( +)(\\/list)( +)");
                 if (pattern1.matcher(command).find()) {
                     list(id);
-                }
-                Pattern pattern3 = Pattern.compile("( +)(\\/track)( +)");
-                if (pattern3.matcher(command).find()) {
-                    track(id);
-                    return;
-                }
-                Pattern pattern4 = Pattern.compile("( +)(\\/untrack)( +)");
-                if (pattern4.matcher(command).find()) {
-                    untrack(id);
                 } else {
-                    Pattern pattern5 = Pattern.compile("( +)(\\/help)( +)");
-                    if (pattern5.matcher(command).find()) {
-                        help();
+                    if (pattern3.matcher(command).find()) {
+                        track(id);
                     } else {
-                        log.info("Команда не распознана."
-                            + "Введите /help, чтобы ознакомиться с допустимыми командами.");
+                        if (pattern4.matcher(command).find()) {
+                            untrack(id);
+                        } else {
+                            help();
+                        }
                     }
                 }
             }
@@ -66,9 +69,10 @@ public class BotApplication {
     }
 
     public static void list(String id) {
-        if (!allForAll.containsKey(id)) {
-            log.info("Зарегиструйтесь с помощью команды /start");
+        if (allForAll.get(id).size() == 0) {
+            log.info("Список отслеживаемых ресурсов пуст");
         } else {
+            log.info("Текущий список отслеживаемых ресурсов:");
             for (String link : allForAll.get(id)) {
                 log.info(link);
             }
@@ -76,49 +80,43 @@ public class BotApplication {
     }
 
     public static void track(String id) {
-        if (!allForAll.containsKey(id)) {
-            log.info("Зарегиструйтесь с помощью команды /start");
-        } else {
-            log.info("Введите ссылку, которую хотите начать отслеживать");
-            var link = System.console().readLine();
-            try {
-                Paths.get(link).toUri().toURL();
-                if (!allForAll.get(id).contains(link)) {
-                    log.info("Ресурс добавлен");
-                }
-                allForAll.get(id).add(link);
-
-            } catch (MalformedURLException | IllegalArgumentException e) {
-                log.info("Не удалось подключиться к заданному ресурсу."
-                    + "Проверьте корректность ссылки.");
+        log.info("Введите ссылку, которую хотите начать отслеживать");
+        var link = System.console().readLine();
+        try {
+            Paths.get(link).toUri().toURL();
+            if (!allForAll.get(id).contains(link)) {
+                log.info("Ресурс добавлен");
             }
+            allForAll.get(id).add(link);
+
+        } catch (MalformedURLException | IllegalArgumentException e) {
+            log.info("Не удалось подключиться к заданному ресурсу."
+                + "Проверьте корректность ссылки.");
         }
+
     }
 
     public static void untrack(String id) {
-        if (!allForAll.containsKey(id)) {
-            log.info("Зарегиструйтесь с помощью команды /start");
-        } else {
-            log.info("Ваш текущий список отслеживаемых ресурсов:");
-            StringBuilder res = new StringBuilder();
-            for (String link : allForAll.get(id)) {
-                res.append(link).append("\n");
-            }
-            log.info(res.toString());
-            log.info("Введите ресурс, который хотите перестать отслеживать");
-            var link = System.console().readLine();
-            try {
-                Paths.get(link).toUri().toURL();
-                if (allForAll.get(id).contains(link)) {
-                    log.info("Ресурс удален");
-                }
-                allForAll.get(id).remove(link);
-
-            } catch (MalformedURLException | IllegalArgumentException e) {
-                log.info("Не удалось подключиться к заданному ресурсу."
-                    + "Проверьте корректность ссылки.");
-            }
+        log.info("Ваш текущий список отслеживаемых ресурсов:");
+        StringBuilder res = new StringBuilder();
+        for (String link : allForAll.get(id)) {
+            res.append(link).append("\n");
         }
+        log.info(res.toString());
+        log.info("Введите ресурс, который хотите перестать отслеживать");
+        var link = System.console().readLine();
+        try {
+            Paths.get(link).toUri().toURL();
+            if (allForAll.get(id).contains(link)) {
+                log.info("Ресурс удален");
+            }
+            allForAll.get(id).remove(link);
+
+        } catch (MalformedURLException | IllegalArgumentException e) {
+            log.info("Не удалось подключиться к заданному ресурсу."
+                + "Проверьте корректность ссылки.");
+        }
+
     }
 
     public static void help() {

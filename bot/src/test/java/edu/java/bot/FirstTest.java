@@ -24,14 +24,19 @@ public class FirstTest {
 
 
     @Test
-    @DisplayName("При команде /list выводится список ресурсов, которые уже отслеживаются данным пользователем," +
-        " если пользователь не зарегистрирован, выводится соответствующее сообщение")
-    public void list() {
+    @DisplayName("При команде /help выводится список допустимых комманд")
+    public void help() {
+        var id = UUID.randomUUID().toString();
+        BotApplication.command("  /start  ",id);
+        BotApplication.command("  /help     ",id);
+    }
+
+    @Test
+    @DisplayName("Если никакие ресурсы не отслеживаются, при команде /list выводится специальное сообщение")
+    public void emptyList() {
         var id = UUID.randomUUID().toString();
         BotApplication.command("  /start  ",id);
         BotApplication.command("  /list     ",id);
-        var id1 = UUID.randomUUID().toString();
-        BotApplication.command("  /list     ",id1);
     }
 
 
