@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import lombok.extern.java.Log;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -123,11 +122,11 @@ public class BotApplication {
     }
 
     public static void help() {
-        String res = "/start - регистрация в боте\n" +
-                "/help - список доступных команд\n" +
-                "/track - добавление ресурса в отслеживаемые\n" +
-                "/untrack - прекращение отслеживания ресурса\n" +
-                "/list - список отслеживаемых ресурсов\n";
+        String res = "/start - регистрация в боте\n"
+            + "/help - список доступных команд\n"
+            + "/track - добавление ресурса в отслеживаемые\n"
+            + "/untrack - прекращение отслеживания ресурса\n"
+            + "/list - список отслеживаемых ресурсов\n";
         log.info(res);
     }
 }
