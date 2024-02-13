@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
+import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,7 +16,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 @SpringBootApplication
 @EnableConfigurationProperties(ApplicationConfig.class)
-@Log4j2
+@Log
+//@Log4j2
 @SuppressWarnings("MultipleStringLiterals")
 public class BotApplication {
     static ConcurrentHashMap<String, Set<String>> allForAll = new ConcurrentHashMap<>();
@@ -121,12 +123,11 @@ public class BotApplication {
     }
 
     public static void help() {
-        StringBuilder res = new StringBuilder();
-        res.append("/start - регистрация в боте\n");
-        res.append("/help - список доступных команд\n");
-        res.append("/track - добавление ресурса в отслеживаемые\n");
-        res.append("/untrack - прекращение отслеживания ресурса\n");
-        res.append("/list - список отслеживаемых ресурсов\n");
+        String res = "/start - регистрация в боте\n" +
+                "/help - список доступных команд\n" +
+                "/track - добавление ресурса в отслеживаемые\n" +
+                "/untrack - прекращение отслеживания ресурса\n" +
+                "/list - список отслеживаемых ресурсов\n";
         log.info(res);
     }
 }
