@@ -1,43 +1,95 @@
 package edu.java.bot;
 
+import com.pengrad.telegrambot.model.Chat;
+import com.pengrad.telegrambot.model.Message;
+import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.request.ParseMode;
+import edu.java.bot.configuration.ApplicationConfig;
+import edu.java.bot.configuration.Bot;
+import lombok.extern.java.Log;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.mockito.Mockito;
+import java.lang.reflect.Field;
 import java.util.UUID;
+import java.util.function.Supplier;
 
+import static org.mockito.Mockito.when;
+
+@Log
 public class FirstTest {
 
     @DisplayName("При вводе несуществующей команды бот выводит соответствующее сообщение")
     @Test
     public void strangeCommand() {
-        var id = UUID.randomUUID().toString();
-        BotApplication.command("  /start  ",id);
-        BotApplication.command("abcde",id);
+        var botExample = new Bot(new ApplicationConfig("test"));
+        Update update = Mockito.mock(Update.class);
+        when(update.message()).thenReturn(Mockito.mock(Message.class));
+        when(update.message().chat()).thenReturn(Mockito.mock(Chat.class));
+        when(update.message().chat().id()).thenReturn(1L);
+        when(update.message().text()).thenReturn(" /start");
+        botExample.handle(update);
+        when(update.message().text()).thenReturn(" /do");
+        botExample.handle(update);
     }
 
     @DisplayName("При команде /start от пользователя, который уже зарегистрирован в системе, бот выводит соответствующее сообщение")
     @Test
     public void alreadyExists() {
-        var id = UUID.randomUUID().toString();
-        BotApplication.command("  /start  ",id);
-        BotApplication.command("/start",id);
+        var botExample = new Bot(new ApplicationConfig("test"));
+        Update update = Mockito.mock(Update.class);
+        when(update.message()).thenReturn(Mockito.mock(Message.class));
+        when(update.message().chat()).thenReturn(Mockito.mock(Chat.class));
+        when(update.message().chat().id()).thenReturn(78787L);
+        when(update.message().text()).thenReturn(" /start");
+        botExample.handle(update);
+        when(update.message().text()).thenReturn("  /start   ");
+        botExample.handle(update);
     }
 
 
     @Test
     @DisplayName("При команде /help выводится список допустимых комманд")
     public void help() {
-        var id = UUID.randomUUID().toString();
-        BotApplication.command("  /start  ",id);
-        BotApplication.command("  /help     ",id);
+        var botExample = new Bot(new ApplicationConfig("test"));
+        Update update = Mockito.mock(Update.class);
+        when(update.message()).thenReturn(Mockito.mock(Message.class));
+        when(update.message().chat()).thenReturn(Mockito.mock(Chat.class));
+        when(update.message().chat().id()).thenReturn(55676L);
+        when(update.message().text()).thenReturn(" /help    ");
+        botExample.handle(update);
     }
 
     @Test
     @DisplayName("Если никакие ресурсы не отслеживаются, при команде /list выводится специальное сообщение")
     public void emptyList() {
-        var id = UUID.randomUUID().toString();
-        BotApplication.command("  /start  ",id);
-        BotApplication.command("  /list     ",id);
+        var botExample = new Bot(new ApplicationConfig("test"));
+        Update update = Mockito.mock(Update.class);
+        when(update.message()).thenReturn(Mockito.mock(Message.class));
+        when(update.message().chat()).thenReturn(Mockito.mock(Chat.class));
+        when(update.message().chat().id()).thenReturn(90L);
+        when(update.message().text()).thenReturn(" /start");
+        botExample.handle(update);
+        when(update.message().text()).thenReturn("  /list   ");
+        botExample.handle(update);
     }
 
+    @Test
+    @DisplayName("При добавлении ссылки она появится в списке отслеживаемых ресурсов")
+    public void addToList() {
+        var botExample = new Bot(new ApplicationConfig("test"));
+        Update update = Mockito.mock(Update.class);
+        when(update.message()).thenReturn(Mockito.mock(Message.class));
+        when(update.message().chat()).thenReturn(Mockito.mock(Chat.class));
+        when(update.message().chat().id()).thenReturn(90L);
+        when(update.message().text()).thenReturn(" /start");
+        botExample.handle(update);
+        when(update.message().text()).thenReturn("  /track   ");
+        botExample.handle(update);
+        when(update.message().text()).thenReturn("https://stackoverflow.com/");
+        botExample.handle(update);
+        when(update.message().text()).thenReturn("  /list   ");
+        botExample.handle(update);
 
+    }
 }
