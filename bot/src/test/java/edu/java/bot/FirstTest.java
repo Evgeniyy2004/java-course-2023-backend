@@ -16,7 +16,6 @@ import java.util.function.Supplier;
 
 import static org.mockito.Mockito.when;
 
-@Log
 public class FirstTest {
 
     @DisplayName("При вводе несуществующей команды бот выводит соответствующее сообщение")
