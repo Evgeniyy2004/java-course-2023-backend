@@ -1,12 +1,13 @@
 package edu.java.clients;
 
-import jakarta.websocket.server.PathParam;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
+import static io.netty.handler.codec.http.HttpHeaders.Values.APPLICATION_JSON;
 
-@HttpExchange("")
+@HttpExchange(url = "https://api.stackexchange.com/2.2/questions/{id}?&site=stackoverflow", accept = APPLICATION_JSON)
 public interface StackOverflowClient {
-        QuestionResponse fetchQuestion(@PathVariable long id);
+
+    @GetExchange
+    QuestionResponse fetchQuestion(@PathVariable long id);
 }
