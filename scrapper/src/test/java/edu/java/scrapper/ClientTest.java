@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @WireMockTest
-@SpringBootTest
 @Log
 public class ClientTest {
     //WireMockServer wireMockServer = new WireMockServer();
