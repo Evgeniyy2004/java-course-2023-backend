@@ -14,7 +14,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @WireMockTest
-@SpringBootTest
 @Log
 public class ClientTest {
     WireMockServer wireMockServer = new WireMockServer();
