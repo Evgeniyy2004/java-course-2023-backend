@@ -7,7 +7,6 @@ import static io.netty.handler.codec.http.HttpHeaders.Values.APPLICATION_JSON;
 
 @HttpExchange(url = "https://api.stackexchange.com/2.3/questions/{id}?site=stackoverflow&filter=withbody", accept = APPLICATION_JSON)
 public interface StackOverflowClient {
-
     @GetExchange
     QuestionResponse fetchQuestion(@PathVariable long id);
 }

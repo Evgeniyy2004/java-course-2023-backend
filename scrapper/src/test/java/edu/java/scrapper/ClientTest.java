@@ -1,11 +1,13 @@
 package edu.java.scrapper;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import edu.java.configuration.ClientConfiguration;
 import lombok.extern.java.Log;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
@@ -16,9 +18,10 @@ import static org.junit.Assert.assertTrue;
 @WireMockTest
 @Log
 public class ClientTest {
-    WireMockServer wireMockServer = new WireMockServer();
+    WireMockServer wireMockServer = new WireMockServer(WireMockConfiguration.options().port(8080).httpsPort(8443));
 
     @Test
+    @DirtiesContext
     public  void gitTest() {
         //Arrange
         wireMockServer.start();
@@ -139,9 +142,22 @@ public class ClientTest {
     }
 
     @Test
+    @DirtiesContext
     public  void stackTest() {
-        var response = new ClientConfiguration().beanStack().fetchQuestion(6827752);
-        log.info(String.valueOf(response.isDone));
+        //Arrange
+        wireMockServer.start();
+        stubFor(get(urlEqualTo("https://api.stackexchange.com/2.3/questions/6827752?site=stackoverflow&filter=withbody"))
+            .willReturn(aResponse().withBody("{\"items\":[{\"tags\":[\"java\",\"spring\",\"spring-mvc\",\"annotations\",\"inversion-of-control\"],\"owner\":{\"account_id\":787859,\"reputation\":25785,\"user_id\":863084,\"user_type\":\"unregistered\",\"profile_image\":\"https://www.gravatar.com/avatar/be273143043ed0ff5b55406ac70ff41e?s=256&d=identicon&r=PG\",\"display_name\":\"Colin McCree\",\"link\":\"https://stackoverflow.com/users/863084/colin-mccree\"},\"is_answered\":true,\"view_count\":1153366,\"protected_date\":1452629449,\"answer_count\":29,\"score\":2572,\"last_activity_date\":1699015824,\"creation_date\":1311671446,\"last_edit_date\":1696393872,\"question_id\":6827752,\"content_license\":\"CC BY-SA 4.0\",\"link\":\"https://stackoverflow.com/questions/6827752/whats-the-difference-between-component-repository-service-annotations-in\",\"title\":\"What&#39;s the difference between @Component, @Repository &amp; @Service annotations in Spring?\",\"body\":\"<p>Can <a href=\\\"https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Component.html\\\" rel=\\\"noreferrer\\\"><code>@Component</code></a>, <a href=\\\"https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Repository.html\\\" rel=\\\"noreferrer\\\"><code>@Repository</code></a>, and <a href=\\\"https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Service.html\\\" rel=\\\"noreferrer\\\"><code>@Service</code></a> annotations be used interchangeably in Spring or do they provide any particular functionality besides acting as a notation device?</p>\\n<p>In other words, if I have a Service class and I change its annotation from <code>@Service</code> to <code>@Component</code>, will it still behave the same way?</p>\\n<p>Or does the annotation also influence the behavior and functionality of the class?</p>\\n\"}],\"has_more\":false,\"quota_max\":300,\"quota_remaining\":298}"
+            )));
+        //Act
+        var response = new ClientConfiguration()
+            .beanStack()
+            .fetchQuestion(6827752);
+        //Assert
+        assertTrue(response.isDone);
+        assertThat(response.title).isEqualTo("What&#39;s the difference between @Component, @Repository &amp; @Service annotations in Spring?");
+        assertThat(response.link).isEqualTo("https://stackoverflow.com/questions/6827752/whats-the-difference-between-component-repository-service-annotations-in");
+        wireMockServer.stop();
 
     }
 }
