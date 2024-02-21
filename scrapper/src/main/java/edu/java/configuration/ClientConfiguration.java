@@ -6,6 +6,8 @@ import edu.java.clients.StackOverflowClient;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 @Configuration
@@ -13,16 +15,16 @@ public class ClientConfiguration {
 
     @Bean
     public StackOverflowClient beanStack() {
-        RestClient restClient = RestClient.builder().baseUrl("https://api.stackexchange.com/").build();
-        RestClientAdapter adapter = RestClientAdapter.create(restClient);
+        WebClient restClient =WebClient.builder().baseUrl("https://api.stackexchange.com/").build();
+        WebClientAdapter adapter = WebClientAdapter.create(restClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(StackOverflowClient.class);
     }
 
     @Bean
     public GitHubClient beanGit() {
-        RestClient restClient = RestClient.builder().baseUrl("https://api.github.com/").build();
-        RestClientAdapter adapter = RestClientAdapter.create(restClient);
+        WebClient restClient = WebClient.builder().baseUrl("https://api.github.com/").build();
+        WebClientAdapter adapter = WebClientAdapter.create(restClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(GitHubClient.class);
     }
