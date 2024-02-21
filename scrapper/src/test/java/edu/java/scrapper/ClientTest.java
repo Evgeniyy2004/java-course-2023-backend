@@ -136,6 +136,7 @@ public class ClientTest {
                     "  \"subscribers_count\": 2\n" +
                     "}"
             )));
+
         //Act
         var response = new ClientConfiguration().beanGit().fetchRepository("jojozhuang","algorithm-problems-java");
         //Assert
@@ -148,6 +149,9 @@ public class ClientTest {
     @DirtiesContext
     public  void stackTest() {
         //Arrange
+        wireMockServer.start();
+        stubFor(get(urlEqualTo("https://api.stackexchange.com/2.3/questions/6827752/items?site=stackoverflow&filter=withbody"))
+            .willReturn(aResponse().withBody("")));
         var bean = new ClientConfiguration()
             .beanStack();
         //Act
