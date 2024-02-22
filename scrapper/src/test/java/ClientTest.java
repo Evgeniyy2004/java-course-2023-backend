@@ -4,24 +4,20 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import edu.java.configuration.ClientConfiguration;
 import lombok.extern.java.Log;
 import org.junit.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.apache.http.HttpHeaders.CONTENT_TYPE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @WireMockTest
 @Log
 public class ClientTest {
     WireMockServer wireMockServer = new WireMockServer(WireMockConfiguration.options().port(8080).httpsPort(8443));
 
-    @Test
+    @org.junit.jupiter.api.Test
     @DirtiesContext
     public  void gitTest() {
         //Arrange
@@ -143,7 +139,7 @@ public class ClientTest {
         wireMockServer.stop();
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     @DirtiesContext
     public  void stackTest() {
         //Arrange
