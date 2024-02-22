@@ -151,7 +151,12 @@ public class ClientTest {
         //Arrange
         wireMockServer.start();
         stubFor(get(urlEqualTo("https://api.stackexchange.com/2.3/questions/6827752/items?site=stackoverflow&filter=withbody"))
-            .willReturn(aResponse().withBody("")));
+            .willReturn(aResponse().withBody("{\"items\":[{\"tags\":[\"java\",\"spring\",\"spring-mvc\",\"annotations\",\"inversion-of-control\"],\"owner\":{\"account_id\":787859,\"reputation\":25795,\"user_id\":863084,\"user_type\":\"unregistered\",\"profile_image\":\"https://www.gravatar.com/avatar/be273143043ed0ff5b55406ac70ff41e?s=256&d=identicon&r=PG\",\"display_name\":\"Colin McCree\",\"link\":\"https://stackoverflow.com/users/863084/colin-mccree\"},\"is_answered\":true,\"view_count\":1153730,\"protected_date\":1452629449,\"answer_count\":29,\"score\":2573,\"last_activity_date\"" +
+                ":1699015824,\"creation_date\":1311671446,\"last_edit_date\":1696393872,\"question_id\":6827752,\"content_license\":\"CC BY-SA 4.0\",\"link\":\"https://stackoverflow.com/questions/6827752/whats-the-difference-between-component-repository-service-annotations-in\",\"title\":\"What&#39;s the difference between @Component, @Repository &amp; @Service annotations in Spring?\",\"body\":\"<p>Can <a href=\\\"https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Component.html\\\" rel=\\\"noreferrer\\\"><code>@Component</code></a>, " +
+                "<a href=\\\"https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Repository.html\\\" rel=\\\"noreferrer\\\"><code>@Repository</code></a>, and <a href=\\\"https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Service.html\\\" rel=\\\"noreferrer\\\">" +
+                "<code>@Service</code></a> annotations be used interchangeably in Spring or do they provide any particular functionality besides acting as a notation device?</p>\\n<p>In other words, if I have a Service class and I change its annotation from <code>@Service</code> to <code>@Component</code>, will it still behave the same way?</p>\\n<p>Or does the annotation also influence the behavior and " +
+                "functionality of the class?</p>\\n\"}],\"has_more\":false," +
+                "\"quota_max\":300,\"quota_remaining\":297}")));
         var bean = new ClientConfiguration()
             .beanStack();
         //Act
