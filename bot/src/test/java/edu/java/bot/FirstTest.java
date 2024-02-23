@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 public class FirstTest {
 
     @DisplayName("При вводе несуществующей команды бот выводит соответствующее сообщение")
-    @Test
+    @org.junit.jupiter.api.Test
     public void strangeCommand() {
         var botExample = new Bot(new ApplicationConfig("test"));
         Update update = Mockito.mock(Update.class);
@@ -33,7 +33,7 @@ public class FirstTest {
     }
 
     @DisplayName("При команде /start от пользователя, который уже зарегистрирован в системе, бот выводит соответствующее сообщение")
-    @Test
+    @org.junit.jupiter.api.Test
     public void alreadyExists() {
         var botExample = new Bot(new ApplicationConfig("test"));
         Update update = Mockito.mock(Update.class);
@@ -47,7 +47,7 @@ public class FirstTest {
     }
 
 
-    @Test
+    @org.junit.jupiter.api.Test
     @DisplayName("При команде /help выводится список допустимых комманд")
     public void help() {
         var botExample = new Bot(new ApplicationConfig("test"));
@@ -59,7 +59,7 @@ public class FirstTest {
         botExample.handle(update);
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     @DisplayName("Если никакие ресурсы не отслеживаются, при команде /list выводится специальное сообщение")
     public void emptyList() {
         var botExample = new Bot(new ApplicationConfig("test"));
@@ -73,7 +73,7 @@ public class FirstTest {
         botExample.handle(update);
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     @DisplayName("При добавлении ссылки она появится в списке отслеживаемых ресурсов")
     public void addToList() {
         var botExample = new Bot(new ApplicationConfig("test"));
