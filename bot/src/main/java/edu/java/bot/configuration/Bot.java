@@ -14,7 +14,7 @@ import lombok.extern.java.Log;
 @Log
 public class Bot extends TelegramBot {
     private int condition = -1;
-    private static Set<String> allForAll = ConcurrentHashMap.newKeySet();
+    private static final Set<String> LINKSSET = ConcurrentHashMap.newKeySet();
 
     public Bot(ApplicationConfig app) {
         super(app.telegramToken());
@@ -101,11 +101,11 @@ public class Bot extends TelegramBot {
     }
 
     public static String list() {
-        if (allForAll.isEmpty()) {
+        if (LINKSSET.isEmpty()) {
             return "Список отслеживаемых ресурсов пуст";
         } else {
             StringBuilder start = new StringBuilder("Текущий список отслеживаемых ресурсов:\n");
-            for (String link : allForAll) {
+            for (String link : LINKSSET) {
                 start.append(link + "\n");
             }
             return start.toString();
@@ -115,8 +115,8 @@ public class Bot extends TelegramBot {
     public static String track(String link) {
         try {
             var url = new URI(link).toURL();
-            if (!allForAll.contains(link)) {
-                allForAll.add(link);
+            if (!LINKSSET.contains(link)) {
+                LINKSSET.add(link);
                 return ("Ресурс добавлен");
             } else {
                 return "Ресурс уже находится в списке отслеживаемых";
@@ -128,8 +128,8 @@ public class Bot extends TelegramBot {
     }
 
     public static String untrack(String link) {
-        if (allForAll.contains(link)) {
-            allForAll.remove(link);
+        if (LINKSSET.contains(link)) {
+            LINKSSET.remove(link);
             return ("Ресурс удален");
         } else {
             return "Ресурс ранее вами не отслеживался.";
