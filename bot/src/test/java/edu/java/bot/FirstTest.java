@@ -3,23 +3,17 @@ package edu.java.bot;
 import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.request.ParseMode;
 import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.configuration.Bot;
-import lombok.extern.java.Log;
-import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import java.lang.reflect.Field;
-import java.util.UUID;
-import java.util.function.Supplier;
-
 import static org.mockito.Mockito.when;
 
 public class FirstTest {
 
     @DisplayName("При вводе несуществующей команды бот выводит соответствующее сообщение")
-    @org.junit.jupiter.api.Test
+    @Test
     public void strangeCommand() {
         var botExample = new Bot(new ApplicationConfig("test"));
         Update update = Mockito.mock(Update.class);
@@ -32,8 +26,9 @@ public class FirstTest {
         botExample.handle(update);
     }
 
-    @DisplayName("При команде /start от пользователя, который уже зарегистрирован в системе, бот выводит соответствующее сообщение")
-    @org.junit.jupiter.api.Test
+    @DisplayName(
+        "При команде /start от пользователя, который уже зарегистрирован в системе, бот выводит соответствующее сообщение")
+    @Test
     public void alreadyExists() {
         var botExample = new Bot(new ApplicationConfig("test"));
         Update update = Mockito.mock(Update.class);
@@ -46,8 +41,7 @@ public class FirstTest {
         botExample.handle(update);
     }
 
-
-    @org.junit.jupiter.api.Test
+    @Test
     @DisplayName("При команде /help выводится список допустимых комманд")
     public void help() {
         var botExample = new Bot(new ApplicationConfig("test"));
@@ -59,7 +53,7 @@ public class FirstTest {
         botExample.handle(update);
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     @DisplayName("Если никакие ресурсы не отслеживаются, при команде /list выводится специальное сообщение")
     public void emptyList() {
         var botExample = new Bot(new ApplicationConfig("test"));
@@ -73,7 +67,7 @@ public class FirstTest {
         botExample.handle(update);
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     @DisplayName("При добавлении ссылки она появится в списке отслеживаемых ресурсов")
     public void addToList() {
         var botExample = new Bot(new ApplicationConfig("test"));

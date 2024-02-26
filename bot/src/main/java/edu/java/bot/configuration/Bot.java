@@ -13,8 +13,8 @@ import lombok.extern.java.Log;
 
 @Log
 public class Bot extends TelegramBot {
-    int condition = -1;
-    static Set<String> allForAll = ConcurrentHashMap.newKeySet();
+    private int condition = -1;
+    private static Set<String> allForAll = ConcurrentHashMap.newKeySet();
 
     public Bot(ApplicationConfig app) {
         super(app.telegramToken());
@@ -137,11 +137,11 @@ public class Bot extends TelegramBot {
     }
 
     public static String help() {
-        String res = "/start - регистрация в боте\n"
-            + "/help - список доступных команд\n"
-            + "/track - добавление ресурса в отслеживаемые\n"
-            + "/untrack - прекращение отслеживания ресурса\n"
-            + "/list - список отслеживаемых ресурсов\n";
-        return res;
+        return """
+            /start - регистрация в боте
+            /help - список доступных команд
+            /track - добавление ресурса в отслеживаемые
+            /untrack - прекращение отслеживания ресурса
+            /list - список отслеживаемых ресурсов""";
     }
 }
