@@ -25,6 +25,16 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>0.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.7.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
@@ -135,6 +145,11 @@
             <version>3.0.2</version>
         </dependency>
         <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>2.4.6</version>
+        </dependency>
+        <dependency>
             <groupId>io.gsonfire</groupId>
             <artifactId>gson-fire</artifactId>
             <version>1.9.0</version>
@@ -176,7 +191,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/java/edu/java/bot/bot-api.json</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/bot-api.json</inputSpec>
                             <output>${project.build.directory}/generated-sources</output>
                             <generatorName>java</generatorName>
                             <configOptions>
