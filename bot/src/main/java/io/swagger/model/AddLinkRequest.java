@@ -1,12 +1,9 @@
 package io.swagger.model;
 
-import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Objects;
 import org.springframework.validation.annotation.Validated;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
 
 /**
  * AddLinkRequest
@@ -15,7 +12,7 @@ import javax.validation.constraints.*;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2024-02-27T16:17:37.541889551Z[GMT]")
 
 
-public class AddLinkRequest   {
+public class AddLinkRequest {
   @JsonProperty("link")
   private String link = null;
 
@@ -29,7 +26,7 @@ public class AddLinkRequest   {
    * @return link
    **/
   @Schema(description = "")
-  
+
     public String getLink() {
     return link;
   }
@@ -40,7 +37,7 @@ public class AddLinkRequest   {
 
 
   @Override
-  public boolean equals(java.lang.Object o) {
+  public boolean equals(Object o) {
     if (this == o) {
       return true;
     }
@@ -60,7 +57,7 @@ public class AddLinkRequest   {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class AddLinkRequest {\n");
-    
+
     sb.append("    link: ").append(toIndentedString(link)).append("\n");
     sb.append("}");
     return sb.toString();
@@ -70,7 +67,7 @@ public class AddLinkRequest   {
    * Convert the given object to string with each line indented by 4 spaces
    * (except the first line).
    */
-  private String toIndentedString(java.lang.Object o) {
+  private String toIndentedString(Object o) {
     if (o == null) {
       return "null";
     }

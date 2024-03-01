@@ -15,9 +15,9 @@ public class JacksonConfiguration {
   @ConditionalOnMissingBean(ThreeTenModule.class)
   ThreeTenModule threeTenModule() {
     ThreeTenModule module = new ThreeTenModule();
-    module.addDeserializer(Instant.class, io.swagger.configuration.CustomInstantDeserializer.INSTANT);
-    module.addDeserializer(OffsetDateTime.class, io.swagger.configuration.CustomInstantDeserializer.OFFSET_DATE_TIME);
-    module.addDeserializer(ZonedDateTime.class, io.swagger.configuration.CustomInstantDeserializer.ZONED_DATE_TIME);
+    module.addDeserializer(Instant.class, CustomInstantDeserializer.INSTANT);
+    module.addDeserializer(OffsetDateTime.class, CustomInstantDeserializer.OFFSET_DATE_TIME);
+    module.addDeserializer(ZonedDateTime.class, CustomInstantDeserializer.ZONED_DATE_TIME);
     return module;
   }
 }

@@ -1,12 +1,12 @@
 package io.swagger.model;
 
-import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * LinkUpdate
@@ -15,7 +15,7 @@ import javax.validation.Valid;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2024-02-27T13:00:16.152772335Z[GMT]")
 
 
-public class LinkUpdate   {
+public class LinkUpdate {
   @JsonProperty("id")
   private Long id = null;
 
@@ -115,7 +115,7 @@ public class LinkUpdate   {
 
 
   @Override
-  public boolean equals(java.lang.Object o) {
+  public boolean equals(Object o) {
     if (this == o) {
       return true;
     }
@@ -151,7 +151,7 @@ public class LinkUpdate   {
    * Convert the given object to string with each line indented by 4 spaces
    * (except the first line).
    */
-  private String toIndentedString(java.lang.Object o) {
+  private String toIndentedString(Object o) {
     if (o == null) {
       return "null";
     }

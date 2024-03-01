@@ -1,7 +1,7 @@
 package edu.java.configuration;
 
-import edu.java.clients.GitHubClient;
-import edu.java.clients.StackOverflowClient;
+import edu.java.siteclients.GitHubClient;
+import edu.java.siteclients.StackOverflowClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;

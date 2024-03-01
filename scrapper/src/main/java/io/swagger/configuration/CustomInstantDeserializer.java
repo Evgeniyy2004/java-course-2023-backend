@@ -55,7 +55,8 @@ public class CustomInstantDeserializer<T extends Temporal>
       null
   );
 
-  public static final CustomInstantDeserializer<OffsetDateTime> OFFSET_DATE_TIME = new CustomInstantDeserializer<OffsetDateTime>(
+  public static final CustomInstantDeserializer<OffsetDateTime>
+      OFFSET_DATE_TIME = new CustomInstantDeserializer<OffsetDateTime>(
       OffsetDateTime.class, DateTimeFormatter.ISO_OFFSET_DATE_TIME,
       new Function<TemporalAccessor, OffsetDateTime>() {
         @Override
@@ -83,7 +84,8 @@ public class CustomInstantDeserializer<T extends Temporal>
       }
   );
 
-  public static final CustomInstantDeserializer<ZonedDateTime> ZONED_DATE_TIME = new CustomInstantDeserializer<ZonedDateTime>(
+  public static final CustomInstantDeserializer<ZonedDateTime>
+      ZONED_DATE_TIME = new CustomInstantDeserializer<ZonedDateTime>(
       ZonedDateTime.class, DateTimeFormatter.ISO_ZONED_DATE_TIME,
       new Function<TemporalAccessor, ZonedDateTime>() {
         @Override

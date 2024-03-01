@@ -2,13 +2,11 @@ package io.swagger.model;
 
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
 
 /**
  * ApiErrorResponse
@@ -44,7 +42,7 @@ public class ApiErrorResponse   {
    * @return description
    **/
   @Schema(description = "")
-  
+
     public String getDescription() {
     return description;
   }
@@ -63,7 +61,7 @@ public class ApiErrorResponse   {
    * @return code
    **/
   @Schema(description = "")
-  
+
     public String getCode() {
     return code;
   }
@@ -82,7 +80,7 @@ public class ApiErrorResponse   {
    * @return exceptionName
    **/
   @Schema(description = "")
-  
+
     public String getExceptionName() {
     return exceptionName;
   }
@@ -101,7 +99,7 @@ public class ApiErrorResponse   {
    * @return exceptionMessage
    **/
   @Schema(description = "")
-  
+
     public String getExceptionMessage() {
     return exceptionMessage;
   }
@@ -128,7 +126,7 @@ public class ApiErrorResponse   {
    * @return stacktrace
    **/
   @Schema(description = "")
-  
+
     public List<String> getStacktrace() {
     return stacktrace;
   }
@@ -163,7 +161,7 @@ public class ApiErrorResponse   {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ApiErrorResponse {\n");
-    
+
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    code: ").append(toIndentedString(code)).append("\n");
     sb.append("    exceptionName: ").append(toIndentedString(exceptionName)).append("\n");

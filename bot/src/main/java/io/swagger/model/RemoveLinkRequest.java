@@ -1,22 +1,22 @@
 package io.swagger.model;
 
-import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Objects;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * AddLinkRequest
+ * RemoveLinkRequest
  */
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2024-02-27T16:17:37.541889551Z[GMT]")
 
 
-public class AddLinkRequest   {
+public class RemoveLinkRequest {
   @JsonProperty("link")
   private String link = null;
 
-  public AddLinkRequest link(String link) {
+  public RemoveLinkRequest link(String link) {
     this.link = link;
     return this;
   }
@@ -44,8 +44,8 @@ public class AddLinkRequest   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AddLinkRequest addLinkRequest = (AddLinkRequest) o;
-    return Objects.equals(this.link, addLinkRequest.link);
+    RemoveLinkRequest removeLinkRequest = (RemoveLinkRequest) o;
+    return Objects.equals(this.link, removeLinkRequest.link);
   }
 
   @Override
@@ -56,7 +56,7 @@ public class AddLinkRequest   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class AddLinkRequest {\n");
+    sb.append("class RemoveLinkRequest {\n");
 
     sb.append("    link: ").append(toIndentedString(link)).append("\n");
     sb.append("}");

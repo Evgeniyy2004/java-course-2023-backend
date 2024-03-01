@@ -5,15 +5,9 @@ import io.swagger.model.LinkResponse;
 import io.swagger.model.ListLinksResponse;
 import io.swagger.model.RemoveLinkRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -23,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import javax.validation.Valid;
-import javax.validation.constraints.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
@@ -43,8 +36,10 @@ public class LinksApiController implements LinksApi {
         this.request = request;
     }
 
-    public ResponseEntity<LinkResponse> linksDelete(@Parameter(in = ParameterIn.HEADER, description = "" ,required=true,schema=@Schema()) @RequestHeader(value="Tg-Chat-Id", required=true) Long tgChatId
-,@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody RemoveLinkRequest body
+
+    public ResponseEntity<LinkResponse> linksDelete(@Parameter(in = ParameterIn.HEADER, description = "" , required=true, schema=@Schema()) @RequestHeader(value="Tg-Chat-Id", required=true) Long tgChatId
+,@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody
+    RemoveLinkRequest body
 ) {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
@@ -59,7 +54,8 @@ public class LinksApiController implements LinksApi {
         return new ResponseEntity<LinkResponse>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<ListLinksResponse> linksGet(@Parameter(in = ParameterIn.HEADER, description = "" ,required=true,schema=@Schema()) @RequestHeader(value="Tg-Chat-Id", required=true) Long tgChatId
+
+    public ResponseEntity<ListLinksResponse> linksGet(@Parameter(in = ParameterIn.HEADER, description = "" , required=true, schema=@Schema()) @RequestHeader(value="Tg-Chat-Id", required=true) Long tgChatId
 ) {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
@@ -75,7 +71,8 @@ public class LinksApiController implements LinksApi {
     }
 
     public ResponseEntity<LinkResponse> linksPost(@Parameter(in = ParameterIn.HEADER, description = "" ,required=true,schema=@Schema()) @RequestHeader(value="Tg-Chat-Id", required=true) Long tgChatId
-,@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody AddLinkRequest body
+,@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody
+    AddLinkRequest body
 ) {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
