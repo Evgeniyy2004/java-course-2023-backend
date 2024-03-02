@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UpdatesApiController implements UpdatesApi {
 
-    private static final Logger log = LoggerFactory.getLogger(UpdatesApiController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UpdatesApiController.class);
 
     private final ObjectMapper objectMapper;
 

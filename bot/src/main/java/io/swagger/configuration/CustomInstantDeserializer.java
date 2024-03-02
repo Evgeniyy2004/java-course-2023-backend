@@ -169,6 +169,7 @@ public class CustomInstantDeserializer<T extends Temporal>
     }
 
     @Override
+    @SuppressWarnings({"ReturnCount", "MissingSwitchDefault"})
     public T deserialize(JsonParser parser, DeserializationContext context) throws IOException {
         //NOTE: Timestamps contain no timezone info, and are always in configured TZ. Only
         //string values have to be adjusted to the configured TZ.
@@ -199,7 +200,7 @@ public class CustomInstantDeserializer<T extends Temporal>
                     return null;
                 }
                 if (string.endsWith("+0000")) {
-                    string = string.substring(0, string.length() - 5) + "Z";
+                    string = string.substring(0, string.length() - 2 * 2 - 1) + "Z";
                 }
                 T value;
                 try {

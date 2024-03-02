@@ -5,7 +5,7 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import static io.netty.handler.codec.http.HttpHeaders.Values.APPLICATION_JSON;
 
-@HttpExchange(url = "https://api.github.com/repos/{user}/{repo}", accept = APPLICATION_JSON)
+@HttpExchange(url = "repos/{user}/{repo}", accept = APPLICATION_JSON)
 public interface GitHubClient {
 
     @GetExchange
