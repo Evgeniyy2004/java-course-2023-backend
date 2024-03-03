@@ -1,8 +1,8 @@
 import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
-import edu.java.bot.configuration.ApplicationConfig;
-import edu.java.bot.configuration.Bot;
+import edu.java.configuration.ApplicationConfig;
+import edu.java.configuration.Bot;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
