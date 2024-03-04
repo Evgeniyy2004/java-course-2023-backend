@@ -6,13 +6,13 @@ create table id
 
 create table links
 (
-    link              text,
+    link              text  nol null,
     primary key (link)
 );
 
 create table connect
 (
-    link              text,
+    link              text    not null,
     id                bigint generated always as identity,
     foreign key (link) references links(link)
     foreign key (id) references id(id)

@@ -6,8 +6,5 @@
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-
     <include file="01-foo.sql"/>
-    <include file="02-bar.sql"/>
-    <include file="03-baz.sql"/>
 </databaseChangeLog>
