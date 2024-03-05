@@ -7,6 +7,10 @@ app:
 spring:
   application:
     name: scrapper
+  liquibase:
+    change-log: classpath:migrations/master.xml
+    searchPath: ...../migrations
+    enabled: true
 
 server:
   port: 8080
