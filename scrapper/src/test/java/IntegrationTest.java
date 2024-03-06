@@ -50,12 +50,9 @@ public abstract class IntegrationTest {
     private static void runMigrations(JdbcDatabaseContainer<?> c) throws Exception {
         java.sql.Connection connection = DriverManager.getConnection(POSTGRES.getJdbcUrl(),POSTGRES.getUsername(), POSTGRES.getPassword());
         Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-
         var way = new File(new File(new File(new File(new File(".").toPath().toAbsolutePath().toString()).getParent()).getParent()).toString()).toPath().resolve("migrations");
-         var file = way.resolve("master.xml");
         Liquibase liquibase = new liquibase.Liquibase("master.xml", new DirectoryResourceAccessor(way), database);
         liquibase.update(new Contexts(), new PrintWriter(System.out));
-
     }
 
     @DynamicPropertySource

@@ -97,7 +97,6 @@ public class Bot extends TelegramBot {
         var t = untrack(command);
         log.info(t);
         return new SendMessage(id, t);
-
     }
 
     public static String list() {
