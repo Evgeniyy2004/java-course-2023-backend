@@ -8,8 +8,8 @@ spring:
   application:
     name: scrapper
   liquibase:
-    change-log: classpath:migrations/master.xml
-    searchPath: ...../migrations
+    searchPath: ...../migrations/
+    change-log: ...../migrations/master.xml
     enabled: true
 
 server:

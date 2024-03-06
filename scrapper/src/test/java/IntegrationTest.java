@@ -7,6 +7,7 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import liquibase.resource.SearchPathResourceAccessor;
 import org.junit.runners.model.InitializationError;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -46,8 +47,9 @@ public abstract class IntegrationTest {
     private static void runMigrations(JdbcDatabaseContainer<?> c) throws Exception {
         java.sql.Connection connection = DriverManager.getConnection(POSTGRES.getJdbcUrl(),POSTGRES.getUsername(), POSTGRES.getPassword());
         Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-        Liquibase liquibase = new liquibase.Liquibase("master.xml", new ClassLoaderResourceAccessor(), database);
-        liquibase.update(new Contexts(), new LabelExpression());
+        var str = new File(new File(new File(".").getParent()).getParent())
+        Liquibase liquibase = new liquibase.Liquibase("master.xml", new SearchPathResourceAccessor(), database);
+        liquibase.update(new Contexts());
 
     }
 
