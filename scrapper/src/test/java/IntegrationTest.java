@@ -7,6 +7,7 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import liquibase.resource.DirectoryResourceAccessor;
 import liquibase.resource.SearchPathResourceAccessor;
 import org.junit.runners.model.InitializationError;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -17,6 +18,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.File;
+import java.io.PipedWriter;
+import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -40,16 +43,18 @@ public abstract class IntegrationTest {
         try {
             runMigrations(POSTGRES);
         } catch (Exception e) {
-            throw new IllegalArgumentException();
+            e.printStackTrace();
         }
     }
 
     private static void runMigrations(JdbcDatabaseContainer<?> c) throws Exception {
         java.sql.Connection connection = DriverManager.getConnection(POSTGRES.getJdbcUrl(),POSTGRES.getUsername(), POSTGRES.getPassword());
         Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-        var str = new File(new File(new File(".").getParent()).getParent())
-        Liquibase liquibase = new liquibase.Liquibase("master.xml", new SearchPathResourceAccessor(), database);
-        liquibase.update(new Contexts());
+
+        var way = new File(new File(new File(new File(new File(".").toPath().toAbsolutePath().toString()).getParent()).getParent()).toString()).toPath().resolve("migrations");
+         var file = way.resolve("master.xml");
+        Liquibase liquibase = new liquibase.Liquibase("master.xml", new DirectoryResourceAccessor(way), database);
+        liquibase.update(new Contexts(), new PrintWriter(System.out));
 
     }
 
