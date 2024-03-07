@@ -21,9 +21,10 @@ services:
       - --url=jdbc:postgresql://postgresql:5432/scrapper
       - --username=postgres
       - --password=postgres
+      - --host=localhost
       - update
     volumes:
-      - ./migrations:/liquibase/changelog
+      - ./migrations:/changelog
     networks:
       - backend
 
