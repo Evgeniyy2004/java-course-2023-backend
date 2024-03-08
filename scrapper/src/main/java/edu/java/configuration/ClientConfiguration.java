@@ -1,7 +1,8 @@
 package edu.java.configuration;
 
-import edu.java.clients.GitHubClient;
-import edu.java.clients.StackOverflowClient;
+import edu.java.botclient.UpdatesClient;
+import edu.java.siteclients.GitHubClient;
+import edu.java.siteclients.StackOverflowClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,6 +26,14 @@ public class ClientConfiguration {
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(GitHubClient.class);
+    }
+
+    @Bean
+    public UpdatesClient beanUpdates() {
+        WebClient restClient = WebClient.builder().baseUrl("http://localhost:8080/").build();
+        WebClientAdapter adapter = WebClientAdapter.create(restClient);
+        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
+        return factory.createClient(UpdatesClient.class);
     }
 
 }
