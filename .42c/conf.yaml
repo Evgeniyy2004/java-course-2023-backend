@@ -1,0 +1,3 @@
+apis:
+  bot/src/main/java/edu/java/bot/bot-api.json:
+    alias: "bot-api"
