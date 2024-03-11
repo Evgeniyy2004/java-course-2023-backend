@@ -24,6 +24,8 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-log4j2</artifactId>
@@ -43,12 +45,18 @@
             <artifactId>spring-kafka</artifactId>
         </dependency>
 
+
         <!-- Dev Tools -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -119,33 +127,33 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.joschi.jackson</groupId>
-            <artifactId>jackson-datatype-threetenbp</artifactId>
-            <version>2.15.2</version>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>2.2.9</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-models</artifactId>
-            <version>2.2.19</version>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.0.0.GA</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
             <version>1.2</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
-            <version>2.2.19</version>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>2.0.1.Final</version>
+            <groupId>edu.java</groupId>
+            <artifactId>bot</artifactId>
+            <version>0.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -153,15 +161,7 @@
             <artifactId>jakarta.xml.bind-api</artifactId>
             <version>2.3.3</version>
         </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-        </dependency>
+
     </dependencies>
 
     <build>
