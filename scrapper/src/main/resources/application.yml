@@ -8,8 +8,11 @@ spring:
   application:
     name: scrapper
   liquibase:
-    searchPath: public
+    searchPath: ...../migrations/
     enabled: true
+  datasource:
+    username: postgres
+    password: postgres
 
 server:
   port: 8080

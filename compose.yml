@@ -16,15 +16,15 @@ services:
     depends_on:
       - postgresql
     command:
+      - --search-path=/migrations/
       - --changelog-file=master.xml
       - --driver=org.postgresql.Driver
       - --url=jdbc:postgresql://postgresql:5432/scrapper
       - --username=postgres
       - --password=postgres
-      - --host=localhost
       - update
     volumes:
-      - ./migrations:/changelog
+      - /migrations:/changelog
     networks:
       - backend
 
