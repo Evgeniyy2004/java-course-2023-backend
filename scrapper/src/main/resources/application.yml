@@ -9,10 +9,11 @@ spring:
     name: scrapper
   liquibase:
     enabled: true
-    change-log: classpath:/migrations/master.xml
+    change-log: classpath:migrations/master.xml
   datasource:
+    port: 5432
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/scrapper?allowMultiQueries=true&createDatabaseIfNotExist=true
+    url: jdbc:postgresql://localhost:5432/scrapper
     username: postgres
     password: postgres
 
