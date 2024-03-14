@@ -1,9 +1,8 @@
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import edu.java.configuration.ClientConfiguration;
+import edu.java.configuration.Configuration;
 import lombok.extern.java.Log;
-import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -132,7 +131,7 @@ public class ClientTest {
             )));
 
         //Act
-        var response = new ClientConfiguration().beanGit().fetchRepository("jojozhuang","algorithm-problems-java");
+        var response = new Configuration().beanGit().fetchRepository("jojozhuang","algorithm-problems-java");
         //Assert
         assertThat(response.owner.user()).isEqualTo("jojozhuang");
         assertThat(response.name).isEqualTo("algorithm-problems-java");
@@ -151,7 +150,7 @@ public class ClientTest {
                 "<code>@Service</code></a> annotations be used interchangeably in Spring or do they provide any particular functionality besides acting as a notation device?</p>\\n<p>In other words, if I have a Service class and I change its annotation from <code>@Service</code> to <code>@Component</code>, will it still behave the same way?</p>\\n<p>Or does the annotation also influence the behavior and " +
                 "functionality of the class?</p>\\n\"}],\"has_more\":false," +
                 "\"quota_max\":300,\"quota_remaining\":297}")));
-        var bean = new ClientConfiguration()
+        var bean = new Configuration()
             .beanStack();
         //Act
         var response = bean.fetchQuestion(6827752);

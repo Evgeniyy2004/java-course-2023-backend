@@ -4,13 +4,16 @@ import edu.java.botclient.UpdatesClient;
 import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
-@Configuration
-public class ClientConfiguration {
+@org.springframework.context.annotation.Configuration
+@ComponentScan
+public class Configuration {
 
     @Bean
     public StackOverflowClient beanStack() {
@@ -35,6 +38,20 @@ public class ClientConfiguration {
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(UpdatesClient.class);
     }
+
+
+
+    @Bean
+    public JdbcTemplate template() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("org.postgresql.Driver");
+        dataSource.setUrl("jdbc:postgresql://localhost:5437/scrapper");
+        dataSource.setUsername("postgres");
+        dataSource.setPassword("postgres");
+        return new JdbcTemplate(dataSource);
+    }
+
+
 
 }
 
