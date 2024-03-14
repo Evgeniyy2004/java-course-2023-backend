@@ -22,19 +22,19 @@ public class JdbcLinkRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    void save(Long id, String link) throws ApiException {
+    public void save(Long id, String link) throws ApiException {
         try {
             String query = ("select * from id where id=") + id.toString();
             jdbcTemplate.queryForObject(query, Long.class);
             var time = new Timestamp(System.currentTimeMillis());
-            var values = "("+id+","+link+","+time+")";
+            var values = "("+id+","+link+", "+time+")";
             jdbcTemplate.execute("insert into connect (id,link,time) values "+values);
         } catch (EmptyResultDataAccessException e) {
             throw new ApiException(404,"Чат не существует");
         }
     }
 
-    void remove(Long id, String link)throws ApiException {
+    public void remove(Long id, String link)throws ApiException {
         try {
             String query = ("select * from id where id=") + id.toString();
             jdbcTemplate.queryForObject(query, Long.class);
@@ -44,7 +44,7 @@ public class JdbcLinkRepository {
         }
     }
 
-    Collection<URI> findAll(Long id)throws ApiException {
+    public Collection<URI> findAll(Long id)throws ApiException {
         try {
             String query = ("select * from id where id=") + id.toString();
             jdbcTemplate.queryForObject(query, Long.class);

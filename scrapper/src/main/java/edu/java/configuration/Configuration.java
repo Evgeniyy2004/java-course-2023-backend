@@ -3,15 +3,19 @@ package edu.java.configuration;
 import edu.java.botclient.UpdatesClient;
 import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 @org.springframework.context.annotation.Configuration
+@SpringBootConfiguration
 @ComponentScan
 public class Configuration {
 
@@ -38,6 +42,8 @@ public class Configuration {
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(UpdatesClient.class);
     }
+
+
 
 
 

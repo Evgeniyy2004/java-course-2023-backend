@@ -24,7 +24,7 @@ public class JdbcTgChatRepository {
     public JdbcTgChatRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-    void save(Long id) throws ApiException {
+    public void save(Long id) throws ApiException {
         try {
             String query = ("select * from id where id=") + id.toString();
             var res = jdbcTemplate.queryForObject(query, Long.class);
@@ -35,7 +35,7 @@ public class JdbcTgChatRepository {
         throw new ApiException(404,"Чат уже зарегистрирован");
     }
 
-    void remove(Long id)throws ApiException {
+    public void remove(Long id)throws ApiException {
         try {
             String query = ("select * from id where id=") + id.toString();
             jdbcTemplate.queryForObject(query, Long.class);

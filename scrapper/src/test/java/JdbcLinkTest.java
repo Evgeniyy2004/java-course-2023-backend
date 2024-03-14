@@ -1,4 +1,5 @@
 import edu.java.configuration.Configuration;
+import io.swagger.api.ApiException;
 import io.swagger.api.JdbcLinkRepository;
 import io.swagger.api.JdbcTgChatRepository;
 import org.junit.jupiter.api.Test;
@@ -10,16 +11,14 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-@SpringBootTest
-@Import({Configuration.class, JdbcLinkRepository.class, JdbcTgChatRepository.class})
+@SpringBootTest(classes = {Configuration.class, JdbcLinkRepository.class, JdbcTgChatRepository.class})
 @Testcontainers
 public class JdbcLinkTest {
 
     @Autowired
     private JdbcTgChatRepository chatRepository;
 
-    @Autowired
-    private JdbcTemplate template;
+
 
     @Autowired
     private JdbcLinkRepository linkRepository;
@@ -27,10 +26,16 @@ public class JdbcLinkTest {
 
 
     @Test
-    @Transactional
+    @Transactional(transactionManager = "hibernateTransactionManager")
     @Rollback
     void addTest() {
-
+        try {
+            chatRepository.save(1L);
+            chatRepository.save(2L);
+            linkRepository.save(1L,"https://stackoverflow.com/questions/434718/sockets-discover-port-availability-using-java");
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
