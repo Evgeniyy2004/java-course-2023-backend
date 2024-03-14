@@ -1,8 +1,8 @@
 services:
   postgresql:
-    image: postgres:16
+    image: postgres:latest
     ports:
-      - "5432:5432"
+      - "5437:5432"
     environment:
       POSTGRES_DB: scrapper
       POSTGRES_USER: postgres
@@ -16,7 +16,6 @@ services:
     depends_on:
       - postgresql
     command:
-      - --search-path=/migrations/
       - --changelog-file=master.xml
       - --driver=org.postgresql.Driver
       - --url=jdbc:postgresql://postgresql:5432/scrapper
@@ -24,12 +23,13 @@ services:
       - --password=postgres
       - update
     volumes:
-      - /migrations:/changelog
+      - ./scrapper/src/main/resources/migrations:/liquibase/changelog
     networks:
       - backend
 
 volumes:
   postgresql: { }
+
 
 networks:
   backend: { }
