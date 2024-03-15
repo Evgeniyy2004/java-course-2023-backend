@@ -7,11 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest(classes = {Configuration.class, JdbcLinkRepository.class, JdbcTgChatRepository.class})
+@EnableTransactionManagement
+@Transactional
 @Testcontainers
 public class JdbcLinkTest {
 
@@ -26,7 +30,6 @@ public class JdbcLinkTest {
 
 
     @Test
-    @Transactional(transactionManager = "hibernateTransactionManager")
     @Rollback
     void addTest() {
         try {
@@ -39,7 +42,6 @@ public class JdbcLinkTest {
     }
 
     @Test
-    @Transactional
     @Rollback
     void removeTest() {
     }
