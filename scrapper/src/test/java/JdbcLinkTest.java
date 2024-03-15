@@ -23,7 +23,6 @@ public class JdbcLinkTest {
     private JdbcTgChatRepository chatRepository;
 
 
-
     @Autowired
     private JdbcLinkRepository linkRepository;
 

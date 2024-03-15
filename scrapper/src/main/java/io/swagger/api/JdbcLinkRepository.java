@@ -17,6 +17,7 @@ import java.util.Collection;
 
 @Repository
 public class JdbcLinkRepository {
+    @Autowired
     private final JdbcTemplate jdbcTemplate;
     @Autowired
     public JdbcLinkRepository(JdbcTemplate jdbcTemplate) {
