@@ -1,9 +1,10 @@
 package io.swagger.services;
 
+import io.swagger.api.ApiException;
 import javax.swing.text.html.Option;
 import java.util.Optional;
 
 public interface TgChatService {
-    Optional<Long> register(long tgChatId);
-    Optional<Long> unregister(long tgChatId);
+    void register(long tgChatId) throws ApiException;
+    void unregister(long tgChatId) throws ApiException ;
 }

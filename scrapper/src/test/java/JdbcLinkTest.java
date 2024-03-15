@@ -53,4 +53,29 @@ public class JdbcLinkTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    @Rollback
+    void findAllTest() {
+        try {
+            chatRepository.save(1L);
+            linkRepository.save(1L,"https://stackoverflow.com/questions/434718/sockets-discover-port-availability-using-java");
+            linkRepository.save(1L,"https://github.com/krahets/hello-algo");
+            linkRepository.findAll(1L);
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    @Rollback
+    void failedRemoveTest() {
+        try {
+            chatRepository.save(1L);
+            linkRepository.save(1L,"https://stackoverflow.com/questions/434718/sockets-discover-port-availability-using-java");
+            linkRepository.remove(1L,"https://github.com/krahets/hello-algo");
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+    }
 }

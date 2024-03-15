@@ -25,25 +25,18 @@ public class JdbcTgChatRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
     public void save(Long id) throws ApiException {
-        try {
-            String query = ("select * from id where id=") + id.toString();
-            var res = jdbcTemplate.queryForObject(query, Long.class);
-        } catch (EmptyResultDataAccessException e) {
+
+            String query = ("select * from id where id=?");
+            var res = jdbcTemplate.queryForList(query, id).toArray();
+            if (res.length != 0) throw new ApiException(404,"Чат уже зарегистрирован");
             jdbcTemplate.execute("insert into id (id) values "+"("+id+")");
-            return;
-        }
-        throw new ApiException(404,"Чат уже зарегистрирован");
     }
 
     public void remove(Long id)throws ApiException {
-        try {
-            String query = ("select * from id where id=") + id.toString();
-            jdbcTemplate.queryForObject(query, Long.class);
+            String query = ("select * from id where id=?");
+            var res = jdbcTemplate.queryForList(query, id).toArray();
+            if (res.length == 0) throw new ApiException(404,"Чат не существует");
             jdbcTemplate.execute("delete from id where id="+ id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new ApiException(404,"Чат не существует");
-        }
-
     }
 
 
