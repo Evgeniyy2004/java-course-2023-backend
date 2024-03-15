@@ -44,5 +44,14 @@ public class JdbcLinkTest {
     @Test
     @Rollback
     void removeTest() {
+        try {
+            chatRepository.save(1L);
+            chatRepository.remove(1L);
+            chatRepository.save(1L);
+            linkRepository.save(1L,"https://stackoverflow.com/questions/434718/sockets-discover-port-availability-using-java");
+            linkRepository.remove(1L,"https://stackoverflow.com/questions/434718/sockets-discover-port-availability-using-java");
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
     }
 }

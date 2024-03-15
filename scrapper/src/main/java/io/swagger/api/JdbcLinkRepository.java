@@ -3,6 +3,7 @@ package io.swagger.api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -27,8 +28,13 @@ public class JdbcLinkRepository {
             String query = ("select * from id where id=") + id.toString();
             jdbcTemplate.queryForObject(query, Long.class);
             var time = new Timestamp(System.currentTimeMillis());
-            var values = "("+id+","+link+", "+time+")";
-            jdbcTemplate.execute("insert into connect (id,link,time) values "+values);
+            MapSqlParameterSource params = new MapSqlParameterSource();
+
+            params.addValue("id",id);
+            params.addValue("link",link);
+            params.addValue("updated",time);
+            var action ="insert into connect  values (?, ?, ?)";
+            jdbcTemplate.update(action, link,id,time);
         } catch (EmptyResultDataAccessException e) {
             throw new ApiException(404,"Чат не существует");
         }
@@ -38,7 +44,7 @@ public class JdbcLinkRepository {
         try {
             String query = ("select * from id where id=") + id.toString();
             jdbcTemplate.queryForObject(query, Long.class);
-            jdbcTemplate.execute("delete from connect where link="+ link +" and id=" + id);
+            jdbcTemplate.update("delete from connect where link =? and id = ?", link,id);
         } catch (EmptyResultDataAccessException e) {
             throw new ApiException(404,"Чат не существует");
         }
@@ -48,7 +54,7 @@ public class JdbcLinkRepository {
         try {
             String query = ("select * from id where id=") + id.toString();
             jdbcTemplate.queryForObject(query, Long.class);
-            ResultSet res = jdbcTemplate.queryForObject("select link from connect where id="+id,ResultSet.class);
+            ResultSet res = jdbcTemplate.queryForObject("select link from connect where id="+id+";",ResultSet.class);
             ArrayList<URI> result = new ArrayList<>();
             if (res != null && res.last()) {
                 result = new ArrayList<>(res.getRow());
