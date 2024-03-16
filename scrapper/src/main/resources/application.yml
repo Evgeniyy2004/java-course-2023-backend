@@ -12,6 +12,9 @@ spring:
     url: jdbc:postgresql://localhost:5437/scrapper
     username: postgres
     password: postgres
+  devtools:
+    restart:
+      enabled: false
 
 
 server:
