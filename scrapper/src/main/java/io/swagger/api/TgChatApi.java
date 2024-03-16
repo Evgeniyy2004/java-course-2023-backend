@@ -45,7 +45,7 @@ public interface TgChatApi {
     @RequestMapping(value = "/tg-chat/{id}",
                     produces = {"application/json"},
                     method = RequestMethod.DELETE)
-    ResponseEntity<Void> tgChatIdDelete(
+    ResponseEntity tgChatIdDelete(
         @Parameter(in = ParameterIn.PATH, description = "", required = true, schema = @Schema()) @PathVariable("id")
         Long id
     );
@@ -65,7 +65,7 @@ public interface TgChatApi {
     @RequestMapping(value = "/tg-chat/{id}",
                     produces = {"application/json"},
                     method = RequestMethod.POST)
-    ResponseEntity<Void> tgChatIdPost(
+    ResponseEntity tgChatIdPost(
         @Parameter(in = ParameterIn.PATH, description = "", required = true, schema = @Schema()) @PathVariable("id")
         Long id
     );

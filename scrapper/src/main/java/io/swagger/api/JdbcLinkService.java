@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import java.net.URI;
 import java.util.Collection;
 
-@Import(JdbcLinkRepository.class)
 @Service
 public class JdbcLinkService implements LinkService {
 

@@ -1,8 +1,10 @@
 package edu.java.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.java.botclient.UpdatesClient;
 import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
+import io.swagger.api.JdbcLinkService;
 import org.hibernate.SessionFactory;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +18,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
+import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 
 @org.springframework.context.annotation.Configuration
@@ -57,6 +60,9 @@ public class Configuration {
         dataSource.setPassword("postgres");
         return dataSource;
     }
+
+
+
 
     @Bean
     public LocalSessionFactoryBean sessionFactory(DataSource d) {

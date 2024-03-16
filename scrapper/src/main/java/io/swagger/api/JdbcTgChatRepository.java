@@ -28,7 +28,7 @@ public class JdbcTgChatRepository {
 
             String query = ("select * from id where id=?");
             var res = jdbcTemplate.queryForList(query, id).toArray();
-            if (res.length != 0) throw new ApiException(404,"Чат уже зарегистрирован");
+            if (res.length != 0) throw new ApiException(409,"Вы не можете повторно зарегистрировать чат");
             jdbcTemplate.execute("insert into id (id) values "+"("+id+")");
     }
 
