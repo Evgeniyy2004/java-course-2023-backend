@@ -12,15 +12,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-@EnableScheduling
 @Service
-@Log
+@EnableScheduling
 public class LinkUpdaterScheduler {
-    @Autowired
-    private UpdatesClient client;
-
-    @Autowired
-    private LinkRepository links;
 
     @Scheduled(fixedDelayString = "#{@scheduler.interval}")
     public void update() {

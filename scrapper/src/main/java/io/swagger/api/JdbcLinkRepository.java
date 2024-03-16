@@ -1,16 +1,24 @@
 package io.swagger.api;
 
+import edu.java.configuration.Configuration;
+import edu.java.siteclients.GitHubClient;
+import edu.java.siteclients.StackOverflowClient;
 import io.swagger.v3.oas.annotations.links.Link;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.util.Pair;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
+import reactor.util.function.Tuple3;
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.OffsetTime;
 import java.util.ArrayList;
@@ -22,6 +30,13 @@ import java.util.List;
 public class JdbcLinkRepository implements LinkRepository {
     @Autowired
     private final JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private GitHubClient git;
+
+    @Autowired
+    private StackOverflowClient stack;
+
     @Autowired
     public JdbcLinkRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -64,8 +79,30 @@ public class JdbcLinkRepository implements LinkRepository {
         }
     }
 
-    public HashMap<Long,Collection<URI>> update() {
+    public HashMap<Long,Collection<String>> update() {
+        var time = new Timestamp(System.currentTimeMillis()- 3600000);
+        var now = new Timestamp(System.currentTimeMillis());
+        var res = jdbcTemplate.queryForList("select (id,link,updated) from connect where updated<?", ArrayList.class,time);
+        jdbcTemplate.update("update connect set update=? where update<?",now,time);
+        HashMap<Long, Collection<String>> result = new HashMap<>();
+        for (ArrayList i: res) {
+            var current = i.get(1).toString();
+            var id = Long.parseLong(i.get(0).toString());
+            if (current.startsWith("https://stackoverflow.com/questions/")) {
+                current = current.replace("https://stackoverflow.com/questions/","");
+                var question = Long.parseLong(current.split("/")[0]);
+                var response = stack.fetchQuestion(question);
+                if (Timestamp.valueOf(response.time.toLocalDateTime()).after((Timestamp)i.get(2))) {
+                    if (!result.containsKey(id)) {
+                        result.put(id,new ArrayList<>());
+                    }
+                    result.get(id).add(i.get(2).toString());
+                }
+            }
+            else {
 
+            }
+        }
     }
 
 

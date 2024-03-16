@@ -16,5 +16,5 @@ public interface LinkRepository {
     public Collection<URI> findAll(Long id) throws ApiException;
 
 
-    public HashMap<Long,Collection<URI>> update();
+    public HashMap<Long,Collection<String>> update();
 }
