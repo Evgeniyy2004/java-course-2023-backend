@@ -1,5 +1,6 @@
 package io.swagger.api;
 
+import io.swagger.v3.oas.annotations.links.Link;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,10 +15,11 @@ import java.sql.Timestamp;
 import java.time.OffsetTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 @Repository
-public class JdbcLinkRepository {
+public class JdbcLinkRepository implements LinkRepository {
     @Autowired
     private final JdbcTemplate jdbcTemplate;
     @Autowired
@@ -61,4 +63,10 @@ public class JdbcLinkRepository {
             throw new RuntimeException(e);
         }
     }
+
+    public HashMap<Long,Collection<URI>> update() {
+
+    }
+
+
 }

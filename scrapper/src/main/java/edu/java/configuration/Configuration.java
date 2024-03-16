@@ -84,6 +84,13 @@ public class Configuration {
         return new JdbcTemplate(d);
     }
 
+    @Bean
+    public UpdatesClient botClient() {
+        WebClient restClient = WebClient.builder().baseUrl("http://localhost:8080/").build();
+        WebClientAdapter adapter = WebClientAdapter.create(restClient);
+        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
+        return factory.createClient(UpdatesClient.class);
+    }
 
 
 }
