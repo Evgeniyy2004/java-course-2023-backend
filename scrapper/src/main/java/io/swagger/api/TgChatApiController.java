@@ -29,9 +29,7 @@ TgChatApiController implements TgChatApi {
     private final HttpServletRequest request;
 
     @Autowired
-    private  JdbcTgChatService chatService;
-
-
+    private JdbcTgChatService chatService;
 
     @org.springframework.beans.factory.annotation.Autowired
     public TgChatApiController(ObjectMapper objectMapper, HttpServletRequest request) {
@@ -45,8 +43,8 @@ TgChatApiController implements TgChatApi {
     ) {
         try {
             chatService.unregister(id);
-        } catch (ApiException e){
-            var res =  new ResponseEntity<ApiErrorResponse>(HttpStatus.NOT_FOUND);
+        } catch (ApiException e) {
+            var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.NOT_FOUND);
             return res;
         }
         return new ResponseEntity(HttpStatus.OK);
@@ -58,8 +56,8 @@ TgChatApiController implements TgChatApi {
     ) {
         try {
             chatService.register(id);
-        } catch (ApiException e){
-            var res =  new ResponseEntity<ApiErrorResponse>(HttpStatus.CONFLICT);
+        } catch (ApiException e) {
+            var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.CONFLICT);
             return res;
         }
         return new ResponseEntity(HttpStatus.OK);

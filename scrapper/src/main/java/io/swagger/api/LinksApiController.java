@@ -8,7 +8,6 @@ import io.swagger.model.RemoveLinkRequest;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletRequest;
@@ -71,12 +70,12 @@ public class LinksApiController implements LinksApi {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         var result = new ListLinksResponse();
-        for (int u =0; u < res1.length;u++) {
+        for (int u = 0; u < res1.length; u++) {
             var curr = new LinkResponse();
             curr.setUrl(res1[u].toString());
             result.addLinksItem(curr);
         }
-        return new ResponseEntity<ListLinksResponse>(result,HttpStatus.OK);
+        return new ResponseEntity<ListLinksResponse>(result, HttpStatus.OK);
 
     }
 
