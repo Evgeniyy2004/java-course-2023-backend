@@ -4,6 +4,7 @@ import edu.java.botclient.UpdatesClient;
 import io.swagger.api.LinkRepository;
 import io.swagger.model.LinkUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -18,13 +19,13 @@ public class LinkUpdaterScheduler {
     @Autowired
     LinkRepository repo;
 
-    @Scheduled(fixedDelayString = "#{@scheduler.interval}")
+    @Scheduled(fixedDelayString = "86400s")
     public void update() {
-        var allchanges = repo.update();
-        for (Long id : allchanges.keySet()) {
+        var allChanges = repo.update();
+        for (Long id : allChanges.keySet()) {
             var request = new LinkUpdate();
             request.addTgChatIdsItem(id);
-            for (String url : allchanges.get(id)) {
+            for (String url : allChanges.get(id)) {
                 request.setUrl(url);
                 client.post(request);
             }

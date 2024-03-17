@@ -1,8 +1,14 @@
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import edu.java.configuration.Configuration;
+import edu.java.ScrapperApplication;
+import edu.java.configuration.ApplicationConfig;
+import edu.java.siteclients.GitHubClient;
+import edu.java.siteclients.StackOverflowClient;
 import lombok.extern.java.Log;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -11,10 +17,18 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.assertTrue;
 
+
+@SpringBootTest(classes = ScrapperApplication.class)
 @WireMockTest
 @Log
 public class ClientTest {
     WireMockServer wireMockServer = new WireMockServer(WireMockConfiguration.options().port(8080).httpsPort(8443));
+
+    @Autowired
+    private StackOverflowClient client1;
+
+    @Autowired
+    private GitHubClient client;
 
     @org.junit.jupiter.api.Test
     @DirtiesContext
@@ -131,7 +145,7 @@ public class ClientTest {
             )));
 
         //Act
-        var response = new Configuration().beanGit().fetchRepository("jojozhuang","algorithm-problems-java");
+        var response = client.fetchRepository("jojozhuang","algorithm-problems-java");
         //Assert
         assertThat(response.owner.user()).isEqualTo("jojozhuang");
         assertThat(response.name).isEqualTo("algorithm-problems-java");
@@ -150,8 +164,7 @@ public class ClientTest {
                 "<code>@Service</code></a> annotations be used interchangeably in Spring or do they provide any particular functionality besides acting as a notation device?</p>\\n<p>In other words, if I have a Service class and I change its annotation from <code>@Service</code> to <code>@Component</code>, will it still behave the same way?</p>\\n<p>Or does the annotation also influence the behavior and " +
                 "functionality of the class?</p>\\n\"}],\"has_more\":false," +
                 "\"quota_max\":300,\"quota_remaining\":297}")));
-        var bean = new Configuration()
-            .beanStack();
+        var bean = client1;
         //Act
         var response = bean.fetchQuestion(6827752);
         //Assert

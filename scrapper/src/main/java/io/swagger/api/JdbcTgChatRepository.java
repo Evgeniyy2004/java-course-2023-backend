@@ -12,7 +12,7 @@ public class JdbcTgChatRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Autowired
+
     public JdbcTgChatRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }

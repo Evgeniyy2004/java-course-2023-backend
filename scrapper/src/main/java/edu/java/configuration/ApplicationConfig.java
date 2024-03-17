@@ -1,37 +1,42 @@
 package edu.java.configuration;
 
-import java.time.Duration;
-import javax.sql.DataSource;
-import javax.validation.constraints.NotNull;
 import edu.java.botclient.UpdatesClient;
 import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
+import io.swagger.api.JdbcLinkRepository;
+import io.swagger.api.JdbcTgChatRepository;
+import java.time.Duration;
+import javax.sql.DataSource;
+import javax.validation.constraints.NotNull;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
-@Validated
 @ComponentScan
+@Configuration
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
-public record ApplicationConfig(
-    @NotNull
-    @Bean
-    Scheduler scheduler
-) {
-    public record Scheduler(boolean enable, @NotNull Duration interval, @NotNull Duration forceCheckDelay) {
-
-    }
+public class ApplicationConfig
+{
     private static final String BASE = "http://localhost:8080/";
+
+    @Bean
+    public JdbcTgChatRepository chatrepo() {
+        return new JdbcTgChatRepository(template());
+    }
+
+    @Bean
+    public JdbcLinkRepository linkrepo() {
+        return new JdbcLinkRepository(template());
+    }
 
     @Bean
     public StackOverflowClient beanStack() {
@@ -83,7 +88,7 @@ public record ApplicationConfig(
     }
 
     @Bean
-    public JdbcTemplate template(@Autowired DataSource source) {
-        return new JdbcTemplate(source);
+    public JdbcTemplate template() {
+        return new JdbcTemplate(dataSource());
     }
 }

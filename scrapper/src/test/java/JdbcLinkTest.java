@@ -1,4 +1,5 @@
-import edu.java.configuration.Configuration;
+import edu.java.ScrapperApplication;
+import edu.java.configuration.ApplicationConfig;
 import io.swagger.api.ApiException;
 import io.swagger.api.JdbcLinkRepository;
 import io.swagger.api.JdbcTgChatRepository;
@@ -6,15 +7,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import javax.sql.DataSource;
 
-@SpringBootTest(classes = {Configuration.class,DataSource.class,JdbcTemplate.class, JdbcLinkRepository.class, JdbcTgChatRepository.class})
+@SpringBootTest(classes = ScrapperApplication.class)
 @EnableTransactionManagement
 @Testcontainers
 public class JdbcLinkTest {
