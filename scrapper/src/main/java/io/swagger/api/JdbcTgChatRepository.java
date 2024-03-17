@@ -10,7 +10,7 @@ public class JdbcTgChatRepository {
     private static final String QUERY = "select * from id where id=?";
 
     @Autowired
-    private final JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     public JdbcTgChatRepository(JdbcTemplate jdbcTemplate) {

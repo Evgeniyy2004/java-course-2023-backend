@@ -5,9 +5,11 @@ import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import javax.sql.DataSource;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
@@ -16,9 +18,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
-@org.springframework.context.annotation.Configuration
-@SpringBootConfiguration
 @ComponentScan
+@org.springframework.context.annotation.Configuration
 public class Configuration {
 
     private static final String BASE = "http://localhost:8080/";
@@ -59,22 +60,22 @@ public class Configuration {
     }
 
     @Bean
-    public LocalSessionFactoryBean sessionFactory(DataSource d) {
+    public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-        sessionFactory.setDataSource(d);
+        sessionFactory.setDataSource(dataSource());
         return sessionFactory;
     }
 
     @Bean
-    public HibernateTransactionManager transactionManager(SessionFactory s) {
+    public HibernateTransactionManager transactionManager() {
         HibernateTransactionManager txManager = new HibernateTransactionManager();
-        txManager.setSessionFactory(s);
+        txManager.setSessionFactory((SessionFactory) sessionFactory());
         return txManager;
     }
 
     @Bean
-    public JdbcTemplate template(DataSource d) {
-        return new JdbcTemplate(d);
+    public JdbcTemplate template(@Autowired DataSource source) {
+        return new JdbcTemplate(source);
     }
 
 }

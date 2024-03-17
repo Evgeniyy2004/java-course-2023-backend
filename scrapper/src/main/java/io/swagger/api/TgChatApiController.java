@@ -27,10 +27,10 @@ TgChatApiController implements TgChatApi {
     private static final String HEADER = "Accept";
 
     @Autowired
-    private final ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     @Autowired
-    private final HttpServletRequest request;
+    private HttpServletRequest request;
 
     @Autowired
     private JdbcTgChatService chatService;

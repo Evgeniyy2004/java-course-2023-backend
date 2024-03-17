@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
 @SuppressWarnings("all")
 public class JdbcLinkRepository implements LinkRepository {
     @Autowired
-    private final JdbcTemplate jdbcTemplate;
+    private  JdbcTemplate jdbcTemplate;
 
     @Autowired
     private GitHubClient git;

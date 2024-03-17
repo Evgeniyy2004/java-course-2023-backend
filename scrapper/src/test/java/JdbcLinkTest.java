@@ -12,12 +12,13 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import javax.sql.DataSource;
 
-@SpringBootTest(classes = {Configuration.class, JdbcLinkRepository.class, JdbcTgChatRepository.class})
+@SpringBootTest(classes = {Configuration.class,DataSource.class,JdbcTemplate.class, JdbcLinkRepository.class, JdbcTgChatRepository.class})
 @EnableTransactionManagement
-@Transactional
 @Testcontainers
 public class JdbcLinkTest {
+
 
     @Autowired
     private JdbcTgChatRepository chatRepository;
@@ -27,8 +28,8 @@ public class JdbcLinkTest {
     private JdbcLinkRepository linkRepository;
 
 
-
     @Test
+    @Transactional
     @Rollback
     void addTest() {
         try {
@@ -41,6 +42,7 @@ public class JdbcLinkTest {
     }
 
     @Test
+    @Transactional
     @Rollback
     void removeTest() {
         try {
@@ -55,6 +57,7 @@ public class JdbcLinkTest {
     }
 
     @Test
+    @Transactional
     @Rollback
     void findAllTest() {
         try {
@@ -68,6 +71,7 @@ public class JdbcLinkTest {
     }
 
     @Test
+    @Transactional
     @Rollback
     void failedRemoveTest() {
         try {
