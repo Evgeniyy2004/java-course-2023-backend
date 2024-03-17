@@ -17,21 +17,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen",
-                            date = "2024-02-27T16:17:37.541889551Z[GMT]")
 @RestController
+@Validated
+@SuppressWarnings("MultipleStringLiterals")
 public class LinksApiController implements LinksApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(LinksApiController.class);
 
+    @Autowired
     private final ObjectMapper objectMapper;
 
     @Autowired
     private JdbcLinkService linkService;
+
+    @Autowired
     private final HttpServletRequest request;
 
     @org.springframework.beans.factory.annotation.Autowired
@@ -40,11 +44,11 @@ public class LinksApiController implements LinksApi {
         this.request = request;
     }
 
-    @SuppressWarnings("MultipleStringLiterals")
+    @Valid
     public ResponseEntity linksDelete(
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
         @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId,
-        @Parameter(in = ParameterIn.DEFAULT, description = "", required = true, schema = @Schema()) @Valid @RequestBody
+        @Parameter(in = ParameterIn.DEFAULT, description = "", required = true, schema = @Schema()) @RequestBody
         RemoveLinkRequest body
     ) {
         try {
@@ -58,6 +62,7 @@ public class LinksApiController implements LinksApi {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Valid
     public ResponseEntity linksGet(
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
         @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId
@@ -79,10 +84,11 @@ public class LinksApiController implements LinksApi {
 
     }
 
+    @Valid
     public ResponseEntity linksPost(
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
         @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId,
-        @Parameter(in = ParameterIn.DEFAULT, description = "", required = true, schema = @Schema()) @Valid @RequestBody
+        @Parameter(in = ParameterIn.DEFAULT, description = "", required = true, schema = @Schema()) @RequestBody
         AddLinkRequest body
     ) {
         try {

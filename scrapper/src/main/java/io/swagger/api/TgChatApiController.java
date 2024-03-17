@@ -6,17 +6,19 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen",
-                            date = "2024-02-27T16:17:37.541889551Z[GMT]")
+
 @RestController
+@Validated
 public class
 TgChatApiController implements TgChatApi {
 
@@ -24,8 +26,10 @@ TgChatApiController implements TgChatApi {
 
     private static final String HEADER = "Accept";
 
+    @Autowired
     private final ObjectMapper objectMapper;
 
+    @Autowired
     private final HttpServletRequest request;
 
     @Autowired
@@ -37,6 +41,7 @@ TgChatApiController implements TgChatApi {
         this.request = request;
     }
 
+    @Valid
     public ResponseEntity tgChatIdDelete(
         @Parameter(in = ParameterIn.PATH, description = "", required = true, schema = @Schema()) @PathVariable("id")
         Long id
@@ -50,6 +55,7 @@ TgChatApiController implements TgChatApi {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @Valid
     public ResponseEntity tgChatIdPost(
         @Parameter(in = ParameterIn.PATH, description = "", required = true, schema = @Schema()) @PathVariable("id")
         Long id

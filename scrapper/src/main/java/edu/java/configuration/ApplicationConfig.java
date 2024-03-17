@@ -1,7 +1,7 @@
 package edu.java.configuration;
 
-import javax.validation.constraints.NotNull;
 import java.time.Duration;
+import javax.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.validation.annotation.Validated;
