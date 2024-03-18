@@ -6,9 +6,12 @@ spring:
     url: jdbc:postgresql://localhost:5437/scrapper
     username: postgres
     password: postgres
+
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
+
 
   liquibase:
     enabled: false
