@@ -5,10 +5,7 @@ import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import io.swagger.api.JdbcLinkRepository;
 import io.swagger.api.JdbcTgChatRepository;
-import java.time.Duration;
 import javax.sql.DataSource;
-import javax.validation.constraints.NotNull;
-import org.hibernate.SessionFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -17,7 +14,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
-import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
@@ -25,8 +21,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 @ComponentScan
 @Configuration
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
-public class ApplicationConfig
-{
+public class ApplicationConfig {
     private static final String BASE = "http://localhost:8080/";
 
     @Bean
@@ -74,14 +69,12 @@ public class ApplicationConfig
         return dataSource;
     }
 
-    @Bean(name="entityManagerFactory")
+    @Bean(name = "entityManagerFactory")
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
         return sessionFactory;
     }
-
-
 
     @Bean
     public HibernateTransactionManager transactionManager() {

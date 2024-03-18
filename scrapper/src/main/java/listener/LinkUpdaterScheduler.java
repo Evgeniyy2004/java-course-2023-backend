@@ -4,7 +4,6 @@ import edu.java.botclient.UpdatesClient;
 import io.swagger.api.LinkRepository;
 import io.swagger.model.LinkUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
