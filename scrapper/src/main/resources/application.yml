@@ -8,7 +8,9 @@ spring:
     username: postgres
     password: postgres
 
-
+  liquibase:
+    change-log: classpath:migrations/master.xml
+    enabled: false
 
 server:
   port: 8080

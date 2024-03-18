@@ -16,6 +16,7 @@ services:
     depends_on:
       - postgresql
     command:
+      - --search-path=./scrapper/src/main/resources/migrations
       - --changelog-file=master.xml
       - --driver=org.postgresql.Driver
       - --url=jdbc:postgresql://postgresql:5432/scrapper
