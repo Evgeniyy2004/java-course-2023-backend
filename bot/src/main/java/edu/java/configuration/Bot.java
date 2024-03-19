@@ -9,12 +9,22 @@ import java.net.URISyntaxException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
+import edu.java.scrapperclient.ScrapperChatClient;
 import lombok.extern.java.Log;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 @Log
+@Component
 public class Bot extends TelegramBot {
+    @Autowired
+    private ScrapperChatClient chat;
+
+    @Autowired
+    private ScrapperChatClient links;
+
     private int condition = -1;
-    private static final Set<String> LINKSSET = ConcurrentHashMap.newKeySet();
 
     public Bot(ApplicationConfig app) {
         super(app.telegramToken());
@@ -31,11 +41,13 @@ public class Bot extends TelegramBot {
         if (condition == -1) {
             var res = new SendMessage(update.message().chat().id(), "");
             if (pattern5.matcher(command).find()) {
-                log.info(help());
                 res = new SendMessage(update.message().chat().id(), help());
             } else if (pattern2.matcher(command).find()) {
-                var text = "Вы успешно зарегистрировались";
-                log.info(text);
+                var entity = chat.post(update.message().chat().id());
+                String text ="";
+                if (entity.getStatusCode() == HttpStatus.NOT_FOUND) {
+                    text = "Вы не можете быть зарегистрированы повторно";
+                } else text = "Вы успешно зарегистрировались";
                 condition = 0;
                 res = new SendMessage(id, text);
             } else {
@@ -43,6 +55,7 @@ public class Bot extends TelegramBot {
                 log.info(text);
                 res = new SendMessage(id, text);
             }
+            this.execute(res);
             return res;
         }
         if (condition == 0) {
