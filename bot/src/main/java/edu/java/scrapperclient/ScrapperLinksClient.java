@@ -15,6 +15,7 @@ public interface ScrapperLinksClient {
 
     @GetExchange
     ResponseEntity get(Long id);
+
     @DeleteExchange
     ResponseEntity delete(Long id, RemoveLinkRequest request);
 }

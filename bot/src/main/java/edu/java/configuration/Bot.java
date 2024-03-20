@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 @Log
 @Component
+@SuppressWarnings({"ReturnCount", "CyclomaticComplexity"})
 public class Bot extends TelegramBot {
 
     private static final String BASESTACK = "https://stackoverflow.com/questions/";
@@ -32,7 +33,7 @@ public class Bot extends TelegramBot {
     private static final String INCORRECT = "Некорректные параметры запроса";
     @Autowired
     private ScrapperLinksClient links;
-
+    private static final String ALREADY = "Ссылка уже отслеживается";
     @Autowired
     private GitHubClient git;
 
@@ -59,7 +60,6 @@ public class Bot extends TelegramBot {
             return;
         } else if (pattern2.matcher(command).find()) {
             var entity = chat.post(update.message().chat().id());
-
             if (entity.getStatusCode() == HttpStatus.CONFLICT) {
                 text = "Вы не можете быть зарегистрированы повторно";
             } else {
@@ -100,30 +100,28 @@ public class Bot extends TelegramBot {
                 if (pattern3.matcher(command).find()) {
                     var link = command.split("/track");
                     if (link.length == 0) {
-                        Incorrect(id);
+                        incorrect(id);
                     } else {
                         check(update.message().chat().id(), link[0]);
                     }
                 } else {
                     var link = command.split("/untrack");
                     if (link.length == 0) {
-                        Incorrect(id);
+                        incorrect(id);
                         return;
                     }
                     var req = new RemoveLinkRequest();
                     req.setLink(link[0]);
-                    var done = links.delete(id,req);
+                    var done = links.delete(id, req);
                     if (done.getStatusCode() == HttpStatus.NOT_FOUND) {
                         text = REGISTRY;
-                        this.execute(new SendMessage(id,text));
-                    }
-                    else if (done.getStatusCode() == HttpStatus.CONFLICT){
+                        this.execute(new SendMessage(id, text));
+                    } else if (done.getStatusCode() == HttpStatus.CONFLICT) {
                         text = "Ссылка не отслеживается.";
-                        this.execute(new SendMessage(id,text));
-                    }
-                    else {
+                        this.execute(new SendMessage(id, text));
+                    } else {
                         text = "Ссылка удалена.";
-                        this.execute(new SendMessage(id,text));
+                        this.execute(new SendMessage(id, text));
                     }
                 }
             }
@@ -143,12 +141,13 @@ public class Bot extends TelegramBot {
 
     public void check(Long id, String link) {
         String text;
+        var success = "Ссылка успешно добавлена";
         if (!link.startsWith(BASEGIT) && !link.startsWith(BASESTACK)) {
-            Incorrect(id);
+            incorrect(id);
         } else {
             try {
-                var URI = new URI(link);
-                var link1 = URI.toString();
+                var uri = new URI(link);
+                var link1 = uri.toString();
                 if (link1.startsWith(BASEGIT)) {
                     var userrepo = link1.replace(BASEGIT, "").split("/");
                     if (userrepo.length < 2) {
@@ -160,7 +159,7 @@ public class Bot extends TelegramBot {
                     var repo = userrepo[1];
                     var result = git.fetchRepository(user, repo);
                     if (result.name == null || result.owner == null || result.time == null) {
-                        Incorrect(id);
+                        incorrect(id);
                         return;
                     }
                     var req = new AddLinkRequest();
@@ -169,11 +168,13 @@ public class Bot extends TelegramBot {
                     if (done.getStatusCode() == HttpStatus.NOT_FOUND) {
                         text = REGISTRY;
                         this.execute(new SendMessage(id, text));
-                    } else if (done.getStatusCode() == HttpStatus.CONFLICT) {
-                        text = "Ссылка уже отслеживается";
+                    }
+                    if (done.getStatusCode() == HttpStatus.CONFLICT) {
+                        text = ALREADY;
                         this.execute(new SendMessage(id, text));
-                    } else {
-                        text = "Ссылка успешно добавлена";
+                    }
+                    if (done.getStatusCode() == HttpStatus.OK) {
+                        text = success;
                         this.execute(new SendMessage(id, text));
                     }
                     return;
@@ -188,7 +189,7 @@ public class Bot extends TelegramBot {
                 var id1 = Long.parseLong(question[0]);
                 var result = stack.fetchQuestion(id1);
                 if (result.time == null || result.link == null || result.title == null) {
-                    Incorrect(id);
+                    incorrect(id);
                 } else {
                     var req = new AddLinkRequest();
                     req.setLink(link1);
@@ -196,9 +197,9 @@ public class Bot extends TelegramBot {
                     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
                         text = REGISTRY;
                     } else if (response.getStatusCode() == HttpStatus.CONFLICT) {
-                        text = "Ссылка уже отслеживается";
+                        text = ALREADY;
                     } else {
-                        text = "Ссылка успешно добавлена";
+                        text = success;
                     }
                     this.execute(new SendMessage(id, text));
                 }
@@ -210,7 +211,7 @@ public class Bot extends TelegramBot {
         }
     }
 
-    public void Incorrect(Long id) {
+    public void incorrect(Long id) {
         var text = INCORRECT;
         this.execute(new SendMessage(id, text));
     }
