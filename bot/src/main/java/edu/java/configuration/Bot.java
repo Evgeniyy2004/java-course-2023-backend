@@ -5,10 +5,16 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.scrapperclient.ScrapperChatClient;
 import edu.java.scrapperclient.ScrapperLinksClient;
+import edu.java.siteclients.GitHubClient;
+import edu.java.siteclients.StackOverflowClient;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.regex.Pattern;
 import lombok.extern.java.Log;
+import model.AddLinkRequest;
 import model.LinkResponse;
 import model.ListLinksResponse;
+import model.RemoveLinkRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -16,11 +22,22 @@ import org.springframework.stereotype.Component;
 @Log
 @Component
 public class Bot extends TelegramBot {
+
+    private static final String BASESTACK = "https://stackoverflow.com/questions/";
+    private static final String BASEGIT = "https://github.com/";
     @Autowired
     private ScrapperChatClient chat;
 
+    private static final String REGISTRY = "Для отслеживания ссылок вам необходимо зарегистрироваться.";
+    private static final String INCORRECT = "Некорректные параметры запроса";
     @Autowired
     private ScrapperLinksClient links;
+
+    @Autowired
+    private GitHubClient git;
+
+    @Autowired
+    private StackOverflowClient stack;
 
     public Bot(ApplicationConfig app) {
         super(app.telegramToken());
@@ -64,7 +81,7 @@ public class Bot extends TelegramBot {
             if (pattern1.matcher(command).find()) {
                 var all = links.get(update.message().chat().id());
                 if (all.getStatusCode() == HttpStatus.NOT_FOUND) {
-                    text = "Для отслеживания ссылок вам необходимо зарегистрироваться.";
+                    text = REGISTRY;
                 } else {
                     var body = (ListLinksResponse) all.getBody();
                     if (body.getLinks().isEmpty()) {
@@ -72,7 +89,7 @@ public class Bot extends TelegramBot {
                     } else {
                         text = "Текущий список отслеживаемых ссылок:\n";
                         for (LinkResponse l : body.getLinks()) {
-                            text += l.getUrl()+"\n";
+                            text += l.getUrl() + "\n";
                         }
                     }
                 }
@@ -81,9 +98,33 @@ public class Bot extends TelegramBot {
 
             } else {
                 if (pattern3.matcher(command).find()) {
-                    var link = command.split("/track").
+                    var link = command.split("/track");
+                    if (link.length == 0) {
+                        Incorrect(id);
+                    } else {
+                        check(update.message().chat().id(), link[0]);
+                    }
                 } else {
-
+                    var link = command.split("/untrack");
+                    if (link.length == 0) {
+                        Incorrect(id);
+                        return;
+                    }
+                    var req = new RemoveLinkRequest();
+                    req.setLink(link[0]);
+                    var done = links.delete(id,req);
+                    if (done.getStatusCode() == HttpStatus.NOT_FOUND) {
+                        text = REGISTRY;
+                        this.execute(new SendMessage(id,text));
+                    }
+                    else if (done.getStatusCode() == HttpStatus.CONFLICT){
+                        text = "Ссылка не отслеживается.";
+                        this.execute(new SendMessage(id,text));
+                    }
+                    else {
+                        text = "Ссылка удалена.";
+                        this.execute(new SendMessage(id,text));
+                    }
                 }
             }
 
@@ -91,13 +132,87 @@ public class Bot extends TelegramBot {
 
     }
 
-    public static String help() {
+    public String help() {
         return """
             /start - регистрация в боте
             /help - список доступных команд
             /track - добавление ресурса в отслеживаемые
             /untrack - прекращение отслеживания ресурса
             /list - список отслеживаемых ресурсов""";
+    }
+
+    public void check(Long id, String link) {
+        String text;
+        if (!link.startsWith(BASEGIT) && !link.startsWith(BASESTACK)) {
+            Incorrect(id);
+        } else {
+            try {
+                var URI = new URI(link);
+                var link1 = URI.toString();
+                if (link1.startsWith(BASEGIT)) {
+                    var userrepo = link1.replace(BASEGIT, "").split("/");
+                    if (userrepo.length < 2) {
+                        text = INCORRECT;
+                        this.execute(new SendMessage(id, text));
+                        return;
+                    }
+                    var user = userrepo[0];
+                    var repo = userrepo[1];
+                    var result = git.fetchRepository(user, repo);
+                    if (result.name == null || result.owner == null || result.time == null) {
+                        Incorrect(id);
+                        return;
+                    }
+                    var req = new AddLinkRequest();
+                    req.setLink(link1);
+                    var done = links.post(id, req);
+                    if (done.getStatusCode() == HttpStatus.NOT_FOUND) {
+                        text = REGISTRY;
+                        this.execute(new SendMessage(id, text));
+                    } else if (done.getStatusCode() == HttpStatus.CONFLICT) {
+                        text = "Ссылка уже отслеживается";
+                        this.execute(new SendMessage(id, text));
+                    } else {
+                        text = "Ссылка успешно добавлена";
+                        this.execute(new SendMessage(id, text));
+                    }
+                    return;
+
+                }
+                var question = link1.replace(BASESTACK, "").split("/");
+                if (question.length < 2) {
+                    text = INCORRECT;
+                    this.execute(new SendMessage(id, text));
+                    return;
+                }
+                var id1 = Long.parseLong(question[0]);
+                var result = stack.fetchQuestion(id1);
+                if (result.time == null || result.link == null || result.title == null) {
+                    Incorrect(id);
+                } else {
+                    var req = new AddLinkRequest();
+                    req.setLink(link1);
+                    var response = links.post(id, req);
+                    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+                        text = REGISTRY;
+                    } else if (response.getStatusCode() == HttpStatus.CONFLICT) {
+                        text = "Ссылка уже отслеживается";
+                    } else {
+                        text = "Ссылка успешно добавлена";
+                    }
+                    this.execute(new SendMessage(id, text));
+                }
+
+            } catch (URISyntaxException e) {
+                text = INCORRECT;
+                this.execute(new SendMessage(id, text));
+            }
+        }
+    }
+
+    public void Incorrect(Long id) {
+        var text = INCORRECT;
+        this.execute(new SendMessage(id, text));
     }
 }
 
