@@ -1,16 +1,16 @@
 package io.swagger.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.model.AddLinkRequest;
-import io.swagger.model.LinkResponse;
-import io.swagger.model.ListLinksResponse;
-import io.swagger.model.RemoveLinkRequest;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import model.AddLinkRequest;
+import model.LinkResponse;
+import model.ListLinksResponse;
+import model.RemoveLinkRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
