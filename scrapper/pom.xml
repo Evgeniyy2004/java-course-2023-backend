@@ -197,6 +197,18 @@
             <artifactId>spring-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>edu.java</groupId>
+            <artifactId>requestresponse</artifactId>
+            <version>${revision}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>edu.java</groupId>
+            <artifactId>requestresponse</artifactId>
+            <version>${revision}</version>
+            <scope>compile</scope>
+        </dependency>
 
 
     </dependencies>

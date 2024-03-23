@@ -1,12 +1,13 @@
 package io.swagger.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.model.ApiErrorResponse;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import model.ApiErrorResponse;
+import model.ApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

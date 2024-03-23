@@ -1,5 +1,6 @@
 package edu.java.scrapperclient;
 
+
 import model.AddLinkRequest;
 import model.RemoveLinkRequest;
 import org.springframework.http.ResponseEntity;

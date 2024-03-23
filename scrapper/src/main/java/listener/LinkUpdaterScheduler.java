@@ -2,7 +2,7 @@ package listener;
 
 import edu.java.botclient.UpdatesClient;
 import io.swagger.api.LinkRepository;
-import io.swagger.model.LinkUpdate;
+import model.LinkUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,7 +23,7 @@ public class LinkUpdaterScheduler {
         var allChanges = repo.update();
         for (Long id : allChanges.keySet()) {
             var request = new LinkUpdate();
-            request.addTgChatIdsItem(id);
+            request.setId(id);
             for (String url : allChanges.get(id)) {
                 request.setUrl(url);
                 client.post(request);

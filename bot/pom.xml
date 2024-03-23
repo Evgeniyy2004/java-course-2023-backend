@@ -181,6 +181,12 @@
             <artifactId>javax.annotation-api</artifactId>
             <version>1.2</version>
         </dependency>
+        <dependency>
+            <groupId>edu.java</groupId>
+            <artifactId>requestresponse</artifactId>
+            <version>0.1</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
