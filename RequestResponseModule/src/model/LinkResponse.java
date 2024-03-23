@@ -9,8 +9,6 @@ import org.springframework.validation.annotation.Validated;
  * LinkResponse
  */
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen",
-                            date = "2024-02-27T16:17:37.541889551Z[GMT]")
 
 public class LinkResponse {
     @JsonProperty("id")

@@ -12,8 +12,6 @@ import org.springframework.validation.annotation.Validated;
  * LinkUpdate
  */
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen",
-                            date = "2024-02-27T13:00:16.152772335Z[GMT]")
 
 public class LinkUpdate {
     @JsonProperty("id")

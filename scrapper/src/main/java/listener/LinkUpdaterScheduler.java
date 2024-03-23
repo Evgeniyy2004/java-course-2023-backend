@@ -1,14 +1,33 @@
 package listener;
 
-import lombok.extern.java.Log;
+import edu.java.botclient.UpdatesClient;
+import io.swagger.api.LinkRepository;
+import io.swagger.model.LinkUpdate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
+@Service
 @EnableScheduling
-@Log
 public class LinkUpdaterScheduler {
-    @Scheduled(fixedDelayString = "#{@scheduler.interval}")
+
+    @Autowired
+    UpdatesClient client;
+
+    @Autowired
+    LinkRepository repo;
+
+    @Scheduled(fixedDelayString = "86400s")
     public void update() {
-        log.info("Updated");
+        var allChanges = repo.update();
+        for (Long id : allChanges.keySet()) {
+            var request = new LinkUpdate();
+            request.addTgChatIdsItem(id);
+            for (String url : allChanges.get(id)) {
+                request.setUrl(url);
+                client.post(request);
+            }
+        }
     }
 }
