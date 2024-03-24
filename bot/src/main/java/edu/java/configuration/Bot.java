@@ -3,7 +3,6 @@ package edu.java.configuration;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.request.GetUpdates;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.model.AddLinkRequest;
 import edu.java.model.LinkResponse;
@@ -17,15 +16,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Component
 @EnableConfigurationProperties({ApplicationConfig.class})
-@SuppressWarnings({"ReturnCount", "CyclomaticComplexity"})
+@SuppressWarnings({"ReturnCount", "CyclomaticComplexity", "RegexpSinglelineJava"})
 public class Bot extends TelegramBot {
 
     private static final String BASESTACK = "https://stackoverflow.com/questions/";
@@ -41,8 +38,6 @@ public class Bot extends TelegramBot {
     private static final String ALREADY = "Ссылка уже отслеживается";
     @Autowired
     private GitHubClient git;
-
-
 
     @Autowired
     private StackOverflowClient stack;
