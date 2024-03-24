@@ -13,7 +13,6 @@
     <artifactId>requestresponse</artifactId>
     <version>${revision}</version>
 
-
     <dependencies>
 
         <dependency>
