@@ -48,7 +48,7 @@
     <modules>
         <module>bot</module>
         <module>scrapper</module>
-        <module>requestresponse</module>
+        <module>RequestResponseModule</module>
     </modules>
 
     <dependencyManagement>
