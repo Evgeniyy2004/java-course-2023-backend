@@ -1,9 +1,9 @@
 package io.swagger.api;
 
+import edu.java.model.ApiException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
-import edu.java.model.ApiException;
 import org.springframework.stereotype.Repository;
 
 @Repository

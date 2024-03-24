@@ -2,7 +2,12 @@ package edu.java.configuration;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.GetUpdates;
 import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.model.AddLinkRequest;
+import edu.java.model.LinkResponse;
+import edu.java.model.ListLinksResponse;
+import edu.java.model.RemoveLinkRequest;
 import edu.java.scrapperclient.ScrapperChatClient;
 import edu.java.scrapperclient.ScrapperLinksClient;
 import edu.java.siteclients.GitHubClient;
@@ -10,17 +15,11 @@ import edu.java.siteclients.StackOverflowClient;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.regex.Pattern;
-import edu.java.model.AddLinkRequest;
-import edu.java.model.LinkResponse;
-import edu.java.model.ListLinksResponse;
-import edu.java.model.RemoveLinkRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 
 @Component
-@EnableScheduling
 @SuppressWarnings({"ReturnCount", "CyclomaticComplexity"})
 public class Bot extends TelegramBot {
 
@@ -44,14 +43,15 @@ public class Bot extends TelegramBot {
     public Bot(ApplicationConfig app) {
 
         super(app.telegramToken());
-        this.setUpdatesListener(list -> {
-            int i =0;
+        this.setUpdatesListener((list -> {
+            int i = 0;
             for (Update u : list) {
                 handle(u);
                 i++;
             }
             return i;
-        });
+        }), new GetUpdates());
+
     }
 
     public void handle(Update update) {
@@ -139,7 +139,6 @@ public class Bot extends TelegramBot {
         }
 
     }
-
 
     public String help() {
         return """

@@ -1,6 +1,5 @@
 app:
   telegram-token: ${APP_TELEGRAM_TOKEN}
-
 spring:
   application:
     name: bot

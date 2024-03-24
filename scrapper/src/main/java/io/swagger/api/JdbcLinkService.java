@@ -1,9 +1,9 @@
 package io.swagger.api;
 
+import edu.java.model.ApiException;
 import io.swagger.services.LinkService;
 import java.net.URI;
 import java.util.Collection;
-import edu.java.model.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
