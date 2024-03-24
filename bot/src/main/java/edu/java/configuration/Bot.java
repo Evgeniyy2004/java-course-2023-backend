@@ -1,6 +1,7 @@
 package edu.java.configuration;
 
 import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.GetUpdates;
 import com.pengrad.telegrambot.request.SendMessage;
@@ -41,17 +42,22 @@ public class Bot extends TelegramBot {
     private StackOverflowClient stack;
 
     public Bot(ApplicationConfig app) {
-
         super(app.telegramToken());
-        this.setUpdatesListener((list -> {
-            int i = 0;
-            for (Update u : list) {
-                handle(u);
-                i++;
+        this.setUpdatesListener(updates -> {
+            for (Update update : updates) {
+                this.handle(update);
             }
-            return i;
-        }), new GetUpdates());
-
+            return UpdatesListener.CONFIRMED_UPDATES_ALL;
+        }, e -> {
+            if (e.response() != null) {
+                // god bad response from telegram
+                e.response().errorCode();
+                e.response().description();
+            } else {
+                // probably network error
+                e.printStackTrace();
+            }
+        });
     }
 
     public void handle(Update update) {
