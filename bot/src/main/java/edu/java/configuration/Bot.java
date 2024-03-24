@@ -59,7 +59,7 @@ public class Bot extends TelegramBot {
                 // probably network error
                 e.printStackTrace();
             }
-        }, new GetUpdates().limit(100).offset(0).timeout(0));
+        }, new GetUpdates().limit(2 * 2 * 2 * 2 * 2 * 2 + 2 * 2 * 2 * 2 * 2 + 2 * 2).offset(0).timeout(0));
     }
 
     public void handle(Update update) {
