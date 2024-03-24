@@ -16,10 +16,9 @@ services:
     depends_on:
       - postgresql
     command:
-      - --search-path=./scrapper/src/main/resources/migrations
-      - --changelog-file=master.xml
+      - --changelog-file=./scrapper/src/main/resources/migrations/master.xml
       - --driver=org.postgresql.Driver
-      - --url=jdbc:postgresql://postgresql:5432/scrapper
+      - --url=jdbc:postgresql://postgresql:5437/scrapper
       - --username=postgres
       - --password=postgres
       - update
