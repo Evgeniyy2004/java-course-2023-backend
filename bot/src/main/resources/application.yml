@@ -5,7 +5,6 @@ spring:
     name: bot
   jackson:
     time-zone: UTC
-
 server:
   port: 8081
 
