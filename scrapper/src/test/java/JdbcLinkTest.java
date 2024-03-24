@@ -1,6 +1,6 @@
 import edu.java.ScrapperApplication;
 import edu.java.configuration.ApplicationConfig;
-import io.swagger.api.ApiException;
+import model.ApiException;
 import io.swagger.api.JdbcLinkRepository;
 import io.swagger.api.JdbcTgChatRepository;
 import org.junit.jupiter.api.Test;

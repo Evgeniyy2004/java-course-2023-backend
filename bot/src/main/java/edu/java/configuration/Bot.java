@@ -18,14 +18,15 @@ import model.RemoveLinkRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Log
 @Component
 @SuppressWarnings({"ReturnCount", "CyclomaticComplexity"})
 public class Bot extends TelegramBot {
 
     private static final String BASESTACK = "https://stackoverflow.com/questions/";
     private static final String BASEGIT = "https://github.com/";
+
     @Autowired
     private ScrapperChatClient chat;
 
