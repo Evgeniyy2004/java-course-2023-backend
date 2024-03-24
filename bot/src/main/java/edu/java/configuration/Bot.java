@@ -17,10 +17,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Component
+@EnableConfigurationProperties({ApplicationConfig.class})
 @SuppressWarnings({"ReturnCount", "CyclomaticComplexity"})
 public class Bot extends TelegramBot {
 
@@ -37,6 +41,8 @@ public class Bot extends TelegramBot {
     private static final String ALREADY = "Ссылка уже отслеживается";
     @Autowired
     private GitHubClient git;
+
+
 
     @Autowired
     private StackOverflowClient stack;
