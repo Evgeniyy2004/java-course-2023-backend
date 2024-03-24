@@ -10,17 +10,18 @@ import edu.java.siteclients.StackOverflowClient;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.regex.Pattern;
-import lombok.extern.java.Log;
 import model.AddLinkRequest;
 import model.LinkResponse;
 import model.ListLinksResponse;
 import model.RemoveLinkRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 @Component
+@EnableScheduling
 @SuppressWarnings({"ReturnCount", "CyclomaticComplexity"})
 public class Bot extends TelegramBot {
 
@@ -42,7 +43,9 @@ public class Bot extends TelegramBot {
     private StackOverflowClient stack;
 
     public Bot(ApplicationConfig app) {
+
         super(app.telegramToken());
+        this.setUpdatesListener();
     }
 
     public void handle(Update update) {
@@ -130,6 +133,7 @@ public class Bot extends TelegramBot {
         }
 
     }
+
 
     public String help() {
         return """
