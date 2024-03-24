@@ -2,7 +2,7 @@ package listener;
 
 import edu.java.botclient.UpdatesClient;
 import io.swagger.api.LinkRepository;
-import model.LinkUpdate;
+import edu.java.model.LinkUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;

@@ -1,4 +1,4 @@
-package model;
+package edu.java.model;
 
 public class ApiException extends Exception {
     public final int code;

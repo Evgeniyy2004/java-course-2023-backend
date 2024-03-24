@@ -1,12 +1,10 @@
 import edu.java.ScrapperApplication;
-import edu.java.configuration.ApplicationConfig;
-import model.ApiException;
+import edu.java.model.ApiException;
 import io.swagger.api.JdbcLinkRepository;
 import io.swagger.api.JdbcTgChatRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;

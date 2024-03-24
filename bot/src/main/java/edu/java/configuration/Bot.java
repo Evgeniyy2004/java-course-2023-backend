@@ -10,14 +10,13 @@ import edu.java.siteclients.StackOverflowClient;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.regex.Pattern;
-import model.AddLinkRequest;
-import model.LinkResponse;
-import model.ListLinksResponse;
-import model.RemoveLinkRequest;
+import edu.java.model.AddLinkRequest;
+import edu.java.model.LinkResponse;
+import edu.java.model.ListLinksResponse;
+import edu.java.model.RemoveLinkRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -45,7 +44,14 @@ public class Bot extends TelegramBot {
     public Bot(ApplicationConfig app) {
 
         super(app.telegramToken());
-        this.setUpdatesListener();
+        this.setUpdatesListener(list -> {
+            int i =0;
+            for (Update u : list) {
+                handle(u);
+                i++;
+            }
+            return i;
+        });
     }
 
     public void handle(Update update) {

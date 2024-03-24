@@ -1,8 +1,8 @@
 package edu.java.scrapperclient;
 
 
-import model.AddLinkRequest;
-import model.RemoveLinkRequest;
+import edu.java.model.AddLinkRequest;
+import edu.java.model.RemoveLinkRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.service.annotation.DeleteExchange;
 import org.springframework.web.service.annotation.GetExchange;

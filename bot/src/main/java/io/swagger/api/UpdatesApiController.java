@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import model.LinkUpdate;
+import edu.java.model.LinkUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

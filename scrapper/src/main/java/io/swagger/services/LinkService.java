@@ -1,6 +1,6 @@
 package io.swagger.services;
 
-import model.ApiException;
+import edu.java.model.ApiException;
 import java.net.URI;
 import java.util.Collection;
 

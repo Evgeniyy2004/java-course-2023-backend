@@ -1,7 +1,7 @@
 package io.swagger.api;
 
 import io.swagger.services.TgChatService;
-import model.ApiException;
+import edu.java.model.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
