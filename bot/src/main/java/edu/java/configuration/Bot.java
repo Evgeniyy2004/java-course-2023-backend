@@ -3,6 +3,7 @@ package edu.java.configuration;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.GetUpdates;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.model.AddLinkRequest;
 import edu.java.model.LinkResponse;
@@ -58,7 +59,7 @@ public class Bot extends TelegramBot {
                 // probably network error
                 e.printStackTrace();
             }
-        });
+        }, new GetUpdates().limit(100).offset(0).timeout(0));
     }
 
     public void handle(Update update) {
