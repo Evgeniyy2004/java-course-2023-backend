@@ -32,7 +32,6 @@ public class UpdatesApiController implements UpdatesApi {
 
     private final HttpServletRequest request;
 
-    private final Bucket bucket;
     @Autowired
     Bot bot;
 
@@ -40,10 +39,6 @@ public class UpdatesApiController implements UpdatesApi {
     public UpdatesApiController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.request = request;
-        Bandwidth limit = Bandwidth.classic(20, Refill.greedy(20, Duration.ofMinutes(1)));
-        this.bucket = Bucket.builder()
-            .addLimit(limit)
-            .build();
     }
 
     public ResponseEntity updatesPost(

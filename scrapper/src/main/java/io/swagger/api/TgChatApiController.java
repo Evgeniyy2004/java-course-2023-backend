@@ -55,6 +55,7 @@ TgChatApiController implements TgChatApi {
         @Parameter(in = ParameterIn.PATH, description = "", required = true, schema = @Schema()) @PathVariable("id")
         Long id
     ) {
+        if (bucket.tryConsume(1)) {
         try {
             chatService.unregister(id);
         } catch (ApiException e) {
@@ -62,6 +63,7 @@ TgChatApiController implements TgChatApi {
             return res;
         }
         return new ResponseEntity(HttpStatus.OK);
+        } else return new ResponseEntity(HttpStatus.TOO_MANY_REQUESTS);
     }
 
     @Valid
@@ -69,13 +71,15 @@ TgChatApiController implements TgChatApi {
         @Parameter(in = ParameterIn.PATH, description = "", required = true, schema = @Schema()) @PathVariable("id")
         Long id
     ) {
-        try {
-            chatService.register(id);
-        } catch (ApiException e) {
-            var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.CONFLICT);
-            return res;
-        }
-        return new ResponseEntity(HttpStatus.OK);
+        if (bucket.tryConsume(1)) {
+            try {
+                chatService.register(id);
+            } catch (ApiException e) {
+                var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.CONFLICT);
+                return res;
+            }
+            return new ResponseEntity(HttpStatus.OK);
+        } else return new ResponseEntity(HttpStatus.TOO_MANY_REQUESTS);
     }
 
 }
