@@ -13,7 +13,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 public class BotApplication {
     @Autowired
     Bot bot;
-
     public static void main(String[] args) {
         SpringApplication.run(BotApplication.class, args);
     }

@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.configuration.Bot;
 import edu.java.model.LinkUpdate;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Refill;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import java.time.Duration;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen",
                             date = "2024-02-27T13:00:16.152772335Z[GMT]")
@@ -28,6 +32,7 @@ public class UpdatesApiController implements UpdatesApi {
 
     private final HttpServletRequest request;
 
+    private final Bucket bucket;
     @Autowired
     Bot bot;
 
@@ -35,6 +40,10 @@ public class UpdatesApiController implements UpdatesApi {
     public UpdatesApiController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.request = request;
+        Bandwidth limit = Bandwidth.classic(20, Refill.greedy(20, Duration.ofMinutes(1)));
+        this.bucket = Bucket.builder()
+            .addLimit(limit)
+            .build();
     }
 
     public ResponseEntity updatesPost(

@@ -5,10 +5,14 @@ import edu.java.model.AddLinkRequest;
 import edu.java.model.LinkResponse;
 import edu.java.model.ListLinksResponse;
 import edu.java.model.RemoveLinkRequest;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Refill;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
+import java.time.Duration;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
@@ -27,13 +31,17 @@ public class LinksApiController implements LinksApi {
     private static final Logger LOG = LoggerFactory.getLogger(LinksApiController.class);
 
     private final ObjectMapper objectMapper;
-
+    private final Bucket bucket;
     private final HttpServletRequest request;
 
     @org.springframework.beans.factory.annotation.Autowired
     public LinksApiController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.request = request;
+        Bandwidth limit = Bandwidth.classic(20, Refill.greedy(20, Duration.ofMinutes(1)));
+        this.bucket = Bucket.builder()
+            .addLimit(limit)
+            .build();
     }
 
     @SuppressWarnings("MultipleStringLiterals")

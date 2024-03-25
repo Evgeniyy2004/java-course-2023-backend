@@ -3,6 +3,9 @@ package io.swagger.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.java.model.ApiErrorResponse;
 import edu.java.model.ApiException;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Refill;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import java.time.Duration;
 
 @RestController
 @Validated
@@ -32,6 +36,7 @@ TgChatApiController implements TgChatApi {
     @Autowired
     private HttpServletRequest request;
 
+    private final Bucket bucket;
     @Autowired
     private JdbcTgChatService chatService;
 
@@ -39,6 +44,10 @@ TgChatApiController implements TgChatApi {
     public TgChatApiController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.request = request;
+        Bandwidth limit = Bandwidth.classic(20, Refill.greedy(20, Duration.ofMinutes(1)));
+        this.bucket = Bucket.builder()
+            .addLimit(limit)
+            .build();
     }
 
     @Valid
