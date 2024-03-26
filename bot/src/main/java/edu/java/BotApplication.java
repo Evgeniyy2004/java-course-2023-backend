@@ -1,5 +1,9 @@
 package edu.java;
 
+import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.UpdatesListener;
+import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.GetUpdates;
 import edu.java.configuration.ApplicationConfig;
 import edu.java.configuration.Bot;
 import edu.java.configuration.ClientConfiguration;
@@ -11,9 +15,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @SpringBootApplication
 @EnableConfigurationProperties({ApplicationConfig.class, ClientConfiguration.class})
 public class BotApplication {
-    @Autowired
-    Bot bot;
-
     public static void main(String[] args) {
         SpringApplication.run(BotApplication.class, args);
     }
