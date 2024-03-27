@@ -15,7 +15,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest(classes = ScrapperApplication.class)
 @EnableTransactionManagement
-public class JdbcLinkTest extends IntegrationTest {
+public class JdbcLinkTest {
 
 
     @Autowired
