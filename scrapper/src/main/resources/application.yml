@@ -17,7 +17,6 @@ spring:
                 url:
                   jdbc:postgresql://localhost:5437/scrapper
 
-
   liquibase:
     enabled: false
 
