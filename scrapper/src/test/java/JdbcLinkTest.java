@@ -13,7 +13,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest(classes = ScrapperApplication.class)
 @EnableTransactionManagement
-@DirtiesContext
 @Testcontainers
 public class JdbcLinkTest {
 
@@ -28,6 +27,7 @@ public class JdbcLinkTest {
 
     @Test
     @Transactional
+    @DirtiesContext
     @Rollback
     void addTest() {
         try {
@@ -41,6 +41,7 @@ public class JdbcLinkTest {
 
     @Test
     @Transactional
+    @DirtiesContext
     @Rollback
     void removeTest() {
         try {
@@ -56,6 +57,7 @@ public class JdbcLinkTest {
 
     @Test
     @Transactional
+    @DirtiesContext
     @Rollback
     void findAllTest() {
         try {
@@ -70,6 +72,7 @@ public class JdbcLinkTest {
 
     @Test
     @Transactional
+    @DirtiesContext
     @Rollback
     void failedRemoveTest() {
         try {
