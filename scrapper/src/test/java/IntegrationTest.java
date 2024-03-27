@@ -7,6 +7,7 @@ import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.DirectoryResourceAccessor;
+import org.junit.jupiter.api.BeforeAll;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -37,10 +38,11 @@ public abstract class IntegrationTest {
         Database database =
             DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
         var way = new File(new File(".").getAbsoluteFile().getParent()).toPath()
-            .toAbsolutePath().getParent().resolve("scrapper").resolve("main").resolve("resources").resolve("migrations");
+            .toAbsolutePath().getParent().resolve("scrapper").resolve("src").resolve("main").resolve("resources").resolve("migrations");
         Liquibase liquibase = new liquibase.Liquibase("master.xml", new DirectoryResourceAccessor(way), database);
         liquibase.update(new Contexts(), new LabelExpression());
     }
+
 
     @DynamicPropertySource
     static void jdbcProperties(DynamicPropertyRegistry registry) {

@@ -2,6 +2,7 @@ import edu.java.ScrapperApplication;
 import edu.java.model.ApiException;
 import io.swagger.api.JdbcLinkRepository;
 import io.swagger.api.JdbcTgChatRepository;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,7 +15,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest(classes = ScrapperApplication.class)
 @EnableTransactionManagement
-public class JdbcLinkTest{
+public class JdbcLinkTest extends IntegrationTest {
 
 
     @Autowired
