@@ -11,11 +11,7 @@ spring:
   jpa:
     properties:
       hibernate:
-          jakarta:
-            persistence:
-              jdbc:
-                url:
-                  jdbc:postgresql://localhost:5437/scrapper
+        dialect: jdbc:postgresql://localhost:5437/scrapper
 
   liquibase:
     enabled: false
