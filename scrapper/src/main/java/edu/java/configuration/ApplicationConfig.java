@@ -5,6 +5,7 @@ import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import io.swagger.api.JdbcLinkRepository;
 import io.swagger.api.JdbcTgChatRepository;
+import java.util.Properties;
 import javax.sql.DataSource;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +18,6 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
-import java.util.Properties;
 
 @ComponentScan
 @Configuration
@@ -71,7 +71,7 @@ public class ApplicationConfig {
         return dataSource;
     }
 
-    @Bean(name ="entityManagerFactory")
+    @Bean(name = "entityManagerFactory")
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
@@ -85,8 +85,6 @@ public class ApplicationConfig {
         txManager.setSessionFactory(sessionFactory().getObject());
         return txManager;
     }
-
-
 
     @Bean
     public Properties hibernateProperties() {

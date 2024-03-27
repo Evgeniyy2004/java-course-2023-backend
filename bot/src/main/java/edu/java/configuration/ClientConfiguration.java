@@ -52,7 +52,7 @@ public class ClientConfiguration {
     }
 
     @Bean
-    public Bot makeBot(){
+    public Bot makeBot() {
         var bot = new Bot(new ApplicationConfig(System.getenv("APP_TELEGRAM_TOKEN")));
         bot.setUpdatesListener(updates -> {
             for (Update update : updates) {
@@ -71,6 +71,5 @@ public class ClientConfiguration {
         }, new GetUpdates().limit(2 * 2 * 2 * 2 * 2 * 2 + 2 * 2 * 2 * 2 * 2 + 2 * 2).offset(0).timeout(0));
         return bot;
     }
-
 
 }
