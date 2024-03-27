@@ -17,6 +17,7 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
+import java.util.Properties;
 
 @ComponentScan
 @Configuration
@@ -73,6 +74,7 @@ public class ApplicationConfig {
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
+        sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }
 
@@ -81,6 +83,14 @@ public class ApplicationConfig {
         HibernateTransactionManager txManager = new HibernateTransactionManager();
         txManager.setSessionFactory(sessionFactory().getObject());
         return txManager;
+    }
+
+    @Bean
+    public Properties hibernateProperties() {
+        Properties hibernateProperties = new Properties();
+        hibernateProperties.setProperty(
+            "hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+        return hibernateProperties;
     }
 
     @Bean
