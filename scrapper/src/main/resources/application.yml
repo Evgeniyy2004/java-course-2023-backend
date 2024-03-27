@@ -11,7 +11,7 @@ spring:
   jpa:
     properties:
       hibernate:
-        dialect: jdbc:postgresql://localhost:5437/scrapper
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
   liquibase:
     enabled: false
