@@ -23,6 +23,7 @@ import java.util.Properties;
 @Configuration
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
 public class ApplicationConfig {
+
     private static final String BASE = "http://localhost:8081/";
 
     @Bean
