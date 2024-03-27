@@ -15,6 +15,7 @@ import org.springframework.web.reactive.function.client.support.WebClientAdapter
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 @Configuration
+@SuppressWarnings("RegexpSinglelineJava")
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
 public class ClientConfiguration {
     String base = "http://localhost:8080/";
