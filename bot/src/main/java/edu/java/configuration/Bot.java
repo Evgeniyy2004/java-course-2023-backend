@@ -22,7 +22,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-@Component
 @EnableConfigurationProperties({ApplicationConfig.class})
 @SuppressWarnings({"ReturnCount", "CyclomaticComplexity", "RegexpSinglelineJava"})
 public class Bot extends TelegramBot {
@@ -46,21 +45,6 @@ public class Bot extends TelegramBot {
 
     public Bot(ApplicationConfig app) {
         super(app.telegramToken());
-        this.setUpdatesListener(updates -> {
-            for (Update update : updates) {
-                this.handle(update);
-            }
-            return UpdatesListener.CONFIRMED_UPDATES_ALL;
-        }, e -> {
-            if (e.response() != null) {
-                // god bad response from telegram
-                e.response().errorCode();
-                e.response().description();
-            } else {
-                // probably network error
-                e.printStackTrace();
-            }
-        }, new GetUpdates().limit(2 * 2 * 2 * 2 * 2 * 2 + 2 * 2 * 2 * 2 * 2 + 2 * 2).offset(0).timeout(0));
     }
 
     public void handle(Update update) {

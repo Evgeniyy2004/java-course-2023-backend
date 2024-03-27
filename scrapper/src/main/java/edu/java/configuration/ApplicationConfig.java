@@ -85,6 +85,8 @@ public class ApplicationConfig {
         return txManager;
     }
 
+
+
     @Bean
     public Properties hibernateProperties() {
         Properties hibernateProperties = new Properties();
