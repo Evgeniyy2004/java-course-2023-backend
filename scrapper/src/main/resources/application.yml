@@ -10,7 +10,12 @@ spring:
 
   jpa:
     properties:
-      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+      hibernate:
+          jakarta:
+            persistence:
+              jdbc:
+                url:
+                  jdbc:postgresql://localhost:5437/scrapper
 
 
   liquibase:
