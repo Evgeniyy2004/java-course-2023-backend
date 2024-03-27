@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+
+@Testcontainers
 @SpringBootTest(classes = ScrapperApplication.class)
 @EnableTransactionManagement
 public class JdbcLinkTest {
@@ -25,8 +27,6 @@ public class JdbcLinkTest {
     @Autowired
     private JdbcLinkRepository linkRepository;
 
-    @Autowired
-    private JdbcTemplate template;
 
     @Test
     @Transactional
