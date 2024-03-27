@@ -5,6 +5,7 @@ import io.swagger.api.JdbcTgChatRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -24,6 +25,8 @@ public class JdbcLinkTest {
     @Autowired
     private JdbcLinkRepository linkRepository;
 
+    @Autowired
+    private JdbcTemplate template;
 
     @Test
     @Transactional
