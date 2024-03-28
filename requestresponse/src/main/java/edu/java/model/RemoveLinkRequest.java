@@ -1,4 +1,4 @@
-package io.swagger.model;
+package edu.java.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -9,8 +9,6 @@ import org.springframework.validation.annotation.Validated;
  * RemoveLinkRequest
  */
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen",
-                            date = "2024-02-27T16:17:37.541889551Z[GMT]")
 
 public class RemoveLinkRequest {
     @JsonProperty("link")
@@ -37,7 +35,7 @@ public class RemoveLinkRequest {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(java.lang.Object o) {
         if (this == o) {
             return true;
         }
@@ -67,7 +65,7 @@ public class RemoveLinkRequest {
      * Convert the given object to string with each line indented by 4 spaces
      * (except the first line).
      */
-    private String toIndentedString(Object o) {
+    private String toIndentedString(java.lang.Object o) {
         if (o == null) {
             return "null";
         }

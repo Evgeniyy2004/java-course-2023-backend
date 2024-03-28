@@ -1,7 +1,7 @@
-package io.swagger.api;
+package edu.java.model;
 
 public class ApiException extends Exception {
-    private final int code;
+    public final int code;
 
     public ApiException(int code, String msg) {
         super(msg);

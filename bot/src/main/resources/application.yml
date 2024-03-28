@@ -1,14 +1,12 @@
-app:
+app1:
   telegram-token: ${APP_TELEGRAM_TOKEN}
-
 spring:
   application:
     name: bot
   jackson:
     time-zone: UTC
-
 server:
-  port: 8080
+  port: 8081
 
 
 logging:

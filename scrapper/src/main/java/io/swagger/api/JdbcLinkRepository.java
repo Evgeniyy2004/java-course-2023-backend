@@ -1,5 +1,6 @@
 package io.swagger.api;
 
+import edu.java.model.ApiException;
 import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import java.net.URI;
@@ -16,14 +17,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 @SuppressWarnings("all")
 public class JdbcLinkRepository implements LinkRepository {
-    @Autowired
-    private  JdbcTemplate jdbcTemplate;
+
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private GitHubClient git;
 
     @Autowired
     private StackOverflowClient stack;
+
     public JdbcLinkRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }

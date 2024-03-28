@@ -1,7 +1,8 @@
 package edu.java.scrapperclient;
 
-import io.swagger.model.AddLinkRequest;
-import io.swagger.model.RemoveLinkRequest;
+
+import edu.java.model.AddLinkRequest;
+import edu.java.model.RemoveLinkRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.service.annotation.DeleteExchange;
 import org.springframework.web.service.annotation.GetExchange;
@@ -13,9 +14,10 @@ public interface ScrapperLinksClient {
     @PostExchange
     ResponseEntity post(Long id, AddLinkRequest request);
 
+    @GetExchange
+    ResponseEntity get(Long id);
+
     @DeleteExchange
     ResponseEntity delete(Long id, RemoveLinkRequest request);
 
-    @GetExchange
-    ResponseEntity get(Long id);
 }

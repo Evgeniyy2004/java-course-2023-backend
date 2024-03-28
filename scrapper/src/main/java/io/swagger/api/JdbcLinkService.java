@@ -1,5 +1,6 @@
 package io.swagger.api;
 
+import edu.java.model.ApiException;
 import io.swagger.services.LinkService;
 import java.net.URI;
 import java.util.Collection;

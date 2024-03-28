@@ -6,8 +6,8 @@
 
 package io.swagger.api;
 
-import io.swagger.model.ApiErrorResponse;
-import io.swagger.model.LinkUpdate;
+import edu.java.model.ApiErrorResponse;
+import edu.java.model.LinkUpdate;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
