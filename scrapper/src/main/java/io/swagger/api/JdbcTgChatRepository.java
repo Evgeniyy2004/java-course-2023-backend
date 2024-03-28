@@ -1,7 +1,6 @@
 package io.swagger.api;
 
 import edu.java.model.ApiException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +10,6 @@ public class JdbcTgChatRepository {
     private static final String QUERY = "select * from id where id=?";
 
     private JdbcTemplate jdbcTemplate;
-
 
     public JdbcTgChatRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
