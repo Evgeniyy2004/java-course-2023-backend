@@ -25,6 +25,7 @@ public class Bot extends TelegramBot {
     private static final String BASESTACK = "https://stackoverflow.com/questions/";
     private static final String BASEGIT = "https://github.com/";
 
+
     @Autowired
     private ScrapperChatClient chat;
 
