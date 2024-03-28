@@ -1,8 +1,10 @@
 import edu.java.ScrapperApplication;
+import edu.java.configuration.ApplicationConfig;
 import edu.java.model.ApiException;
 import io.swagger.api.JdbcLinkRepository;
 import io.swagger.api.JdbcTgChatRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,13 +22,21 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 public class JdbcLinkTest {
 
 
-    @Autowired
-    private JdbcTgChatRepository chatRepository;
+
+    private static JdbcTgChatRepository chatRepository;
 
 
-    @Autowired
-    private JdbcLinkRepository linkRepository;
 
+    private static JdbcLinkRepository linkRepository ;
+
+    @BeforeAll
+    public static void start() {
+        var conf = new ApplicationConfig();
+        var source = conf.dataSource();
+        var template = new JdbcTemplate(source);
+        linkRepository = new JdbcLinkRepository(template);
+        chatRepository = new JdbcTgChatRepository(template);
+    }
 
     @Test
     @Transactional
