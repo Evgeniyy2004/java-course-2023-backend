@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -15,17 +16,16 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 
 @Testcontainers
-@SpringBootTest(classes = ScrapperApplication.class)
 @EnableTransactionManagement
-public class JdbcLinkTest {
+public class JdbcLinkTest extends IntegrationTest{
+
+    DriverManagerDataSource data = new DriverManagerDataSource(POSTGRES.getJdbcUrl(),POSTGRES.getUsername(),POSTGRES.getPassword());
+
+    private final JdbcTgChatRepository chatRepository = new JdbcTgChatRepository(new JdbcTemplate(data));
 
 
-    @Autowired
-    private JdbcTgChatRepository chatRepository;
 
-
-    @Autowired
-    private JdbcLinkRepository linkRepository;
+    private final JdbcLinkRepository linkRepository= new JdbcLinkRepository(new JdbcTemplate(data));
 
 
     @Test
@@ -37,26 +37,13 @@ public class JdbcLinkTest {
             chatRepository.save(1L);
             chatRepository.save(2L);
             linkRepository.save(1L,"https://stackoverflow.com/questions/434718/sockets-discover-port-availability-using-java");
+            chatRepository.remove(1L);
+            chatRepository.remove(2L);
         } catch (ApiException e) {
             e.printStackTrace();
         }
     }
 
-    @Test
-    @Transactional
-    @DirtiesContext
-    @Rollback
-    void removeTest() {
-        try {
-            chatRepository.save(1L);
-            chatRepository.remove(1L);
-            chatRepository.save(1L);
-            linkRepository.save(1L,"https://stackoverflow.com/questions/434718/sockets-discover-port-availability-using-java");
-            linkRepository.remove(1L,"https://stackoverflow.com/questions/434718/sockets-discover-port-availability-using-java");
-        } catch (ApiException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Test
     @Transactional
@@ -68,6 +55,7 @@ public class JdbcLinkTest {
             linkRepository.save(1L,"https://stackoverflow.com/questions/434718/sockets-discover-port-availability-using-java");
             linkRepository.save(1L,"https://github.com/krahets/hello-algo");
             linkRepository.findAll(1L);
+            chatRepository.remove(1L);
         } catch (ApiException e) {
             e.printStackTrace();
         }
@@ -82,6 +70,7 @@ public class JdbcLinkTest {
             chatRepository.save(1L);
             linkRepository.save(1L,"https://stackoverflow.com/questions/434718/sockets-discover-port-availability-using-java");
             linkRepository.remove(1L,"https://github.com/krahets/hello-algo");
+            chatRepository.remove(1L);
         } catch (ApiException e) {
             e.printStackTrace();
         }
