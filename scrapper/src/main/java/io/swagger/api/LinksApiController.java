@@ -57,13 +57,13 @@ public class LinksApiController implements LinksApi {
         RemoveLinkRequest body
     ) {
         if (bucket.tryConsume(1)) {
-        try {
-            linkService.remove(tgChatId,body.getLink());
-        } catch (ApiException e) {
-            if (e.code == 404) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            else return new ResponseEntity(HttpStatus.CONFLICT);
-        }
-        return new ResponseEntity(HttpStatus.OK);
+            try {
+                linkService.remove(tgChatId, body.getLink());
+            } catch (ApiException e) {
+                if (e.getCode() == 404) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                else return new ResponseEntity(HttpStatus.CONFLICT);
+            }
+            return new ResponseEntity(HttpStatus.OK);
         }
         else {
             return new ResponseEntity(HttpStatus.TOO_MANY_REQUESTS);
@@ -73,21 +73,24 @@ public class LinksApiController implements LinksApi {
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
         @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId
     ) {
-        try {
-            var res = linkService.listAll(tgChatId);
-            ListLinksResponse response = new ListLinksResponse();
-            for (URI uri : res) {
-                var curr = new LinkResponse();
-                curr.setUrl(uri.toString());
-                response.addLinksItem(curr);
+        if (bucket.tryConsume(1)) {
+            try {
+                var res = linkService.listAll(tgChatId);
+                ListLinksResponse response = new ListLinksResponse();
+                for (URI uri : res) {
+                    var curr = new LinkResponse();
+                    curr.setUrl(uri.toString());
+                    response.addLinksItem(curr);
+                }
+                return new ResponseEntity<ListLinksResponse>(response, HttpStatus.OK);
+            } catch (ApiException e) {
+                if (e.getCode() == 404) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                else return new ResponseEntity(HttpStatus.CONFLICT);
             }
-            return new ResponseEntity<ListLinksResponse>(response, HttpStatus.OK);
-        } catch (ApiException e) {
-            if (e.code == 404) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            else return new ResponseEntity(HttpStatus.CONFLICT);
         }
-
-        return new ResponseEntity<ListLinksResponse>(HttpStatus.NOT_IMPLEMENTED);
+        else {
+            return new ResponseEntity(HttpStatus.TOO_MANY_REQUESTS);
+        }
     }
 
     public ResponseEntity<LinkResponse> linksPost(
@@ -99,7 +102,7 @@ public class LinksApiController implements LinksApi {
         try {
             linkService.add(tgChatId,body.getLink());
         } catch (ApiException e) {
-            if (e.code == 404) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            if (e.getCode() == 404) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             else return new ResponseEntity(HttpStatus.CONFLICT);
         }
         return new ResponseEntity(HttpStatus.OK);
