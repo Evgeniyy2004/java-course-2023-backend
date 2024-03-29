@@ -41,6 +41,7 @@ public class ApplicationConfig {
         WebClient restClient = WebClient.builder().baseUrl("https://api.stackexchange.com/").build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
+
         return factory.createClient(StackOverflowClient.class);
     }
 

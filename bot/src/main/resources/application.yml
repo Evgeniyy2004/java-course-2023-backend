@@ -2,7 +2,7 @@ app1:
   telegram-token: ${APP_TELEGRAM_TOKEN}
 
 app:
-  codes: 429
+  codes: 429, 503
   strategy: CONSTANT
 
 spring:
