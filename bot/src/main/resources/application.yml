@@ -1,7 +1,9 @@
 app1:
   telegram-token: ${APP_TELEGRAM_TOKEN}
+
 app:
-  allcodes: 429L
+  codes: 429
+  strategy: CONSTANT
 
 spring:
   application:

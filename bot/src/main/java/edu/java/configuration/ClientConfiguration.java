@@ -7,19 +7,30 @@ import edu.java.scrapperclient.ScrapperChatClient;
 import edu.java.scrapperclient.ScrapperLinksClient;
 import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 @Configuration
+@Validated
 @SuppressWarnings("RegexpSinglelineJava")
+@PropertySource("classpath:application.yml")
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
 public class ClientConfiguration {
     String base = "http://localhost:8080/";
+
+    @Value("${app.codes}")
+    int [] codes;
+
+    @Value("${app.strategy}")
+    STRATEGY strategy;
 
     public enum STRATEGY {
         LINEAR,
@@ -27,7 +38,7 @@ public class ClientConfiguration {
         EXPONENTIAL
     }
 
-    private long allcodes;
+
     @Bean
     public ScrapperChatClient beanChat() {
         WebClient restClient = WebClient.builder().baseUrl(base).build();
