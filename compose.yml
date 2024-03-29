@@ -2,7 +2,7 @@ services:
   postgresql:
     image: postgres:latest
     ports:
-      - "5437:5432"
+      - "5433:5432"
     environment:
       POSTGRES_DB: scrapper
       POSTGRES_USER: postgres
@@ -16,9 +16,9 @@ services:
     depends_on:
       - postgresql
     command:
-      - --changelog-file=./scrapper/src/main/resources/migrations/master.xml
+      - --changelog-file=master.xml
       - --driver=org.postgresql.Driver
-      - --url=jdbc:postgresql://postgresql:5437/scrapper
+      - --url=jdbc:postgresql://postgresql:5432/scrapper
       - --username=postgres
       - --password=postgres
       - update

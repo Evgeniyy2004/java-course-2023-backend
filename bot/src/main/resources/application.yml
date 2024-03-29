@@ -1,4 +1,4 @@
-app:
+app1:
   telegram-token: ${APP_TELEGRAM_TOKEN}
 spring:
   application:

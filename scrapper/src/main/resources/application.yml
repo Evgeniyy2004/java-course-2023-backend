@@ -3,15 +3,9 @@ spring:
     name: scrapper
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5437/scrapper
-    username: postgres
+    url: jdbc:postgresql://localhost:5433/scrapper
     password: postgres
-
-
-  jpa:
-    properties:
-      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
-
+    username: postgres
 
   liquibase:
     enabled: false

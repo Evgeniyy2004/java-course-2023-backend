@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset postgres:1
+--changeset postgres:2
 
 create table if not exists id
 (

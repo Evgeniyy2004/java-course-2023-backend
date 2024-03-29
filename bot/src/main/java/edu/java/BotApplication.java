@@ -11,8 +11,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @SpringBootApplication
 @EnableConfigurationProperties({ApplicationConfig.class, ClientConfiguration.class})
 public class BotApplication {
-    @Autowired
-    Bot bot;
     public static void main(String[] args) {
         SpringApplication.run(BotApplication.class, args);
     }

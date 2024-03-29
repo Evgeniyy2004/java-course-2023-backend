@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 @WireMockTest
 @Log
 public class ClientTest {
-    WireMockServer wireMockServer = new WireMockServer(WireMockConfiguration.options().port(8080).httpsPort(8443));
+    WireMockServer wireMockServer = new WireMockServer(WireMockConfiguration.options().port(8082).httpsPort(8443));
 
     @Autowired
     private StackOverflowClient client1;

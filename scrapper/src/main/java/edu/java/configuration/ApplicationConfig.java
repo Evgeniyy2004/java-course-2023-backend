@@ -5,6 +5,7 @@ import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import io.swagger.api.JdbcLinkRepository;
 import io.swagger.api.JdbcTgChatRepository;
+import java.util.Properties;
 import javax.sql.DataSource;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 @Configuration
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
 public class ApplicationConfig {
+
     private static final String BASE = "http://localhost:8081/";
 
     @Bean
@@ -63,7 +65,7 @@ public class ApplicationConfig {
         var namePassword = "postgres";
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl("jdbc:postgresql://localhost:5437/scrapper");
+        dataSource.setUrl("jdbc:postgresql://localhost:5433/scrapper");
         dataSource.setUsername(namePassword);
         dataSource.setPassword(namePassword);
         return dataSource;
@@ -73,6 +75,7 @@ public class ApplicationConfig {
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
+        sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }
 
@@ -81,6 +84,14 @@ public class ApplicationConfig {
         HibernateTransactionManager txManager = new HibernateTransactionManager();
         txManager.setSessionFactory(sessionFactory().getObject());
         return txManager;
+    }
+
+    @Bean
+    public Properties hibernateProperties() {
+        Properties hibernateProperties = new Properties();
+        hibernateProperties.setProperty(
+            "hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+        return hibernateProperties;
     }
 
     @Bean
