@@ -14,12 +14,12 @@ public class JdbcLinkService implements LinkService {
     private JdbcLinkRepository repo;
 
     @Override
-    public void add(long tgChatId, URI url) throws ApiException {
+    public void add(long tgChatId, String url) throws ApiException {
         repo.save(tgChatId, url.toString());
     }
 
     @Override
-    public void remove(long tgChatId, URI url) throws ApiException {
+    public void remove(long tgChatId, String url) throws ApiException {
         repo.remove(tgChatId, url.toString());
     }
 
