@@ -9,9 +9,7 @@ import edu.java.model.RemoveLinkRequest;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
@@ -30,6 +28,7 @@ public class LinksApiController implements LinksApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(LinksApiController.class);
 
+    private static final int NOT_FOUND = 404;
     @Autowired
     private JdbcLinkService linkService;
     private final ObjectMapper objectMapper;
@@ -50,10 +49,13 @@ public class LinksApiController implements LinksApi {
         RemoveLinkRequest body
     ) {
         try {
-            linkService.remove(tgChatId,body.getLink());
+            linkService.remove(tgChatId, body.getLink());
         } catch (ApiException e) {
-            if (e.code == 404) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            else return new ResponseEntity(HttpStatus.CONFLICT);
+            if (e.code == NOT_FOUND) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity(HttpStatus.CONFLICT);
+            }
         }
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -72,8 +74,11 @@ public class LinksApiController implements LinksApi {
             }
             return new ResponseEntity<ListLinksResponse>(response, HttpStatus.OK);
         } catch (ApiException e) {
-            if (e.code == 404) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            else return new ResponseEntity(HttpStatus.CONFLICT);
+            if (e.code == NOT_FOUND) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity(HttpStatus.CONFLICT);
+            }
         }
     }
 
@@ -84,10 +89,13 @@ public class LinksApiController implements LinksApi {
         AddLinkRequest body
     ) {
         try {
-            linkService.add(tgChatId,body.getLink());
+            linkService.add(tgChatId, body.getLink());
         } catch (ApiException e) {
-            if (e.code == 404) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            else return new ResponseEntity(HttpStatus.CONFLICT);
+            if (e.code == NOT_FOUND) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity(HttpStatus.CONFLICT);
+            }
         }
         return new ResponseEntity(HttpStatus.OK);
     }
