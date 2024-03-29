@@ -10,6 +10,7 @@ import edu.java.siteclients.StackOverflowClient;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
@@ -20,6 +21,13 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 public class ClientConfiguration {
     String base = "http://localhost:8080/";
 
+    public enum STRATEGY {
+        LINEAR,
+        CONSTANT,
+        EXPONENTIAL
+    }
+
+    private long allcodes;
     @Bean
     public ScrapperChatClient beanChat() {
         WebClient restClient = WebClient.builder().baseUrl(base).build();

@@ -1,5 +1,8 @@
 app1:
   telegram-token: ${APP_TELEGRAM_TOKEN}
+app:
+  allcodes: 429L
+
 spring:
   application:
     name: bot
