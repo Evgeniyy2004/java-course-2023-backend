@@ -5,27 +5,46 @@ import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import io.swagger.api.JdbcLinkRepository;
 import io.swagger.api.JdbcTgChatRepository;
+import java.time.Duration;
 import java.util.Properties;
 import javax.sql.DataSource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
+import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
+import reactor.util.retry.RetryBackoffSpec;
 
 @ComponentScan
 @Configuration
+@PropertySource("classpath:application.yml")
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
 public class ApplicationConfig {
 
     private static final String BASE = "http://localhost:8081/";
+    @Value("${app.codes}")
+    int [] codes;
 
+    @Value("${app.strategy}")
+    STRATEGY strategy;
+
+    public enum STRATEGY {
+        LINEAR,
+        CONSTANT,
+        EXPONENTIAL
+    }
     @Bean
     public JdbcTgChatRepository chatrepo() {
         return new JdbcTgChatRepository(template());
@@ -38,7 +57,7 @@ public class ApplicationConfig {
 
     @Bean
     public StackOverflowClient beanStack() {
-        WebClient restClient = WebClient.builder().baseUrl("https://api.stackexchange.com/").build();
+        WebClient restClient = WebClient.builder().baseUrl("https://api.stackexchange.com/").filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
 
@@ -51,6 +70,34 @@ public class ApplicationConfig {
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(GitHubClient.class);
+    }
+
+    private ExchangeFilterFunction withRetryableRequests() {
+        if (strategy == STRATEGY.EXPONENTIAL) {
+            return (request, next) -> next.exchange(request)
+                .flatMap(clientResponse -> Mono.just(clientResponse)
+                    .filter(response -> clientResponse.statusCode().isError())
+                    .flatMap(response -> clientResponse.createException())
+                    .flatMap(Mono::error)
+                    .thenReturn(clientResponse))
+                .retryWhen(this.retryBackoffSpec());
+        }
+        if (strategy == STRATEGY.CONSTANT) {
+            retryConst();
+        }
+        else
+    }
+
+    private RetryBackoffSpec retryBackoffSpec() {
+        return Retry.backoff(3, Duration.ofSeconds(2))
+            .filter(throwable->throwable instanceof WebClientResponseException) // here filter on the errors for which you want a retry
+            .onRetryExhaustedThrow((retryBackoffSpec, retrySignal)  -> retrySignal.failure());
+    }
+
+    private RetryBackoffSpec retryConst() {
+        return (Retry.fixedDelay(3, Duration.ofSeconds(2)))
+            .filter(throwable->throwable instanceof WebClientResponseException) // here filter on the errors for which you want a retry
+            .onRetryExhaustedThrow((retryBackoffSpec, retrySignal)  -> retrySignal.failure());
     }
 
     @Bean

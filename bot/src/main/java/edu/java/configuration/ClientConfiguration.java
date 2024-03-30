@@ -52,9 +52,6 @@ public class ClientConfiguration {
         WebClient restClient = WebClient.builder().baseUrl(base).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
-        if (strategy == STRATEGY.CONSTANT) {
-
-        }
         return factory.createClient(ScrapperLinksClient.class);
     }
 

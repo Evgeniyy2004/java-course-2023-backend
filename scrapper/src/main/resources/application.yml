@@ -6,7 +6,9 @@ spring:
     url: jdbc:postgresql://localhost:5433/scrapper
     username: postgres
     password: postgres
-
+app:
+  codes: 429, 503
+  strategy: CONSTANT
 
   liquibase:
     enabled: false
