@@ -6,6 +6,7 @@ import edu.java.siteclients.StackOverflowClient;
 import io.swagger.api.JdbcLinkRepository;
 import io.swagger.api.JdbcTgChatRepository;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Properties;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,16 +36,16 @@ public class ApplicationConfig {
 
     private static final String BASE = "http://localhost:8081/";
     @Value("${app.codes}")
-    int [] codes;
+    ArrayList<Integer> codes;
 
     @Value("${app.strategy}")
     STRATEGY strategy;
 
     public enum STRATEGY {
-        LINEAR,
         CONSTANT,
         EXPONENTIAL
     }
+
     @Bean
     public JdbcTgChatRepository chatrepo() {
         return new JdbcTgChatRepository(template());
@@ -57,7 +58,8 @@ public class ApplicationConfig {
 
     @Bean
     public StackOverflowClient beanStack() {
-        WebClient restClient = WebClient.builder().baseUrl("https://api.stackexchange.com/").filter(withRetryableRequests()).build();
+        WebClient restClient =
+            WebClient.builder().baseUrl("https://api.stackexchange.com/").filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
 
@@ -66,7 +68,8 @@ public class ApplicationConfig {
 
     @Bean
     public GitHubClient beanGit() {
-        WebClient restClient = WebClient.builder().baseUrl("https://api.github.com/").build();
+        WebClient restClient =
+            WebClient.builder().baseUrl("https://api.github.com/").filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(GitHubClient.class);
@@ -76,33 +79,38 @@ public class ApplicationConfig {
         if (strategy == STRATEGY.EXPONENTIAL) {
             return (request, next) -> next.exchange(request)
                 .flatMap(clientResponse -> Mono.just(clientResponse)
-                    .filter(response -> clientResponse.statusCode().isError())
+                    .filter(response -> codes.contains(response.statusCode().value()))
                     .flatMap(response -> clientResponse.createException())
                     .flatMap(Mono::error)
                     .thenReturn(clientResponse))
-                .retryWhen(this.retryBackoffSpec());
+                .retryWhen(this.retryBackoffExp());
+        } else {
+            return (request, next) -> next.exchange(request)
+                .flatMap(clientResponse -> Mono.just(clientResponse)
+                    .filter(response -> codes.contains(response.statusCode().value()))
+                    .flatMap(response -> clientResponse.createException())
+                    .flatMap(Mono::error)
+                    .thenReturn(clientResponse))
+                .retryWhen(this.retryConst());
         }
-        if (strategy == STRATEGY.CONSTANT) {
-            retryConst();
-        }
-        else
     }
 
-    private RetryBackoffSpec retryBackoffSpec() {
-        return Retry.backoff(3, Duration.ofSeconds(2))
-            .filter(throwable->throwable instanceof WebClientResponseException) // here filter on the errors for which you want a retry
-            .onRetryExhaustedThrow((retryBackoffSpec, retrySignal)  -> retrySignal.failure());
+    private RetryBackoffSpec retryBackoffExp() {
+        return Retry.backoff(2 + 1, Duration.ofSeconds(2))
+            .filter(throwable -> throwable instanceof WebClientResponseException)
+            // here filter on the errors for which you want a retry
+            .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> retrySignal.failure());
     }
 
     private RetryBackoffSpec retryConst() {
-        return (Retry.fixedDelay(3, Duration.ofSeconds(2)))
-            .filter(throwable->throwable instanceof WebClientResponseException) // here filter on the errors for which you want a retry
-            .onRetryExhaustedThrow((retryBackoffSpec, retrySignal)  -> retrySignal.failure());
+        return (Retry.fixedDelay(2 + 1, Duration.ofSeconds(2)))
+            .filter(throwable -> throwable instanceof WebClientResponseException)
+            .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> retrySignal.failure());
     }
 
     @Bean
     public UpdatesClient beanUpdates() {
-        WebClient restClient = WebClient.builder().baseUrl(BASE).build();
+        WebClient restClient = WebClient.builder().baseUrl(BASE).filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(UpdatesClient.class);

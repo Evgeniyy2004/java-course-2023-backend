@@ -38,11 +38,14 @@ public class LinksApiController implements LinksApi {
     private final Bucket bucket;
     private final HttpServletRequest request;
 
+    private static final int ERROR = 404;
+
     @org.springframework.beans.factory.annotation.Autowired
     public LinksApiController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.request = request;
-        Bandwidth limit = Bandwidth.classic(20, Refill.greedy(20, Duration.ofMinutes(1)));
+        Bandwidth limit =
+            Bandwidth.classic(2 * 2 * 2 * 2 + 2 * 2, Refill.greedy(2 * 2 * 2 * 2 + 2 * 2, Duration.ofMinutes(1)));
         this.bucket = Bucket.builder()
             .addLimit(limit)
             .build();
@@ -59,7 +62,7 @@ public class LinksApiController implements LinksApi {
             try {
                 linkService.remove(tgChatId, body.getLink());
             } catch (ApiException e) {
-                if (e.getCode() == 404) {
+                if (e.getCode() == ERROR) {
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 } else {
                     return new ResponseEntity(HttpStatus.CONFLICT);
@@ -86,7 +89,7 @@ public class LinksApiController implements LinksApi {
                 }
                 return new ResponseEntity<ListLinksResponse>(response, HttpStatus.OK);
             } catch (ApiException e) {
-                if (e.getCode() == 404) {
+                if (e.getCode() == ERROR) {
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 } else {
                     return new ResponseEntity(HttpStatus.CONFLICT);
@@ -107,7 +110,7 @@ public class LinksApiController implements LinksApi {
             try {
                 linkService.add(tgChatId, body.getLink());
             } catch (ApiException e) {
-                if (e.getCode() == 404) {
+                if (e.getCode() == ERROR) {
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 } else {
                     return new ResponseEntity(HttpStatus.CONFLICT);

@@ -9,6 +9,7 @@ import io.github.bucket4j.Refill;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.Duration;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
@@ -19,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import java.time.Duration;
 
 @RestController
 @Validated
@@ -44,7 +44,8 @@ TgChatApiController implements TgChatApi {
     public TgChatApiController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.request = request;
-        Bandwidth limit = Bandwidth.classic(20, Refill.greedy(20, Duration.ofMinutes(1)));
+        Bandwidth limit =
+            Bandwidth.classic(2 * 2 * 2 * 2 + 2 * 2, Refill.greedy(2 * 2 * 2 * 2 + 2 * 2, Duration.ofMinutes(1)));
         this.bucket = Bucket.builder()
             .addLimit(limit)
             .build();
@@ -56,14 +57,16 @@ TgChatApiController implements TgChatApi {
         Long id
     ) {
         if (bucket.tryConsume(1)) {
-        try {
-            chatService.unregister(id);
-        } catch (ApiException e) {
-            var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.NOT_FOUND);
-            return res;
+            try {
+                chatService.unregister(id);
+            } catch (ApiException e) {
+                var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.NOT_FOUND);
+                return res;
+            }
+            return new ResponseEntity(HttpStatus.OK);
+        } else {
+            return new ResponseEntity(HttpStatus.TOO_MANY_REQUESTS);
         }
-        return new ResponseEntity(HttpStatus.OK);
-        } else return new ResponseEntity(HttpStatus.TOO_MANY_REQUESTS);
     }
 
     @Valid
@@ -79,7 +82,9 @@ TgChatApiController implements TgChatApi {
                 return res;
             }
             return new ResponseEntity(HttpStatus.OK);
-        } else return new ResponseEntity(HttpStatus.TOO_MANY_REQUESTS);
+        } else {
+            return new ResponseEntity(HttpStatus.TOO_MANY_REQUESTS);
+        }
     }
 
 }
