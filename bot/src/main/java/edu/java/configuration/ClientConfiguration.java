@@ -114,7 +114,7 @@ public class ClientConfiguration {
 
     @Bean
     public Bot makeBot() {
-        var conf =new ApplicationConfig(token);
+        var conf = new ApplicationConfig(token);
         var bot = new Bot(conf);
         bot.setUpdatesListener(updates -> {
             for (Update update : updates) {
