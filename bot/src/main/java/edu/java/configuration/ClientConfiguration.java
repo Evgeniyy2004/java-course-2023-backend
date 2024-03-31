@@ -28,15 +28,18 @@ import reactor.util.retry.RetryBackoffSpec;
 @Validated
 @SuppressWarnings("RegexpSinglelineJava")
 @PropertySource("classpath:application.yml")
-@ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "app1", ignoreUnknownFields = false)
 public class ClientConfiguration {
     String base = "http://localhost:8080/";
 
-    @Value("${app.codes}")
+    @Value("${app1.codes}")
     ArrayList<Integer> codes;
 
-    @Value("${app.strategy}")
+    @Value("${app1.strategy}")
     STRATEGY strategy;
+
+    @Value("${app1.token}")
+    String token;
 
     public enum STRATEGY {
         CONSTANT,
@@ -111,7 +114,7 @@ public class ClientConfiguration {
 
     @Bean
     public Bot makeBot() {
-        var conf =new ApplicationConfig("bot"+System.getenv("APP_TELEGRAM_TOKEN"));
+        var conf =new ApplicationConfig(token);
         var bot = new Bot(conf);
         bot.setUpdatesListener(updates -> {
             for (Update update : updates) {

@@ -1,7 +1,5 @@
 app1:
-  telegram-token: ${APP_TELEGRAM_TOKEN}
-
-app:
+  token: ${APP_TELEGRAM_TOKEN}
   codes: 429, 503
   strategy: CONSTANT
 
