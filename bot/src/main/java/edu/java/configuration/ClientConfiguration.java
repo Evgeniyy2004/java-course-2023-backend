@@ -111,7 +111,8 @@ public class ClientConfiguration {
 
     @Bean
     public Bot makeBot() {
-        var bot = new Bot(new ApplicationConfig(System.getenv("APP_TELEGRAM_TOKEN")));
+        var conf =new ApplicationConfig("bot"+System.getenv("APP_TELEGRAM_TOKEN"));
+        var bot = new Bot(conf);
         bot.setUpdatesListener(updates -> {
             for (Update update : updates) {
                 bot.handle(update);
