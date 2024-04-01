@@ -36,6 +36,7 @@ TgChatApiController implements TgChatApi {
     @Autowired
     private HttpServletRequest request;
 
+    @Autowired
     private final Bucket bucket;
     @Autowired
     private JdbcTgChatService chatService;
