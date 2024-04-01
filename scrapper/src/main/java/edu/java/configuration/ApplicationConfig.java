@@ -14,6 +14,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -28,7 +29,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import reactor.util.retry.RetryBackoffSpec;
 
-@ComponentScan
+@ComponentScan(basePackages = "io.swagger.api")
 @Configuration
 @PropertySource("classpath:application.yml")
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
@@ -47,11 +48,13 @@ public class ApplicationConfig {
     }
 
     @Bean
+    @Primary
     public JdbcTgChatRepository chatrepo() {
         return new JdbcTgChatRepository(template());
     }
 
     @Bean
+    @Primary
     public JdbcLinkRepository linkrepo() {
         return new JdbcLinkRepository(template());
     }

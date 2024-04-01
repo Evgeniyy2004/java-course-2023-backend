@@ -33,18 +33,13 @@ TgChatApiController implements TgChatApi {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private HttpServletRequest request;
-
-    @Autowired
     private final Bucket bucket;
     @Autowired
     private JdbcTgChatService chatService;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public TgChatApiController(ObjectMapper objectMapper, HttpServletRequest request) {
+    public TgChatApiController(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        this.request = request;
         Bandwidth limit =
             Bandwidth.classic(2 * 2 * 2 * 2 + 2 * 2, Refill.greedy(2 * 2 * 2 * 2 + 2 * 2, Duration.ofMinutes(1)));
         this.bucket = Bucket.builder()

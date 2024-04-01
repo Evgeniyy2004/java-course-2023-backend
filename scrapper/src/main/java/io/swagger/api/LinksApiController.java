@@ -36,14 +36,13 @@ public class LinksApiController implements LinksApi {
     private JdbcLinkService linkService;
     private final ObjectMapper objectMapper;
     private final Bucket bucket;
-    private final HttpServletRequest request;
+
 
     private static final int ERROR = 404;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public LinksApiController(ObjectMapper objectMapper, HttpServletRequest request) {
+    public LinksApiController(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        this.request = request;
         Bandwidth limit =
             Bandwidth.classic(2 * 2 * 2 * 2 + 2 * 2, Refill.greedy(2 * 2 * 2 * 2 + 2 * 2, Duration.ofMinutes(1)));
         this.bucket = Bucket.builder()
