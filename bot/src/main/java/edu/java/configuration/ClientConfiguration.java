@@ -101,13 +101,13 @@ public class ClientConfiguration {
     }
 
     private RetryBackoffSpec retryBackoffExp() {
-        return Retry.backoff(2 + 1, Duration.ofSeconds(2))
+        return Retry.backoff(2 + 1, Duration.ofSeconds(2 + 2 + 1))
             .filter(throwable -> throwable instanceof WebClientResponseException)
             .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> retrySignal.failure());
     }
 
     private RetryBackoffSpec retryConst() {
-        return (Retry.fixedDelay(2 + 1, Duration.ofSeconds(2)))
+        return (Retry.fixedDelay(2 + 1, Duration.ofSeconds(2 + 2 + 1)))
             .filter(throwable -> throwable instanceof WebClientResponseException)
             .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> retrySignal.failure());
     }
