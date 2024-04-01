@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,13 +48,13 @@ public interface LinksApi {
                      description = "Ссылка не найдена",
                      content = @Content(mediaType = "application/json",
                                         schema = @Schema(implementation = ApiErrorResponse.class)))})
-    @RequestMapping(value = "/links",
+    @RequestMapping(value = "/links/{id}",
                     produces = {"application/json"},
                     consumes = {"application/json"},
                     method = RequestMethod.DELETE)
     ResponseEntity linksDelete(
-        @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
-        @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId,
+        @Parameter(in = ParameterIn.PATH, description = "", required = true, schema = @Schema())
+        @PathVariable("id") Long tgChatId,
         @Parameter(in = ParameterIn.DEFAULT, description = "", required = true, schema = @Schema()) @Valid @RequestBody
         RemoveLinkRequest body
     );
@@ -69,12 +70,12 @@ public interface LinksApi {
                      description = "Некорректные параметры запроса",
                      content = @Content(mediaType = "application/json",
                                         schema = @Schema(implementation = ApiErrorResponse.class)))})
-    @RequestMapping(value = "/links",
+    @RequestMapping(value = "/links/{id}",
                     produces = {"application/json"},
                     method = RequestMethod.GET)
     ResponseEntity linksGet(
-        @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
-        @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId
+        @Parameter(in = ParameterIn.PATH, description = "", required = true, schema = @Schema())
+        @PathVariable("id") Long tgChatId
     );
 
     @Operation(summary = "Добавить отслеживание ссылки", description = "", tags = {})
@@ -92,13 +93,13 @@ public interface LinksApi {
                      description = "Повторное добавление ссылки невозможно",
                      content = @Content(mediaType = "application/json",
                                         schema = @Schema(implementation = ApiErrorResponse.class)))})
-    @RequestMapping(value = "/links",
+    @RequestMapping(value = "/links/{id}",
                     produces = {"application/json"},
                     consumes = {"application/json"},
                     method = RequestMethod.POST)
     ResponseEntity linksPost(
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
-        @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId,
+        @PathVariable("id") Long tgChatId,
         @Parameter(in = ParameterIn.DEFAULT, description = "", required = true, schema = @Schema()) @Valid @RequestBody
         AddLinkRequest body
     );

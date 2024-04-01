@@ -59,9 +59,9 @@ TgChatApiController implements TgChatApi {
                 var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.NOT_FOUND);
                 return res;
             }
-            return new ResponseEntity(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            return new ResponseEntity(HttpStatus.TOO_MANY_REQUESTS);
+            return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
         }
     }
 
@@ -77,9 +77,9 @@ TgChatApiController implements TgChatApi {
                 var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.CONFLICT);
                 return res;
             }
-            return new ResponseEntity(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            return new ResponseEntity(HttpStatus.TOO_MANY_REQUESTS);
+            return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
         }
     }
 

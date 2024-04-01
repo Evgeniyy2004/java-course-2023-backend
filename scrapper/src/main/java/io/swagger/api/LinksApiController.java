@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,6 +35,8 @@ public class LinksApiController implements LinksApi {
 
     @Autowired
     private JdbcLinkService linkService;
+
+    @Autowired
     private final ObjectMapper objectMapper;
     private final Bucket bucket;
 
@@ -51,9 +54,9 @@ public class LinksApiController implements LinksApi {
     }
 
     @SuppressWarnings("MultipleStringLiterals")
-    public ResponseEntity<LinkResponse> linksDelete(
+    public ResponseEntity<?> linksDelete(
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
-        @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId,
+        @PathVariable("id") Long tgChatId,
         @Parameter(in = ParameterIn.DEFAULT, description = "", required = true, schema = @Schema()) @Valid @RequestBody
         RemoveLinkRequest body
     ) {
@@ -73,9 +76,9 @@ public class LinksApiController implements LinksApi {
         }
     }
 
-    public ResponseEntity<ListLinksResponse> linksGet(
+    public ResponseEntity<?> linksGet(
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
-        @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId
+        @PathVariable("id") Long tgChatId
     ) {
         if (bucket.tryConsume(1)) {
             try {
@@ -99,9 +102,9 @@ public class LinksApiController implements LinksApi {
         }
     }
 
-    public ResponseEntity<LinkResponse> linksPost(
+    public ResponseEntity<?> linksPost(
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
-        @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId,
+        @PathVariable("id") Long tgChatId,
         @Parameter(in = ParameterIn.DEFAULT, description = "", required = true, schema = @Schema()) @Valid @RequestBody
         AddLinkRequest body
     ) {
