@@ -48,6 +48,8 @@ public class ClientConfiguration {
         EXPONENTIAL
     }
 
+
+
     @Bean
     public ScrapperChatClient beanChat() {
         WebClient restClient = WebClient.builder().baseUrl(base).filter(withRetryableRequests()).build();
