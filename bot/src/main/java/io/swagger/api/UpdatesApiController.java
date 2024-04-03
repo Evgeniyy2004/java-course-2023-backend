@@ -1,8 +1,6 @@
 package io.swagger.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.configuration.Bot;
 import edu.java.model.LinkUpdate;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -24,8 +22,6 @@ public class UpdatesApiController implements UpdatesApi {
 
     private final ObjectMapper objectMapper;
     private final HttpServletRequest request;
-
-
 
     @Autowired
     Listener listener;
