@@ -37,10 +37,12 @@ public class ApplicationConfig {
 
     private static final String BASE = "http://localhost:8081/";
     @Value("${app.codes}")
-    ArrayList<Integer> codes;
+    public ArrayList<Integer> codes;
+
+
 
     @Value("${app.strategy}")
-    STRATEGY strategy;
+    public  STRATEGY strategy;
 
     public enum STRATEGY {
         CONSTANT,
