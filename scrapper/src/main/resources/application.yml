@@ -13,6 +13,8 @@ spring:
 app:
   codes: 429, 503
   strategy: CONSTANT
+  topic: 1
+  use-queue: false
 server:
   port: 8080
 

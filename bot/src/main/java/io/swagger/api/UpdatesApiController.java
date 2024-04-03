@@ -17,8 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen",
-                            date = "2024-02-27T13:00:16.152772335Z[GMT]")
 @RestController
 public class UpdatesApiController implements UpdatesApi {
 
@@ -27,8 +25,10 @@ public class UpdatesApiController implements UpdatesApi {
     private final ObjectMapper objectMapper;
     private final HttpServletRequest request;
 
+
+
     @Autowired
-    Bot bot;
+    Listener listener;
 
     @org.springframework.beans.factory.annotation.Autowired
     public UpdatesApiController(ObjectMapper objectMapper, HttpServletRequest request) {
@@ -41,7 +41,7 @@ public class UpdatesApiController implements UpdatesApi {
         @Parameter(in = ParameterIn.DEFAULT, description = "", required = true, schema = @Schema()) @Valid @RequestBody
         LinkUpdate body
     ) {
-        bot.execute(new SendMessage(body.getId(), "По ссылке " + body.getUrl() + "появилось обновление"));
+        listener.send(body);
         return new ResponseEntity(HttpStatus.OK);
     }
 

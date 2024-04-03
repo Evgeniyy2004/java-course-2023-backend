@@ -15,6 +15,6 @@ public class ScrapperQueueProducer {
     KafkaTemplate<Integer,String> template;
     public void send(LinkUpdate update) {
         // TODO
-        template.send("1",update.toString());
+        template.send(ApplicationConfig.getTopic(),update.toString());
     }
 }

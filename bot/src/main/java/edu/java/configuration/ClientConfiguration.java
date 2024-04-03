@@ -9,6 +9,7 @@ import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import java.time.Duration;
 import java.util.ArrayList;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +28,7 @@ import reactor.util.retry.RetryBackoffSpec;
 
 @Configuration
 @Validated
-@ComponentScan
+@ComponentScan(basePackages = "io.swagger.api")
 @SuppressWarnings("RegexpSinglelineJava")
 @PropertySource("classpath:application.yml")
 @ConfigurationProperties(prefix = "app1", ignoreUnknownFields = false)
@@ -39,6 +40,10 @@ public class ClientConfiguration {
 
     @Value("${app1.strategy}")
     STRATEGY strategy;
+
+    @Value("${app1.topic}")
+    @Getter
+    private static String topic;
 
     @Value("${app1.token}")
     String token;

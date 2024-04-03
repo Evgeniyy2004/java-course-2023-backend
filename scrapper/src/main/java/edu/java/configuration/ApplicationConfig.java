@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Properties;
 import javax.sql.DataSource;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -39,7 +40,13 @@ public class ApplicationConfig {
     @Value("${app.codes}")
     public ArrayList<Integer> codes;
 
+    @Value("${app.topic}")
+    @Getter
+    private static String topic;
 
+    @Value("${app.use-queue}")
+    @Getter
+    private static boolean useQueue;
 
     @Value("${app.strategy}")
     public  STRATEGY strategy;
@@ -48,6 +55,7 @@ public class ApplicationConfig {
         CONSTANT,
         EXPONENTIAL
     }
+
 
     @Bean
     @Primary
