@@ -22,10 +22,10 @@ import org.springframework.kafka.core.ProducerFactory;
 
 @Configuration
 @EnableKafka
-@ConfigurationProperties(prefix = "app1", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "app2", ignoreUnknownFields = false)
 public class KafkaConfiguration {
 
-    @Value("${app1.server}")
+    @Value("${app2.server}")
     String server;
 
     @Bean

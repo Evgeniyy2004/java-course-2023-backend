@@ -13,10 +13,14 @@ import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @EnableConfigurationProperties({ApplicationConfig.class})
 @SuppressWarnings({"ReturnCount", "CyclomaticComplexity", "RegexpSinglelineJava"})
@@ -47,11 +51,11 @@ public class Bot extends TelegramBot {
     public void handle(Update update) {
         var command = update.message().text();
         var id = update.message().chat().id();
-        Pattern pattern1 = Pattern.compile("( *)(/list)( *)");
-        Pattern pattern2 = Pattern.compile("( *)(/start)( *)");
-        Pattern pattern3 = Pattern.compile("( *)(/track)(.*)");
-        Pattern pattern4 = Pattern.compile("( *)(/untrack)(.*)");
-        Pattern pattern5 = Pattern.compile("( *)(/help)( *)");
+        Pattern pattern1 = Pattern.compile("(\\s*)(/list)(\\s*)");
+        Pattern pattern2 = Pattern.compile("(\\s*)(/start)(\\s*)");
+        Pattern pattern3 = Pattern.compile("(\\s*)(/track\\s+)(.*)");
+        Pattern pattern4 = Pattern.compile("(\\s*)(/untrack\\s+)(.*)");
+        Pattern pattern5 = Pattern.compile("(\\s*)(/help)(\\s*)");
         var res = new SendMessage(update.message().chat().id(), "");
         String text;
         if (pattern5.matcher(command).find()) {
@@ -83,12 +87,13 @@ public class Bot extends TelegramBot {
                 if (all.getStatusCode() == HttpStatus.NOT_FOUND) {
                     text = REGISTRY;
                 } else {
-                    var body = (ListLinksResponse) all.getBody();
-                    if (body.getLinks().isEmpty()) {
+                    var map = (LinkedHashMap)all.getBody();
+                    var body = (List<LinkResponse>)(map.get("links"));
+                    if (body == null || (body).isEmpty()) {
                         text = "Текущий список ссылок пуст";
                     } else {
                         text = "Текущий список отслеживаемых ссылок:\n";
-                        for (LinkResponse l : body.getLinks()) {
+                        for (LinkResponse l : body) {
                             text += l.getUrl() + "\n";
                         }
                     }
@@ -98,20 +103,20 @@ public class Bot extends TelegramBot {
 
             } else {
                 if (pattern3.matcher(command).find()) {
-                    var link = command.split("/track");
+                    var link = Arrays.stream(command.split("/track| ")).filter(r->!r.equals("")).toArray();
                     if (link.length == 0) {
                         incorrect(id);
                     } else {
-                        check(update.message().chat().id(), link[0]);
+                        check(update.message().chat().id(), link[0].toString());
                     }
                 } else {
-                    var link = command.split("/untrack");
+                    var link = Arrays.stream(command.split("/untrack| ")).filter(r->!r.equals("")).toArray();
                     if (link.length == 0) {
                         incorrect(id);
                         return;
                     }
                     var req = new RemoveLinkRequest();
-                    req.setLink(link[0]);
+                    req.setLink(link[0].toString());
                     var done = links.delete(id, req);
                     if (done.getStatusCode() == HttpStatus.NOT_FOUND) {
                         text = REGISTRY;
@@ -140,16 +145,17 @@ public class Bot extends TelegramBot {
     }
 
     public void check(Long id, String link) {
-        String text;
-        var success = "Ссылка успешно добавлена";
-        if (!link.startsWith(BASEGIT) && !link.startsWith(BASESTACK)) {
-            incorrect(id);
-        } else {
             try {
+                String text;
                 var uri = new URI(link);
-                var link1 = uri.toString();
-                if (link1.startsWith(BASEGIT)) {
-                    var userrepo = link1.replace(BASEGIT, "").split("/");
+                link = uri.toString();
+                var success = "Ссылка успешно добавлена";
+                if (!link.startsWith(BASEGIT) && !link.startsWith(BASESTACK)) {
+                    incorrect(id);
+                }
+                if (link.startsWith(BASEGIT)) {
+                    var userrepo = Arrays.stream(link.replace(BASEGIT, "")
+                        .split("/")).filter(r->!r.equals("")).toArray();
                     if (userrepo.length < 2) {
                         text = INCORRECT;
                         this.execute(new SendMessage(id, text));
@@ -157,42 +163,48 @@ public class Bot extends TelegramBot {
                     }
                     var user = userrepo[0];
                     var repo = userrepo[1];
-                    var result = git.fetchRepository(user, repo);
-                    if (result.name == null || result.owner == null || result.time == null) {
-                        incorrect(id);
-                        return;
-                    }
-                    var req = new AddLinkRequest();
-                    req.setLink(link1);
-                    var done = links.post(id, req);
-                    if (done.getStatusCode() == HttpStatus.NOT_FOUND) {
-                        text = REGISTRY;
-                        this.execute(new SendMessage(id, text));
-                    }
-                    if (done.getStatusCode() == HttpStatus.CONFLICT) {
-                        text = ALREADY;
-                        this.execute(new SendMessage(id, text));
-                    }
-                    if (done.getStatusCode() == HttpStatus.OK) {
-                        text = success;
+                    try {
+                        var result = git.fetchRepository(user.toString(), repo.toString());
+                        if (result.name == null || result.owner == null || result.time == null) {
+                            incorrect(id);
+                            return;
+                        }
+                        var req = new AddLinkRequest();
+                        req.setLink(link);
+                        var done = links.post(id, req);
+                        if (done.getStatusCode() == HttpStatus.NOT_FOUND) {
+                            text = REGISTRY;
+                            this.execute(new SendMessage(id, text));
+                        }
+                        if (done.getStatusCode() == HttpStatus.CONFLICT) {
+                            text = ALREADY;
+                            this.execute(new SendMessage(id, text));
+                        }
+                        if (done.getStatusCode() == HttpStatus.OK) {
+                            text = success;
+                            this.execute(new SendMessage(id, text));
+                        }
+                    } catch (WebClientResponseException e) {
+                        text = "Недостаточно прав для доступа";
                         this.execute(new SendMessage(id, text));
                     }
                     return;
 
                 }
-                var question = link1.replace(BASESTACK, "").split("/");
-                if (question.length < 2) {
+                var question = Arrays.stream(link.replace(BASESTACK, "")
+                    .split("/")).filter(r->!r.equals("")).toArray();
+                if (question.length == 0) {
                     text = INCORRECT;
                     this.execute(new SendMessage(id, text));
                     return;
                 }
-                var id1 = Long.parseLong(question[0]);
+                var id1 = Long.parseLong(question[0].toString());
                 var result = stack.fetchQuestion(id1);
                 if (result.time == null || result.link == null || result.title == null) {
                     incorrect(id);
                 } else {
                     var req = new AddLinkRequest();
-                    req.setLink(link1);
+                    req.setLink(link);
                     var response = links.post(id, req);
                     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
                         text = REGISTRY;
@@ -205,10 +217,10 @@ public class Bot extends TelegramBot {
                 }
 
             } catch (URISyntaxException e) {
-                text = INCORRECT;
+                var text = INCORRECT;
                 this.execute(new SendMessage(id, text));
             }
-        }
+
     }
 
     public void incorrect(Long id) {

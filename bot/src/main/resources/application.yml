@@ -4,6 +4,8 @@ app1:
   strategy: CONSTANT
   topic: 1
 
+app2:
+  server: localhost:9092
 spring:
   application:
     name: bot

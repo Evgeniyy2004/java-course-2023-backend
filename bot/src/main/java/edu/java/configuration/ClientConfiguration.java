@@ -74,7 +74,7 @@ public class ClientConfiguration {
     @Bean
     public GitHubClient beanGit() {
         WebClient restClient =
-            WebClient.builder().baseUrl("https://github.com/").filter(withRetryableRequests()).build();
+            WebClient.builder().baseUrl("https://api.github.com/").filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(GitHubClient.class);
@@ -83,7 +83,7 @@ public class ClientConfiguration {
     @Bean
     public StackOverflowClient beanStack() {
         WebClient restClient =
-            WebClient.builder().baseUrl("https://stackoverflow.com/").filter(withRetryableRequests()).build();
+            WebClient.builder().baseUrl("https://api.stackexchange.com/").filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(StackOverflowClient.class);
