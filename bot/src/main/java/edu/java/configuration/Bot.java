@@ -5,7 +5,6 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.model.AddLinkRequest;
 import edu.java.model.LinkResponse;
-import edu.java.model.ListLinksResponse;
 import edu.java.model.RemoveLinkRequest;
 import edu.java.scrapperclient.ScrapperChatClient;
 import edu.java.scrapperclient.ScrapperLinksClient;
@@ -28,7 +27,6 @@ public class Bot extends TelegramBot {
 
     private static final String BASESTACK = "https://stackoverflow.com/questions/";
     private static final String BASEGIT = "https://github.com/";
-
 
     @Autowired
     private ScrapperChatClient chat;
@@ -87,8 +85,8 @@ public class Bot extends TelegramBot {
                 if (all.getStatusCode() == HttpStatus.NOT_FOUND) {
                     text = REGISTRY;
                 } else {
-                    var map = (LinkedHashMap)all.getBody();
-                    var body = (List<LinkResponse>)(map.get("links"));
+                    var map = (LinkedHashMap) all.getBody();
+                    var body = (List<LinkResponse>) (map.get("links"));
                     if (body == null || (body).isEmpty()) {
                         text = "Текущий список ссылок пуст";
                     } else {
@@ -103,14 +101,14 @@ public class Bot extends TelegramBot {
 
             } else {
                 if (pattern3.matcher(command).find()) {
-                    var link = Arrays.stream(command.split("/track| ")).filter(r->!r.equals("")).toArray();
+                    var link = Arrays.stream(command.split("/track| ")).filter(r -> !r.equals("")).toArray();
                     if (link.length == 0) {
                         incorrect(id);
                     } else {
                         check(update.message().chat().id(), link[0].toString());
                     }
                 } else {
-                    var link = Arrays.stream(command.split("/untrack| ")).filter(r->!r.equals("")).toArray();
+                    var link = Arrays.stream(command.split("/untrack| ")).filter(r -> !r.equals("")).toArray();
                     if (link.length == 0) {
                         incorrect(id);
                         return;
@@ -145,81 +143,81 @@ public class Bot extends TelegramBot {
     }
 
     public void check(Long id, String link) {
-            try {
-                String text;
-                var uri = new URI(link);
-                link = uri.toString();
-                var success = "Ссылка успешно добавлена";
-                if (!link.startsWith(BASEGIT) && !link.startsWith(BASESTACK)) {
-                    incorrect(id);
-                }
-                if (link.startsWith(BASEGIT)) {
-                    var userrepo = Arrays.stream(link.replace(BASEGIT, "")
-                        .split("/")).filter(r->!r.equals("")).toArray();
-                    if (userrepo.length < 2) {
-                        text = INCORRECT;
-                        this.execute(new SendMessage(id, text));
-                        return;
-                    }
-                    var user = userrepo[0];
-                    var repo = userrepo[1];
-                    try {
-                        var result = git.fetchRepository(user.toString(), repo.toString());
-                        if (result.name == null || result.owner == null || result.time == null) {
-                            incorrect(id);
-                            return;
-                        }
-                        var req = new AddLinkRequest();
-                        req.setLink(link);
-                        var done = links.post(id, req);
-                        if (done.getStatusCode() == HttpStatus.NOT_FOUND) {
-                            text = REGISTRY;
-                            this.execute(new SendMessage(id, text));
-                        }
-                        if (done.getStatusCode() == HttpStatus.CONFLICT) {
-                            text = ALREADY;
-                            this.execute(new SendMessage(id, text));
-                        }
-                        if (done.getStatusCode() == HttpStatus.OK) {
-                            text = success;
-                            this.execute(new SendMessage(id, text));
-                        }
-                    } catch (WebClientResponseException e) {
-                        text = "Недостаточно прав для доступа";
-                        this.execute(new SendMessage(id, text));
-                    }
-                    return;
-
-                }
-                var question = Arrays.stream(link.replace(BASESTACK, "")
-                    .split("/")).filter(r->!r.equals("")).toArray();
-                if (question.length == 0) {
+        try {
+            String text;
+            var uri = new URI(link);
+            var link1 = uri.toString();
+            var success = "Ссылка успешно добавлена";
+            if (!link1.startsWith(BASEGIT) && !link1.startsWith(BASESTACK)) {
+                incorrect(id);
+            }
+            if (link1.startsWith(BASEGIT)) {
+                var userrepo = Arrays.stream(link1.replace(BASEGIT, "")
+                    .split("/")).filter(r -> !r.equals("")).toArray();
+                if (userrepo.length < 2) {
                     text = INCORRECT;
                     this.execute(new SendMessage(id, text));
                     return;
                 }
-                var id1 = Long.parseLong(question[0].toString());
-                var result = stack.fetchQuestion(id1);
-                if (result.time == null || result.link == null || result.title == null) {
-                    incorrect(id);
-                } else {
-                    var req = new AddLinkRequest();
-                    req.setLink(link);
-                    var response = links.post(id, req);
-                    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-                        text = REGISTRY;
-                    } else if (response.getStatusCode() == HttpStatus.CONFLICT) {
-                        text = ALREADY;
-                    } else {
-                        text = success;
+                var user = userrepo[0];
+                var repo = userrepo[1];
+                try {
+                    var result = git.fetchRepository(user.toString(), repo.toString());
+                    if (result.name == null || result.owner == null || result.time == null) {
+                        incorrect(id);
+                        return;
                     }
+                    var req = new AddLinkRequest();
+                    req.setLink(link1);
+                    var done = links.post(id, req);
+                    if (done.getStatusCode() == HttpStatus.NOT_FOUND) {
+                        text = REGISTRY;
+                        this.execute(new SendMessage(id, text));
+                    }
+                    if (done.getStatusCode() == HttpStatus.CONFLICT) {
+                        text = ALREADY;
+                        this.execute(new SendMessage(id, text));
+                    }
+                    if (done.getStatusCode() == HttpStatus.OK) {
+                        text = success;
+                        this.execute(new SendMessage(id, text));
+                    }
+                } catch (WebClientResponseException e) {
+                    text = "Недостаточно прав для доступа";
                     this.execute(new SendMessage(id, text));
                 }
+                return;
 
-            } catch (URISyntaxException e) {
-                var text = INCORRECT;
+            }
+            var question = Arrays.stream(link1.replace(BASESTACK, "")
+                .split("/")).filter(r -> !r.equals("")).toArray();
+            if (question.length == 0) {
+                text = INCORRECT;
+                this.execute(new SendMessage(id, text));
+                return;
+            }
+            var id1 = Long.parseLong(question[0].toString());
+            var result = stack.fetchQuestion(id1);
+            if (result.time == null || result.link == null || result.title == null) {
+                incorrect(id);
+            } else {
+                var req = new AddLinkRequest();
+                req.setLink(link);
+                var response = links.post(id, req);
+                if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+                    text = REGISTRY;
+                } else if (response.getStatusCode() == HttpStatus.CONFLICT) {
+                    text = ALREADY;
+                } else {
+                    text = success;
+                }
                 this.execute(new SendMessage(id, text));
             }
+
+        } catch (URISyntaxException e) {
+            var text = INCORRECT;
+            this.execute(new SendMessage(id, text));
+        }
 
     }
 
