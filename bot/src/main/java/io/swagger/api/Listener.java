@@ -6,10 +6,12 @@ import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.configuration.Bot;
 import edu.java.model.LinkUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 @Service
+@PropertySource("classpath:application.yml")
 public class Listener {
     @Autowired
     Bot bot;
@@ -20,7 +22,7 @@ public class Listener {
     private static final String FIRST = "По ссылке ";
     private static final String SECOND = "появилось обновление";
 
-    @KafkaListener(topics = "1")
+    @KafkaListener(topics = "${app1.topic}")
     public void listen(String update) {
         try {
             LinkUpdate obj = new ObjectMapper().readValue(update, LinkUpdate.class);
