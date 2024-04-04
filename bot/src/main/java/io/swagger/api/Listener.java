@@ -6,9 +6,6 @@ import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.configuration.Bot;
 import edu.java.model.LinkUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +14,8 @@ public class Listener {
     @Autowired
     Bot bot;
 
+    @Autowired
+    DlqErrorHandler handler;
 
     private static final String FIRST = "По ссылке ";
     private static final String SECOND = "появилось обновление";
@@ -27,7 +26,7 @@ public class Listener {
             LinkUpdate obj = new ObjectMapper().readValue(update, LinkUpdate.class);
             bot.execute(new SendMessage(obj.getId(), FIRST + obj.getUrl() + SECOND));
         } catch (JsonProcessingException e) {
-
+            handler.handle(update);
         }
     }
 
