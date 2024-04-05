@@ -30,6 +30,7 @@ public class JdbcLinkRepository implements LinkRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+
     public void save(Long id, String link) throws ApiException {
         String query = ("select * from id where id=?");
         var first = jdbcTemplate.queryForList(query, id).toArray();
