@@ -3,14 +3,16 @@ spring:
     name: scrapper
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5437/scrapper
+    url: jdbc:postgresql://localhost:5433/scrapper
     username: postgres
     password: postgres
 
 
   liquibase:
     enabled: false
-
+app:
+  codes: 429, 503
+  strategy: CONSTANT
 server:
   port: 8080
 

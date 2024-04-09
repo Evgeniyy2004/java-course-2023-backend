@@ -3,9 +3,13 @@ package io.swagger.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.java.model.ApiErrorResponse;
 import edu.java.model.ApiException;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Refill;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.Duration;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
@@ -32,6 +36,7 @@ TgChatApiController implements TgChatApi {
     @Autowired
     private HttpServletRequest request;
 
+    private final Bucket bucket;
     @Autowired
     private JdbcTgChatService chatService;
 
@@ -39,6 +44,11 @@ TgChatApiController implements TgChatApi {
     public TgChatApiController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.request = request;
+        Bandwidth limit =
+            Bandwidth.classic(2 * 2 * 2 * 2 + 2 * 2, Refill.greedy(2 * 2 * 2 * 2 + 2 * 2, Duration.ofMinutes(1)));
+        this.bucket = Bucket.builder()
+            .addLimit(limit)
+            .build();
     }
 
     @Valid
@@ -46,13 +56,17 @@ TgChatApiController implements TgChatApi {
         @Parameter(in = ParameterIn.PATH, description = "", required = true, schema = @Schema()) @PathVariable("id")
         Long id
     ) {
-        try {
-            chatService.unregister(id);
-        } catch (ApiException e) {
-            var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.NOT_FOUND);
-            return res;
+        if (bucket.tryConsume(1)) {
+            try {
+                chatService.unregister(id);
+            } catch (ApiException e) {
+                var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.NOT_FOUND);
+                return res;
+            }
+            return new ResponseEntity(HttpStatus.OK);
+        } else {
+            return new ResponseEntity(HttpStatus.TOO_MANY_REQUESTS);
         }
-        return new ResponseEntity(HttpStatus.OK);
     }
 
     @Valid
@@ -60,13 +74,17 @@ TgChatApiController implements TgChatApi {
         @Parameter(in = ParameterIn.PATH, description = "", required = true, schema = @Schema()) @PathVariable("id")
         Long id
     ) {
-        try {
-            chatService.register(id);
-        } catch (ApiException e) {
-            var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.CONFLICT);
-            return res;
+        if (bucket.tryConsume(1)) {
+            try {
+                chatService.register(id);
+            } catch (ApiException e) {
+                var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.CONFLICT);
+                return res;
+            }
+            return new ResponseEntity(HttpStatus.OK);
+        } else {
+            return new ResponseEntity(HttpStatus.TOO_MANY_REQUESTS);
         }
-        return new ResponseEntity(HttpStatus.OK);
     }
 
 }
