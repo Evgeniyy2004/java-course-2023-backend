@@ -11,6 +11,22 @@ spring:
 server:
   port: 8081
 
+management:
+
+  prometheus:
+    metrics:
+      export:
+        pushgateway:
+          base-url: /metrics
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,prometheus"
+      base-path:
+  server:
+    port: 49667
+
+
 
 logging:
   config: classpath:log4j2-plain.xml
