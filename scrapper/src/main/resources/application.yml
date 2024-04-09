@@ -1,15 +1,15 @@
-app:
-  scheduler:
-    enable: true
-    interval: 10s
-    force-check-delay: 10s
-
 spring:
   application:
     name: scrapper
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5437/scrapper
+    username: postgres
+    password: postgres
+
+
   liquibase:
-    searchPath: public
-    enabled: true
+    enabled: false
 
 server:
   port: 8080

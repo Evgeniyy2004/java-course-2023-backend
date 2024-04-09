@@ -6,11 +6,11 @@
 
 package io.swagger.api;
 
-import io.swagger.model.AddLinkRequest;
-import io.swagger.model.ApiErrorResponse;
-import io.swagger.model.LinkResponse;
-import io.swagger.model.ListLinksResponse;
-import io.swagger.model.RemoveLinkRequest;
+import edu.java.model.AddLinkRequest;
+import edu.java.model.ApiErrorResponse;
+import edu.java.model.LinkResponse;
+import edu.java.model.ListLinksResponse;
+import edu.java.model.RemoveLinkRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -51,7 +51,7 @@ public interface LinksApi {
                     produces = {"application/json"},
                     consumes = {"application/json"},
                     method = RequestMethod.DELETE)
-    ResponseEntity<LinkResponse> linksDelete(
+    ResponseEntity linksDelete(
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
         @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId,
         @Parameter(in = ParameterIn.DEFAULT, description = "", required = true, schema = @Schema()) @Valid @RequestBody
@@ -72,7 +72,7 @@ public interface LinksApi {
     @RequestMapping(value = "/links",
                     produces = {"application/json"},
                     method = RequestMethod.GET)
-    ResponseEntity<ListLinksResponse> linksGet(
+    ResponseEntity linksGet(
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
         @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId
     );
@@ -96,7 +96,7 @@ public interface LinksApi {
                     produces = {"application/json"},
                     consumes = {"application/json"},
                     method = RequestMethod.POST)
-    ResponseEntity<LinkResponse> linksPost(
+    ResponseEntity linksPost(
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
         @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId,
         @Parameter(in = ParameterIn.DEFAULT, description = "", required = true, schema = @Schema()) @Valid @RequestBody
