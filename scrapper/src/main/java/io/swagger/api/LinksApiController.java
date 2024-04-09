@@ -32,6 +32,7 @@ public class LinksApiController implements LinksApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(LinksApiController.class);
 
+    private static final int NOT_FOUND = 404;
     @Autowired
     private JdbcLinkService linkService;
     private final ObjectMapper objectMapper;
