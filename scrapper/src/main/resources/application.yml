@@ -16,14 +16,15 @@ management:
           base-url: /metrics
   endpoints:
     web:
-      exposure:
-        include: "health,info,prometheus"
       base-path: /health
+      exposure:
+        include: '*'
   server:
     port: 53518
-  wavefront:
-    application:
-      name: ${spring.application.name}
+  metrics:
+    tags:
+      application:
+        ${spring.application.name}
 
 
 app:
