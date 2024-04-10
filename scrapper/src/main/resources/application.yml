@@ -6,7 +6,22 @@ spring:
     url: jdbc:postgresql://localhost:5433/scrapper
     username: postgres
     password: postgres
-
+management:
+  prometheus:
+    metrics:
+      export:
+        pushgateway:
+          base-url: /metrics
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,prometheus"
+      base-path: /health
+  server:
+    port: 53518
+  wavefront:
+    application:
+      name: ${spring.application.name}
 
   liquibase:
     enabled: false
