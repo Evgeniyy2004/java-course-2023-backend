@@ -2,7 +2,10 @@ app1:
   token: ${APP_TELEGRAM_TOKEN}
   codes: 429, 503
   strategy: CONSTANT
-
+  topic: 1
+  error-topic: 2
+app2:
+  server: localhost:9092
 spring:
   application:
     name: bot

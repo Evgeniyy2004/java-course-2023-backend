@@ -14,15 +14,14 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.time.Duration;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen",
@@ -35,16 +34,16 @@ public class LinksApiController implements LinksApi {
     private static final int NOT_FOUND = 404;
     @Autowired
     private JdbcLinkService linkService;
+
+    @Autowired
     private final ObjectMapper objectMapper;
     private final Bucket bucket;
-    private final HttpServletRequest request;
 
     private static final int ERROR = 404;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public LinksApiController(ObjectMapper objectMapper, HttpServletRequest request) {
+    public LinksApiController(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        this.request = request;
         Bandwidth limit =
             Bandwidth.classic(2 * 2 * 2 * 2 + 2 * 2, Refill.greedy(2 * 2 * 2 * 2 + 2 * 2, Duration.ofMinutes(1)));
         this.bucket = Bucket.builder()
@@ -53,9 +52,9 @@ public class LinksApiController implements LinksApi {
     }
 
     @SuppressWarnings("MultipleStringLiterals")
-    public ResponseEntity<LinkResponse> linksDelete(
+    public ResponseEntity<?> linksDelete(
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
-        @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId,
+        @PathVariable("id") Long tgChatId,
         @Parameter(in = ParameterIn.DEFAULT, description = "", required = true, schema = @Schema()) @Valid @RequestBody
         RemoveLinkRequest body
     ) {
@@ -75,9 +74,9 @@ public class LinksApiController implements LinksApi {
         }
     }
 
-    public ResponseEntity<ListLinksResponse> linksGet(
+    public ResponseEntity<?> linksGet(
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
-        @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId
+        @PathVariable("id") Long tgChatId
     ) {
         if (bucket.tryConsume(1)) {
             try {
@@ -101,9 +100,9 @@ public class LinksApiController implements LinksApi {
         }
     }
 
-    public ResponseEntity<LinkResponse> linksPost(
+    public ResponseEntity<?> linksPost(
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
-        @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId,
+        @PathVariable("id") Long tgChatId,
         @Parameter(in = ParameterIn.DEFAULT, description = "", required = true, schema = @Schema()) @Valid @RequestBody
         AddLinkRequest body
     ) {

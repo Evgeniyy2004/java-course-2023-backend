@@ -9,9 +9,11 @@ import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import java.time.Duration;
 import java.util.ArrayList;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.validation.annotation.Validated;
@@ -26,6 +28,7 @@ import reactor.util.retry.RetryBackoffSpec;
 
 @Configuration
 @Validated
+@ComponentScan(basePackages = "io.swagger.api")
 @SuppressWarnings("RegexpSinglelineJava")
 @PropertySource("classpath:application.yml")
 @ConfigurationProperties(prefix = "app1", ignoreUnknownFields = false)
@@ -38,6 +41,10 @@ public class ClientConfiguration {
     @Value("${app1.strategy}")
     STRATEGY strategy;
 
+    @Value("${app1.topic}")
+    @Getter
+    private static String topic;
+
     @Value("${app1.token}")
     String token;
 
@@ -45,6 +52,8 @@ public class ClientConfiguration {
         CONSTANT,
         EXPONENTIAL
     }
+
+
 
     @Bean
     public ScrapperChatClient beanChat() {
@@ -65,7 +74,7 @@ public class ClientConfiguration {
     @Bean
     public GitHubClient beanGit() {
         WebClient restClient =
-            WebClient.builder().baseUrl("https://github.com/").filter(withRetryableRequests()).build();
+            WebClient.builder().baseUrl("https://api.github.com/").filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(GitHubClient.class);
@@ -74,7 +83,7 @@ public class ClientConfiguration {
     @Bean
     public StackOverflowClient beanStack() {
         WebClient restClient =
-            WebClient.builder().baseUrl("https://stackoverflow.com/").filter(withRetryableRequests()).build();
+            WebClient.builder().baseUrl("https://api.stackexchange.com/").filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(StackOverflowClient.class);
