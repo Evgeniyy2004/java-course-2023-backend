@@ -6,6 +6,8 @@ spring:
     url: jdbc:postgresql://localhost:5433/scrapper
     username: postgres
     password: postgres
+  liquibase:
+    enabled: false
 management:
   prometheus:
     metrics:
@@ -23,8 +25,7 @@ management:
     application:
       name: ${spring.application.name}
 
-  liquibase:
-    enabled: false
+
 app:
   codes: 429, 503
   strategy: CONSTANT
