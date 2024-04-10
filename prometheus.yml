@@ -6,4 +6,4 @@ scrape_configs:
   - job_name: 'prometheus'
     scrape_interval: 5s
     static_configs:
-      - targets: ['localhost:49667','localhost:53518']
+      - targets: ['localhost:52893','localhost:53518']
