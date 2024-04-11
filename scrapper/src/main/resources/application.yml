@@ -9,11 +9,6 @@ spring:
   liquibase:
     enabled: false
 management:
-  prometheus:
-    metrics:
-      export:
-        pushgateway:
-          base-url: /metrics
   endpoints:
     web:
       base-path: /health

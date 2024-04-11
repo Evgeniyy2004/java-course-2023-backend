@@ -15,11 +15,6 @@ server:
   port: 8081
 
 management:
-  prometheus:
-    metrics:
-      export:
-        pushgateway:
-          base-url: /metrics
   endpoints:
     web:
       base-path: /health
