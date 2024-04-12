@@ -13,13 +13,9 @@ management:
     web:
       base-path: /
       exposure:
-        include: '*'
+        include: prometheus,health,info
   server:
     port: 53518
-  metrics:
-    tags:
-      application:
-        ${spring.application.name}
 
 
 app:
