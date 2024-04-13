@@ -59,18 +59,18 @@ public class ApplicationConfig {
 
     @Bean
     @Primary
-    public JdbcTgChatRepository chatrepo() {
+    public JdbcTgChatRepository chatrepo1() {
         return new JdbcTgChatRepository(template());
     }
 
     @Bean
     @Primary
-    public JdbcLinkRepository linkrepo() {
+    public JdbcLinkRepository linkrepo1() {
         return new JdbcLinkRepository(template());
     }
 
     @Bean
-    public StackOverflowClient beanStack() {
+    public StackOverflowClient beanStack1() {
         WebClient restClient =
             WebClient.builder().baseUrl("https://api.stackexchange.com/").filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
@@ -80,7 +80,7 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public GitHubClient beanGit() {
+    public GitHubClient beanGit1() {
         WebClient restClient =
             WebClient.builder().baseUrl("https://api.github.com/").filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
