@@ -9,6 +9,10 @@ spring:
   liquibase:
     enabled: false
 management:
+  metrics:
+      tags:
+        application:
+          ${spring.application.name}
   endpoints:
     web:
       base-path: /
