@@ -123,8 +123,7 @@ public class ClientConfiguration {
 
     @Bean
     public Bot makeBot() {
-        var conf = new ApplicationConfig(token);
-        var bot = new Bot(conf);
+        var bot = new Bot(token);
         bot.setUpdatesListener(updates -> {
             for (Update update : updates) {
                 bot.handle(update);

@@ -21,7 +21,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-@EnableConfigurationProperties({ApplicationConfig.class})
 @SuppressWarnings({"ReturnCount", "CyclomaticComplexity", "RegexpSinglelineJava"})
 public class Bot extends TelegramBot {
 
@@ -42,8 +41,8 @@ public class Bot extends TelegramBot {
     @Autowired
     private StackOverflowClient stack;
 
-    public Bot(ApplicationConfig app) {
-        super(app.telegramToken());
+    public Bot(String app) {
+        super(app);
     }
 
     public void handle(Update update) {
