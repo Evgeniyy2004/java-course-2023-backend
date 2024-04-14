@@ -21,6 +21,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -30,6 +31,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import reactor.util.retry.RetryBackoffSpec;
 
+@Validated
 @ComponentScan(basePackages = "io.swagger.api")
 @Configuration
 @PropertySource("classpath:application.yml")
