@@ -221,6 +221,10 @@
             <artifactId>jakarta.persistence-api</artifactId>
             <version>3.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jdbc</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
@@ -241,7 +245,7 @@
         <finalName>${project.artifactId}</finalName>
         <resources>
             <resource>
-                <directory>${basedir}/src/main/resources</directory>
+                <directory>C:\Users\user\IdeaProjects\Spring-java-course-2023-backend\scrapper\src\main\resources</directory>
                 <filtering>true</filtering>
             </resource>
         </resources>
@@ -260,6 +264,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.liquibase</groupId>

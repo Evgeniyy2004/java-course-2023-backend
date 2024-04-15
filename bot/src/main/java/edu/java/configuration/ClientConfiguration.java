@@ -9,13 +9,16 @@ import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -62,6 +65,7 @@ public class ClientConfiguration {
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(ScrapperChatClient.class);
     }
+
 
     @Bean
     public ScrapperLinksClient beanLinks() {
