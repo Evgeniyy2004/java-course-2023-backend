@@ -8,9 +8,9 @@ app2:
   server: localhost:9092
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/scrapper
-    username:
-    password:
+    url: jdbc:postgresql://localhost:5433/scrapper
+    username: postgres
+    password: postgres
     driverClassName: org.postgresql.Driver
   liquibase:
     enabled: false
