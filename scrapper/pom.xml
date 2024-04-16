@@ -245,7 +245,7 @@
         <finalName>${project.artifactId}</finalName>
         <resources>
             <resource>
-                <directory>C:\Users\user\IdeaProjects\Spring-java-course-2023-backend\scrapper\src\main\resources</directory>
+                <directory>${project.basedir}/src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
         </resources>
