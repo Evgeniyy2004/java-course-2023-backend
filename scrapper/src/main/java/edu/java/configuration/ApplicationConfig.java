@@ -15,7 +15,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -49,22 +48,19 @@ public class ApplicationConfig {
     private static boolean useQueue;
 
     @Value("${app.strategy}")
-    public  STRATEGY strategy;
+    public STRATEGY strategy;
 
     public enum STRATEGY {
         CONSTANT,
         EXPONENTIAL
     }
 
-
     @Bean
-    @Primary
     public JdbcTgChatRepository chatrepo() {
         return new JdbcTgChatRepository(template());
     }
 
     @Bean
-    @Primary
     public JdbcLinkRepository linkrepo() {
         return new JdbcLinkRepository(template());
     }

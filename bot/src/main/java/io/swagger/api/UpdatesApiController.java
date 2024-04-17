@@ -19,15 +19,15 @@ public class UpdatesApiController implements UpdatesApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(UpdatesApiController.class);
 
-    @Autowired
     private final ObjectMapper objectMapper;
 
-    @Autowired
-    Listener listener;
+    private Listener listener;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public UpdatesApiController(ObjectMapper objectMapper) {
+    public UpdatesApiController(ObjectMapper objectMapper, Listener listener) {
+
         this.objectMapper = objectMapper;
+        this.listener = listener;
     }
 
     public ResponseEntity updatesPost(

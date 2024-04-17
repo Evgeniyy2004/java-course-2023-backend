@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class ScrapperQueueProducer {
 
     @Autowired
-    KafkaTemplate<Integer, String> template;
+    private KafkaTemplate<Integer, String> template;
 
     public void send(LinkUpdate update) {
         // TODO

@@ -9,11 +9,16 @@ import org.springframework.stereotype.Component;
 @Component
 @PropertySource("classpath:application.yml")
 public class DlqErrorHandler {
-    @Autowired
-    KafkaTemplate<Integer, String> template;
 
     @Value("${app1.error-topic}")
-    String topic;
+    private String topic;
+
+    private KafkaTemplate<Integer, String> template;
+
+    public DlqErrorHandler(KafkaTemplate<Integer, String> template) {
+        this.template = template;
+    }
+
 
     public void handle(String update) {
         template.send(topic, "Invalid message: " + update);

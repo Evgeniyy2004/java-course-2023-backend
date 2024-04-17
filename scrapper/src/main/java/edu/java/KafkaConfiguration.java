@@ -26,7 +26,7 @@ import org.springframework.kafka.core.ProducerFactory;
 public class KafkaConfiguration {
 
     @Value("${app1.server}")
-    String server;
+    private String server;
 
     @Bean
     ConcurrentKafkaListenerContainerFactory<Integer, String>
