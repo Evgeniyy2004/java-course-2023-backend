@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.configuration.Bot;
 import edu.java.model.LinkUpdate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -29,14 +28,14 @@ public class Listener {
     public void listen(String update) {
         try {
             LinkUpdate obj = new ObjectMapper().readValue(update, LinkUpdate.class);
-            bot.execute(new SendMessage(obj.getId(), String.format(FIRST ,obj.getUrl() )));
+            bot.execute(new SendMessage(obj.getId(), String.format(FIRST, obj.getUrl())));
         } catch (JsonProcessingException e) {
             handler.handle(update);
         }
     }
 
     public void send(LinkUpdate body) {
-        bot.execute(new SendMessage(body.getId(), String.format(FIRST ,body.getUrl())));
+        bot.execute(new SendMessage(body.getId(), String.format(FIRST, body.getUrl())));
     }
 
 }

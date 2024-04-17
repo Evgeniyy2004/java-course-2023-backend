@@ -3,8 +3,6 @@ package edu.java.configuration;
 import edu.java.botclient.UpdatesClient;
 import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
-import io.swagger.api.JdbcLinkRepository;
-import io.swagger.api.JdbcTgChatRepository;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -53,16 +51,6 @@ public class ApplicationConfig {
     public enum STRATEGY {
         CONSTANT,
         EXPONENTIAL
-    }
-
-    @Bean
-    public JdbcTgChatRepository chatrepo() {
-        return new JdbcTgChatRepository(template());
-    }
-
-    @Bean
-    public JdbcLinkRepository linkrepo() {
-        return new JdbcLinkRepository(template());
     }
 
     @Bean
