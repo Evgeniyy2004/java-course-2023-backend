@@ -9,6 +9,9 @@ import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.support.WebClientAdapter;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
@@ -16,17 +19,16 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@SpringBootTest(classes = ScrapperApplication.class)
 @WireMockTest
 @Log
 public class ClientTest {
     WireMockServer wireMockServer = new WireMockServer(WireMockConfiguration.options().port(8082).httpsPort(8443));
 
-    @Autowired
-    private StackOverflowClient client1;
+    private StackOverflowClient client1 = HttpServiceProxyFactory.builderFor(WebClientAdapter.create(WebClient.builder().baseUrl("https://api.stackexchange.com/")
+        .build())).build().createClient(StackOverflowClient.class);
 
-    @Autowired
-    private GitHubClient client;
+    private GitHubClient client = HttpServiceProxyFactory.builderFor(WebClientAdapter.create(WebClient.builder().baseUrl("https://api.github.com/")
+        .build())).build().createClient(GitHubClient.class);
 
     @org.junit.jupiter.api.Test
     @DirtiesContext
