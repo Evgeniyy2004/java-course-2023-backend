@@ -6,8 +6,6 @@ import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import java.time.Duration;
 import java.util.ArrayList;
-import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.Counter;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;

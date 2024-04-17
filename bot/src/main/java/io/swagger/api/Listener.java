@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.configuration.Bot;
 import edu.java.model.LinkUpdate;
-import io.micrometer.core.instrument.Counter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -32,7 +31,6 @@ public class Listener {
             handler.handle(update);
         }
     }
-
 
     public void send(LinkUpdate body) {
         bot.execute(new SendMessage(body.getId(), FIRST + body.getUrl() + SECOND));

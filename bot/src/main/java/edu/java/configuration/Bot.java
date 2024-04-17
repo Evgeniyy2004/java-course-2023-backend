@@ -14,7 +14,6 @@ import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -25,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import javax.annotation.Resource;
 
 @Component
 @SuppressWarnings({"ReturnCount", "CyclomaticComplexity", "RegexpSinglelineJava"})
@@ -34,13 +32,10 @@ public class Bot extends TelegramBot {
     private static final String BASESTACK = "https://stackoverflow.com/questions/";
     private static final String BASEGIT = "https://github.com/";
 
-
     private Counter counter;
-
 
     @Autowired
     private ScrapperChatClient chat;
-
 
     private static final String REGISTRY = "Для отслеживания ссылок вам необходимо зарегистрироваться.";
     private static final String INCORRECT = "Некорректные параметры запроса";
@@ -48,7 +43,6 @@ public class Bot extends TelegramBot {
     @Autowired
     private ScrapperLinksClient links;
     private static final String ALREADY = "Ссылка уже отслеживается";
-
 
     @Autowired
     private GitHubClient git;
@@ -58,7 +52,8 @@ public class Bot extends TelegramBot {
 
     public Bot(MeterRegistry registry) {
         super(System.getenv("APP_TELEGRAM_TOKEN"));
-        this.counter =  Counter.builder("processed_messages").description("Number of processed messages").register(registry);
+        this.counter =
+            Counter.builder("processed_messages").description("Number of processed messages").register(registry);
         this.setUpdatesListener(updates -> {
             for (Update update : updates) {
                 this.handle(update);
