@@ -13,6 +13,7 @@ import edu.java.scrapperclient.ScrapperLinksClient;
 import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import javax.annotation.Resource;
 
 @Component
 @SuppressWarnings({"ReturnCount", "CyclomaticComplexity", "RegexpSinglelineJava"})
@@ -32,10 +34,13 @@ public class Bot extends TelegramBot {
     private static final String BASESTACK = "https://stackoverflow.com/questions/";
     private static final String BASEGIT = "https://github.com/";
 
+
+    public Counter counter = new CompositeMeterRegistry().counter("processed_messages");
+
+
     @Autowired
     private ScrapperChatClient chat;
 
-    private final Counter counter = new CompositeMeterRegistry().counter("processed_messages");
 
     private static final String REGISTRY = "Для отслеживания ссылок вам необходимо зарегистрироваться.";
     private static final String INCORRECT = "Некорректные параметры запроса";
@@ -43,6 +48,8 @@ public class Bot extends TelegramBot {
     @Autowired
     private ScrapperLinksClient links;
     private static final String ALREADY = "Ссылка уже отслеживается";
+
+
     @Autowired
     private GitHubClient git;
 

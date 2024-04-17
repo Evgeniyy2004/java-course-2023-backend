@@ -6,12 +6,15 @@ import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import java.time.Duration;
 import java.util.ArrayList;
+import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.Counter;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
@@ -51,6 +54,13 @@ public class ClientConfiguration {
     }
 
     @Bean
+    public Counter beanCounter() {
+        var registry = new CollectorRegistry();
+        return io.prometheus.client.Counter.build().name("processed_messages").help("test").register(registry);
+    }
+
+    @Bean
+
     public ScrapperChatClient beanChat() {
         WebClient restClient = WebClient.builder().baseUrl(base).filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
@@ -67,6 +77,7 @@ public class ClientConfiguration {
     }
 
     @Bean
+    @Primary
     public GitHubClient beanGit() {
         WebClient restClient =
             WebClient.builder().baseUrl("https://api.github.com/").filter(withRetryableRequests()).build();
@@ -76,6 +87,7 @@ public class ClientConfiguration {
     }
 
     @Bean
+    @Primary
     public StackOverflowClient beanStack() {
         WebClient restClient =
             WebClient.builder().baseUrl("https://api.stackexchange.com/").filter(withRetryableRequests()).build();
