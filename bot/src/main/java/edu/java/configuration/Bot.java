@@ -35,7 +35,7 @@ public class Bot extends TelegramBot {
     private static final String BASEGIT = "https://github.com/";
 
 
-    public Counter counter = new CompositeMeterRegistry().counter("processed_messages");
+    private Counter counter;
 
 
     @Autowired
@@ -56,8 +56,9 @@ public class Bot extends TelegramBot {
     @Autowired
     private StackOverflowClient stack;
 
-    public Bot() {
+    public Bot(MeterRegistry registry) {
         super(System.getenv("APP_TELEGRAM_TOKEN"));
+        this.counter =  Counter.builder("processed_messages").description("Number of processed messages").register(registry);
         this.setUpdatesListener(updates -> {
             for (Update update : updates) {
                 this.handle(update);
@@ -98,6 +99,7 @@ public class Bot extends TelegramBot {
                 text = "Вы успешно зарегистрировались";
             }
             res = new SendMessage(id, text);
+            counter.increment();
             this.execute(res);
             return;
         }
@@ -108,6 +110,7 @@ public class Bot extends TelegramBot {
             text = "Команда не распознана."
                 + "Введите /help, чтобы ознакомиться с допустимыми командами.";
             res = new SendMessage(update.message().chat().id(), text);
+            counter.increment();
             this.execute(res);
         } else {
             if (pattern1.matcher(command).find()) {
@@ -127,12 +130,14 @@ public class Bot extends TelegramBot {
                     }
                 }
                 res = new SendMessage(update.message().chat().id(), text);
+                counter.increment();
                 this.execute(res);
 
             } else {
                 if (pattern3.matcher(command).find()) {
                     var link = Arrays.stream(command.split("/track| ")).filter(r -> !r.equals("")).toArray();
                     if (link.length == 0) {
+
                         incorrect(id);
                     } else {
                         check(update.message().chat().id(), link[0].toString());
@@ -148,12 +153,15 @@ public class Bot extends TelegramBot {
                     var done = links.delete(id, req);
                     if (done.getStatusCode() == HttpStatus.NOT_FOUND) {
                         text = REGISTRY;
+                        counter.increment();
                         this.execute(new SendMessage(id, text));
                     } else if (done.getStatusCode() == HttpStatus.CONFLICT) {
                         text = "Ссылка не отслеживается.";
+                        counter.increment();
                         this.execute(new SendMessage(id, text));
                     } else {
                         text = "Ссылка удалена.";
+                        counter.increment();
                         this.execute(new SendMessage(id, text));
                     }
                 }
@@ -186,6 +194,7 @@ public class Bot extends TelegramBot {
                     .split("/")).filter(r -> !r.equals("")).toArray();
                 if (userrepo.length < 2) {
                     text = INCORRECT;
+                    counter.increment();
                     this.execute(new SendMessage(id, text));
                     return;
                 }
@@ -202,18 +211,22 @@ public class Bot extends TelegramBot {
                     var done = links.post(id, req);
                     if (done.getStatusCode() == HttpStatus.NOT_FOUND) {
                         text = REGISTRY;
+                        counter.increment();
                         this.execute(new SendMessage(id, text));
                     }
                     if (done.getStatusCode() == HttpStatus.CONFLICT) {
                         text = ALREADY;
+                        counter.increment();
                         this.execute(new SendMessage(id, text));
                     }
                     if (done.getStatusCode() == HttpStatus.OK) {
                         text = success;
+                        counter.increment();
                         this.execute(new SendMessage(id, text));
                     }
                 } catch (WebClientResponseException e) {
                     text = "Недостаточно прав для доступа";
+                    counter.increment();
                     this.execute(new SendMessage(id, text));
                 }
                 return;
@@ -223,6 +236,7 @@ public class Bot extends TelegramBot {
                 .split("/")).filter(r -> !r.equals("")).toArray();
             if (question.length == 0) {
                 text = INCORRECT;
+                counter.increment();
                 this.execute(new SendMessage(id, text));
                 return;
             }
@@ -241,11 +255,13 @@ public class Bot extends TelegramBot {
                 } else {
                     text = success;
                 }
+                counter.increment();
                 this.execute(new SendMessage(id, text));
             }
 
         } catch (URISyntaxException e) {
             var text = INCORRECT;
+            counter.increment();
             this.execute(new SendMessage(id, text));
         }
 
@@ -253,6 +269,7 @@ public class Bot extends TelegramBot {
 
     public void incorrect(Long id) {
         var text = INCORRECT;
+        counter.increment();
         this.execute(new SendMessage(id, text));
     }
 }

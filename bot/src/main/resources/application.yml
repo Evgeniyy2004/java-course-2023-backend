@@ -33,9 +33,9 @@ management:
     web:
       base-path: /
       exposure:
-        include: prometheus,health,info,metric
+        include: prometheus,health,info,metrics
   server:
-    port: 8081
+    port: 51270
 
 
 

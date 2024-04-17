@@ -2,6 +2,7 @@ package io.swagger.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.java.model.LinkUpdate;
+import io.micrometer.core.instrument.Counter;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,6 +29,7 @@ public class UpdatesApiController implements UpdatesApi {
 
     @Autowired
     Listener listener;
+
 
     @org.springframework.beans.factory.annotation.Autowired
     public UpdatesApiController(ObjectMapper objectMapper) {

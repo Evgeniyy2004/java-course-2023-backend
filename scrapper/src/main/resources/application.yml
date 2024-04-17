@@ -16,7 +16,6 @@ management:
           ${spring.application.name}
   endpoints:
     web:
-      base-path: /
       exposure:
         include: prometheus,health,info
   server:
