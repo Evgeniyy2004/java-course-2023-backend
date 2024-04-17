@@ -29,7 +29,6 @@ public class UpdatesApiController implements UpdatesApi {
     @Autowired
     Listener listener;
 
-
     @org.springframework.beans.factory.annotation.Autowired
     public UpdatesApiController(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;

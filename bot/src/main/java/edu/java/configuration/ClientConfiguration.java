@@ -54,12 +54,6 @@ public class ClientConfiguration {
     }
 
     @Bean
-    public Counter beanCounter() {
-        var registry = new CollectorRegistry();
-        return io.prometheus.client.Counter.build().name("processed_messages").help("test").register(registry);
-    }
-
-    @Bean
 
     public ScrapperChatClient beanChat() {
         WebClient restClient = WebClient.builder().baseUrl(base).filter(withRetryableRequests()).build();
