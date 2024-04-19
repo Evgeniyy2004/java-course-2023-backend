@@ -11,6 +11,8 @@ public class DlqErrorHandler {
 
     private final KafkaTemplate<Integer, String> template;
 
+
+
     @Value("${app1.error-topic}")
     private String topic;
 

@@ -8,13 +8,14 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class ScrapperQueueProducer {
 
-    @Autowired
-    private KafkaTemplate<Integer, String> template;
 
+    private final KafkaTemplate<Integer, String> template;
 
+    public ScrapperQueueProducer(KafkaTemplate<Integer, String> template) {
+        this.template = template;
+    }
 
 
     public void send(LinkUpdate update) {
