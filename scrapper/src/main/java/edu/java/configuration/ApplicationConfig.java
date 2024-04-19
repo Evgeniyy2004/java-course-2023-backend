@@ -3,8 +3,6 @@ package edu.java.configuration;
 import edu.java.botclient.UpdatesClient;
 import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
-import io.swagger.api.JdbcLinkRepository;
-import io.swagger.api.JdbcTgChatRepository;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -15,7 +13,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -51,24 +48,11 @@ public class ApplicationConfig {
     private static boolean useQueue;
 
     @Value("${app.strategy}")
-    public  STRATEGY strategy;
+    public STRATEGY strategy;
 
     public enum STRATEGY {
         CONSTANT,
         EXPONENTIAL
-    }
-
-
-    @Bean
-    @Primary
-    public JdbcTgChatRepository chatrepo1() {
-        return new JdbcTgChatRepository(template());
-    }
-
-    @Bean
-    @Primary
-    public JdbcLinkRepository linkrepo1() {
-        return new JdbcLinkRepository(template());
     }
 
     @Bean

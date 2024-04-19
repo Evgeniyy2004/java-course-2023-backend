@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -21,14 +20,13 @@ public class UpdatesApiController implements UpdatesApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(UpdatesApiController.class);
 
-    @Autowired
     private final ObjectMapper objectMapper;
 
-    @Autowired
-    Listener listener;
+    private final Listener listener;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public UpdatesApiController(ObjectMapper objectMapper) {
+    public UpdatesApiController(ObjectMapper objectMapper, Listener listener) {
+        this.listener = listener;
         this.objectMapper = objectMapper;
     }
 

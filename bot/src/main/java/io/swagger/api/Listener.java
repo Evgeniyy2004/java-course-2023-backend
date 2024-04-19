@@ -13,11 +13,18 @@ import org.springframework.stereotype.Service;
 @Service
 @PropertySource("classpath:application.yml")
 public class Listener {
-    @Autowired
-    Bot bot;
+
+    private final Bot bot;
+
+
+    private final DlqErrorHandler handler;
+
 
     @Autowired
-    DlqErrorHandler handler;
+    public Listener(Bot bot, DlqErrorHandler handler) {
+        this.bot = bot;
+        this.handler = handler;
+    }
 
     private static final String FIRST = "По ссылке ";
     private static final String SECOND = "появилось обновление";
