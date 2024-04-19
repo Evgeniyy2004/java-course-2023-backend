@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 public class JdbcTgChatRepository {
     private static final String QUERY = "select * from id where id=?";
 
-
     private final JdbcTemplate jdbcTemplate;
 
 

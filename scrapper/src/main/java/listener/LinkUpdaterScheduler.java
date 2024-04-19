@@ -14,14 +14,18 @@ import org.springframework.stereotype.Service;
 @EnableScheduling
 public class LinkUpdaterScheduler {
 
-    @Autowired
-    UpdatesClient client;
+    private final UpdatesClient client;
+
+    private final ScrapperQueueProducer queue;
+
+    private final LinkRepository repo;
 
     @Autowired
-    ScrapperQueueProducer queue;
-
-    @Autowired
-    LinkRepository repo;
+    public LinkUpdaterScheduler(UpdatesClient client, ScrapperQueueProducer queue, LinkRepository repo) {
+        this.repo = repo;
+        this.queue = queue;
+        this.client = client;
+    }
 
     @Scheduled(fixedDelayString = "86400s")
     public void update() {

@@ -17,7 +17,6 @@ import java.time.Duration;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,17 +31,17 @@ public class LinksApiController implements LinksApi {
     private static final Logger LOG = LoggerFactory.getLogger(LinksApiController.class);
 
     private static final int NOT_FOUND = 404;
-    @Autowired
-    private JdbcLinkService linkService;
 
-    @Autowired
+    private final JdbcLinkService linkService;
+
     private final ObjectMapper objectMapper;
     private final Bucket bucket;
 
     private static final int ERROR = 404;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public LinksApiController(ObjectMapper objectMapper) {
+    public LinksApiController(ObjectMapper objectMapper, JdbcLinkService service) {
+        this.linkService = service;
         this.objectMapper = objectMapper;
         Bandwidth limit =
             Bandwidth.classic(2 * 2 * 2 * 2 + 2 * 2, Refill.greedy(2 * 2 * 2 * 2 + 2 * 2, Duration.ofMinutes(1)));

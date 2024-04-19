@@ -3,6 +3,8 @@ package edu.java.configuration;
 import edu.java.botclient.UpdatesClient;
 import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
+import io.swagger.api.JdbcLinkRepository;
+import io.swagger.api.JdbcTgChatRepository;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -18,6 +20,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -54,7 +57,7 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public StackOverflowClient beanStack() {
+    public StackOverflowClient beanStack1() {
         WebClient restClient =
             WebClient.builder().baseUrl("https://api.stackexchange.com/").filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
@@ -64,7 +67,7 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public GitHubClient beanGit() {
+    public GitHubClient beanGit1() {
         WebClient restClient =
             WebClient.builder().baseUrl("https://api.github.com/").filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);

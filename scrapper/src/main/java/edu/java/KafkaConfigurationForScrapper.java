@@ -23,14 +23,14 @@ import org.springframework.kafka.core.ProducerFactory;
 @Configuration
 @EnableKafka
 @ConfigurationProperties(prefix = "app1", ignoreUnknownFields = false)
-public class KafkaConfiguration {
+public class KafkaConfigurationForScrapper {
 
     @Value("${app1.server}")
     private String server;
 
     @Bean
     ConcurrentKafkaListenerContainerFactory<Integer, String>
-    kafkaListenerContainerFactory(ConsumerFactory<Integer, String> consumerFactory) {
+    kafkaListenerContainerFactory1(ConsumerFactory<Integer, String> consumerFactory) {
         ConcurrentKafkaListenerContainerFactory<Integer, String> factory =
             new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
@@ -38,7 +38,7 @@ public class KafkaConfiguration {
     }
 
     @Bean
-    public ConsumerFactory<Integer, String> consumerFactory() {
+    public ConsumerFactory<Integer, String> consumerFactory1() {
         return new DefaultKafkaConsumerFactory<>(consumerProps());
     }
 
@@ -54,7 +54,7 @@ public class KafkaConfiguration {
     }
 
     @Bean
-    public ProducerFactory<Integer, String> producerFactory() {
+    public ProducerFactory<Integer, String> producerFactory1() {
         return new DefaultKafkaProducerFactory<>(senderProps());
     }
 
@@ -69,7 +69,7 @@ public class KafkaConfiguration {
     }
 
     @Bean
-    public KafkaTemplate<Integer, String> kafkaTemplate(ProducerFactory<Integer, String> producerFactory) {
+    public KafkaTemplate<Integer, String> kafkaTemplate1(ProducerFactory<Integer, String> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
 

@@ -1,8 +1,5 @@
 package edu.java.configuration;
 
-import com.pengrad.telegrambot.UpdatesListener;
-import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.request.GetUpdates;
 import edu.java.scrapperclient.ScrapperChatClient;
 import edu.java.scrapperclient.ScrapperLinksClient;
 import edu.java.siteclients.GitHubClient;
@@ -15,6 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
@@ -53,9 +51,8 @@ public class ClientConfiguration {
         EXPONENTIAL
     }
 
-
-
     @Bean
+
     public ScrapperChatClient beanChat() {
         WebClient restClient = WebClient.builder().baseUrl(base).filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
@@ -72,6 +69,7 @@ public class ClientConfiguration {
     }
 
     @Bean
+    @Primary
     public GitHubClient beanGit() {
         WebClient restClient =
             WebClient.builder().baseUrl("https://api.github.com/").filter(withRetryableRequests()).build();
@@ -81,6 +79,7 @@ public class ClientConfiguration {
     }
 
     @Bean
+    @Primary
     public StackOverflowClient beanStack() {
         WebClient restClient =
             WebClient.builder().baseUrl("https://api.stackexchange.com/").filter(withRetryableRequests()).build();
@@ -119,28 +118,6 @@ public class ClientConfiguration {
         return (Retry.fixedDelay(2 + 1, Duration.ofSeconds(2 + 2 + 1)))
             .filter(throwable -> throwable instanceof WebClientResponseException)
             .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> retrySignal.failure());
-    }
-
-    @Bean
-    public Bot makeBot() {
-        var conf = new ApplicationConfig(token);
-        var bot = new Bot(conf);
-        bot.setUpdatesListener(updates -> {
-            for (Update update : updates) {
-                bot.handle(update);
-            }
-            return UpdatesListener.CONFIRMED_UPDATES_ALL;
-        }, e -> {
-            if (e.response() != null) {
-                // god bad response from telegram
-                e.response().errorCode();
-                e.response().description();
-            } else {
-                // probably network error
-                e.printStackTrace();
-            }
-        }, new GetUpdates().limit(2 * 2 * 2 * 2 * 2 * 2 + 2 * 2 * 2 * 2 * 2 + 2 * 2).offset(0).timeout(0));
-        return bot;
     }
 
 }

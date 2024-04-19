@@ -1,5 +1,6 @@
 package io.swagger.api;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -9,10 +10,10 @@ import org.springframework.stereotype.Component;
 @PropertySource("classpath:application.yml")
 public class DlqErrorHandler {
 
+    private final KafkaTemplate<Integer, String> template;
+
     @Value("${app1.error-topic}")
     private String topic;
-
-    private final KafkaTemplate<Integer, String> template;
 
     public DlqErrorHandler(KafkaTemplate<Integer, String> template) {
         this.template = template;

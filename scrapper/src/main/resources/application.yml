@@ -1,15 +1,27 @@
 spring:
   application:
     name: scrapper
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5433/scrapper
     username: postgres
     password: postgres
-
-
   liquibase:
     enabled: false
+management:
+  metrics:
+      tags:
+        application:
+          ${spring.application.name}
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info
+  server:
+    port: 53518
+
+
 app:
   codes: 429, 503
   strategy: CONSTANT
