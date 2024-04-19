@@ -14,7 +14,6 @@ jobs:
     permissions:
       packages: write
       pull-requests: write
-
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -25,7 +24,8 @@ jobs:
 
       - name: maven build
         run: mvn -pl bot -am package
-
+      - name: docker
+        run: docker build -t 5e7dfcdd623d
       - id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
         if: ( github.event_name != 'workflow_dispatch' )
@@ -36,7 +36,6 @@ jobs:
           min-coverage-changed-files: 30
           title: Code Coverage
           update-comment: true
-
   checkstyle:
     name: checkstyle
     runs-on: ubuntu-latest
