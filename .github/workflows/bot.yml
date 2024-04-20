@@ -25,9 +25,8 @@ jobs:
 
       - name: maven build
         run: mvn -pl bot -am package
-      - name: come
-        run: cd ...
       - name: create
+        working-directory: ...
         run: docker build -f  /bot/Dockerfile .
       - id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
