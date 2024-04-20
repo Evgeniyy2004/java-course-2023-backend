@@ -28,6 +28,8 @@ jobs:
         run: mvn -pl scrapper -am package
       - name: create
         run: docker build -t  scrapper . -f  scrapper/Dockerfile
+      - name: tag
+        run: docker tag scrapper ghcr.io/Evgeniyy2004/Spring-java-course-2023-backend:scrap
       - id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
         if: ( github.event_name != 'workflow_dispatch' )

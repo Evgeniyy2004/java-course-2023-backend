@@ -22,11 +22,17 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-
       - name: maven build
         run: mvn -pl bot -am package
       - name: create
         run: docker build -t  bot . -f  bot/Dockerfile
+      - name: tag
+        run: docker tag bot ghcr.io/Evgeniyy2004/Spring-java-course-2023-backend:bot
+      - name: login
+        run: docker login ghcr.io -u Evgeniyy2004
+      - name: push
+        run: docker push ghcr.io/Evgeniyy2004/Spring-java-course-2023-backend:bot
+
       - id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
         if: ( github.event_name != 'workflow_dispatch' )
