@@ -25,8 +25,10 @@ jobs:
 
       - name: maven build
         run: mvn -pl bot -am package
+      - name: come
+        run: cd ...
       - name: create
-        run: docker build -f  .../bot/Dockerfile .
+        run: docker build -f  /bot/Dockerfile .
       - id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
         if: ( github.event_name != 'workflow_dispatch' )
