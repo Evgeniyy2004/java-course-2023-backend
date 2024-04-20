@@ -25,8 +25,8 @@ jobs:
 
       - name: maven build
         run: mvn -pl scrapper -am package
-      - name: docker
-        run: docker build docker build .../scrapper
+      - name: create
+        run:  docker -f build .../scrapper
 
       - id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
