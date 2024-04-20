@@ -27,11 +27,11 @@ jobs:
       - name: create
         run: docker build -t  bot . -f  bot/Dockerfile
       - name: tag
-        run: docker tag bot ghcr.io/Evgeniyy2004/spring-java-course-2023-backend:bot
+        run: docker tag bot ghcr.io/evgeniyy2004/spring-java-course-2023-backend:bot
       - name: login
-        run: docker login ghcr.io -u Evgeniyy2004
+        run: docker login ghcr.io -u evgeniyy2004
       - name: push
-        run: docker push ghcr.io/Evgeniyy2004/spring-java-course-2023-backend:bot
+        run: docker push ghcr.io/evgeniyy2004/spring-java-course-2023-backend:bot
 
       - id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
