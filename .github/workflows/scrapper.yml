@@ -27,9 +27,7 @@ jobs:
       - name: maven build
         run: mvn -pl scrapper -am package
       - name: create
-        run: docker build -f  scrapper/Dockerfile .
-      - name: publish
-        run:
+        run: docker build -t  scrapper . -f  scrapper/Dockerfile
       - id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
         if: ( github.event_name != 'workflow_dispatch' )
