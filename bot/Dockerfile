@@ -1,5 +1,5 @@
 FROM openjdk:21-jdk-slim
-COPY target t
+COPY target .
 ENV APP_TELEGRAM_TOKEN ${APP_TELEGRAM_TOKEN}
 COPY target/bot.jar bot.jar
 ENTRYPOINT ["java","-jar","bot.jar"]
