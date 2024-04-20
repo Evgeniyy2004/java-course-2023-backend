@@ -1,3 +1,4 @@
 FROM openjdk:21-jdk-slim
+WORKDIR .
 COPY target/scrapper.jar scrapper.jar
 ENTRYPOINT ["java","-jar","scrapper.jar"]
