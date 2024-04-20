@@ -25,11 +25,15 @@ jobs:
 
 
       - name: maven build
-        run: mvn -pl scrapper -am package
+        run: mvn -pl bot -am package
       - name: create
-        run: docker build -t  scrapper . -f  scrapper/Dockerfile
+        run: docker build -t  scrapper . -f  bot/Dockerfile
       - name: tag
-        run: docker tag scrapper ghcr.io/Evgeniyy2004/Spring-java-course-2023-backend:scrap
+        run: docker tag scrapper ghcr.io/evgeniyy2004/spring-java-course-2023-backend:scrap
+      - name: login
+        run: docker login ghcr.io -u Evgeniyy2004 -p ${{ secrets.GITHUB_TOKEN }}
+      - name: push
+        run: docker push ghcr.io/evgeniyy2004/spring-java-course-2023-backend:scrap
       - id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
         if: ( github.event_name != 'workflow_dispatch' )
