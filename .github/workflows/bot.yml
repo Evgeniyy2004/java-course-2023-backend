@@ -29,7 +29,7 @@ jobs:
       - name: tag
         run: docker tag bot ghcr.io/evgeniyy2004/spring-java-course-2023-backend:bot
       - name: login
-        run: docker login ghcr.io -u Evgeniyy2004 --password-stdin
+        run: docker login ghcr.io -u Evgeniyy2004 -p ${{ secrets.GITHUB_TOKEN }}
       - name: push
         run: docker push ghcr.io/evgeniyy2004/spring-java-course-2023-backend:bot
 
