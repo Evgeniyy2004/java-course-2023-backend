@@ -27,7 +27,7 @@ jobs:
       - name: maven build
         run: mvn -pl bot -am package
       - name: create
-        run: docker build -t  scrapper . -f  bot/Dockerfile
+        run: docker build -t  scrapper . -f  scrapper/Dockerfile
       - name: tag
         run: docker tag scrapper ghcr.io/evgeniyy2004/spring-java-course-2023-backend:scrap
       - name: login
