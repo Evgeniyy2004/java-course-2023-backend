@@ -41,6 +41,7 @@ public class LinksApiController implements LinksApi {
         this.request = request;
     }
 
+
     @SuppressWarnings("MultipleStringLiterals")
     public ResponseEntity<LinkResponse> linksDelete(
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
