@@ -26,6 +26,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LinksApiController implements LinksApi {
 
+    public enum AccessType {
+        JDBC, JPA,
+    }
     private static final Logger LOG = LoggerFactory.getLogger(LinksApiController.class);
 
     private static final int NOT_FOUND = 404;

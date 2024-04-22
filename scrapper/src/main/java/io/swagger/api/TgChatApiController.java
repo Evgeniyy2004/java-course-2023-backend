@@ -19,21 +19,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Validated
-public class
-TgChatApiController implements TgChatApi {
+public class TgChatApiController implements TgChatApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(TgChatApiController.class);
 
     private static final String HEADER = "Accept";
 
-    @Autowired
+
     private ObjectMapper objectMapper;
 
-    @Autowired
     private HttpServletRequest request;
 
-    @Autowired
+
     private JdbcTgChatService chatService;
+
+    public enum AccessType {
+        JDBC, JPA,
+    }
 
     @org.springframework.beans.factory.annotation.Autowired
     public TgChatApiController(ObjectMapper objectMapper, HttpServletRequest request) {
