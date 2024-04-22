@@ -6,13 +6,13 @@ import org.springframework.web.service.annotation.DeleteExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 
-@HttpExchange("/tg-chat/{id}")
+@HttpExchange("tg-chat/{id}")
 public interface ScrapperChatClient {
 
     @PostExchange
     ResponseEntity post(@PathVariable("id") Long id);
 
     @DeleteExchange
-    ResponseEntity delete(@PathVariable Long id);
+    ResponseEntity<?> delete(@PathVariable Long id);
 
 }

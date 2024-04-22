@@ -1,8 +1,10 @@
 package listener;
 
 import edu.java.botclient.UpdatesClient;
+import edu.java.configuration.ApplicationConfig;
 import edu.java.model.LinkUpdate;
 import io.swagger.api.LinkRepository;
+import io.swagger.api.ScrapperQueueProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -12,11 +14,18 @@ import org.springframework.stereotype.Service;
 @EnableScheduling
 public class LinkUpdaterScheduler {
 
-    @Autowired
-    UpdatesClient client;
+    private final UpdatesClient client;
+
+    private final ScrapperQueueProducer queue;
+
+    private final LinkRepository repo;
 
     @Autowired
-    LinkRepository repo;
+    public LinkUpdaterScheduler(UpdatesClient client, ScrapperQueueProducer queue, LinkRepository repo) {
+        this.repo = repo;
+        this.queue = queue;
+        this.client = client;
+    }
 
     @Scheduled(fixedDelayString = "86400s")
     public void update() {
@@ -26,7 +35,11 @@ public class LinkUpdaterScheduler {
             request.setId(id);
             for (String url : allChanges.get(id)) {
                 request.setUrl(url);
-                client.post(request);
+                if (ApplicationConfig.isUseQueue()) {
+                    queue.send(request);
+                } else {
+                    client.post(request);
+                }
             }
         }
     }

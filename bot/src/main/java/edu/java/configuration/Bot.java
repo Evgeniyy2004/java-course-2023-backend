@@ -1,75 +1,100 @@
 package edu.java.configuration;
 
 import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.GetUpdates;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.model.AddLinkRequest;
 import edu.java.model.LinkResponse;
-import edu.java.model.ListLinksResponse;
 import edu.java.model.RemoveLinkRequest;
 import edu.java.scrapperclient.ScrapperChatClient;
 import edu.java.scrapperclient.ScrapperLinksClient;
 import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-@EnableConfigurationProperties({ApplicationConfig.class})
+@Component
 @SuppressWarnings({"ReturnCount", "CyclomaticComplexity", "RegexpSinglelineJava"})
 public class Bot extends TelegramBot {
 
     private static final String BASESTACK = "https://stackoverflow.com/questions/";
     private static final String BASEGIT = "https://github.com/";
 
+    private Counter counter;
+
     @Autowired
     private ScrapperChatClient chat;
 
     private static final String REGISTRY = "Для отслеживания ссылок вам необходимо зарегистрироваться.";
     private static final String INCORRECT = "Некорректные параметры запроса";
+
     @Autowired
     private ScrapperLinksClient links;
     private static final String ALREADY = "Ссылка уже отслеживается";
+
     @Autowired
     private GitHubClient git;
 
     @Autowired
     private StackOverflowClient stack;
 
-    public Bot(ApplicationConfig app) {
-        super(app.telegramToken());
+    public Bot(MeterRegistry registry) {
+        super(System.getenv("APP_TELEGRAM_TOKEN"));
+        this.counter =
+            Counter.builder("processed_messages").description("Number of processed messages").register(registry);
+        this.setUpdatesListener(updates -> {
+            for (Update update : updates) {
+                this.handle(update);
+            }
+            return UpdatesListener.CONFIRMED_UPDATES_ALL;
+        }, e -> {
+            if (e.response() != null) {
+                // god bad response from telegram
+                e.response().errorCode();
+                e.response().description();
+            } else {
+                // probably network error
+                e.printStackTrace();
+            }
+        }, new GetUpdates().limit(2 * 2 * 2 * 2 * 2 * 2 + 2 * 2 * 2 * 2 * 2 + 2 * 2).offset(0).timeout(0));
     }
 
     public void handle(Update update) {
         var command = update.message().text();
         var id = update.message().chat().id();
-        Pattern pattern1 = Pattern.compile("( *)(/list)( *)");
-        Pattern pattern2 = Pattern.compile("( *)(/start)( *)");
-        Pattern pattern3 = Pattern.compile("( *)(/track)( *)(.*)");
-        Pattern pattern4 = Pattern.compile("( *)(/untrack)( *)(.*)");
-        Pattern pattern5 = Pattern.compile("( *)(/help)( *)");
+        Pattern pattern1 = Pattern.compile("(\\s*)(/list)(\\s*)");
+        Pattern pattern2 = Pattern.compile("(\\s*)(/start)(\\s*)");
+        Pattern pattern3 = Pattern.compile("(\\s*)(/track\\s+)(.*)");
+        Pattern pattern4 = Pattern.compile("(\\s*)(/untrack\\s+)(.*)");
+        Pattern pattern5 = Pattern.compile("(\\s*)(/help)(\\s*)");
         var res = new SendMessage(update.message().chat().id(), "");
-        String text="";
+        String text;
         if (pattern5.matcher(command).find()) {
             res = new SendMessage(update.message().chat().id(), help());
             this.execute(res);
+            counter.increment();
             return;
         } else if (pattern2.matcher(command).find()) {
-            try {
-                var entity = chat.post(update.message().chat().id());
+            var entity = chat.post(update.message().chat().id());
+            if (entity.getStatusCode() == HttpStatus.CONFLICT) {
+                text = "Вы не можете быть зарегистрированы повторно";
+            } else {
                 text = "Вы успешно зарегистрировались";
-            } catch (WebClientResponseException e) {
-                if (e.getStatusCode() == HttpStatus.CONFLICT) {
-                    text = "Вы не можете быть зарегистрированы повторно";
-                } else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
-                    text = "Непредвиденная ошибка. Повторите попытку позднее";
-                }
             }
-            res = new SendMessage(update.message().chat().id(), text);
+            res = new SendMessage(id, text);
+            counter.increment();
             this.execute(res);
             return;
         }

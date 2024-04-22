@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface LinkRepository {
     void save(Long id, String link) throws ApiException;
 
+
     void remove(Long id, String link) throws ApiException;
 
     Collection<URI> findAll(Long id) throws ApiException;
