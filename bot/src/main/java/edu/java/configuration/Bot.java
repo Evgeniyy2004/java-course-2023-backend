@@ -8,6 +8,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.model.AddLinkRequest;
 import edu.java.model.LinkResponse;
 import edu.java.model.RemoveLinkRequest;
+import edu.java.model.ListLinksResponse;
 import edu.java.scrapperclient.ScrapperChatClient;
 import edu.java.scrapperclient.ScrapperLinksClient;
 import edu.java.siteclients.GitHubClient;
