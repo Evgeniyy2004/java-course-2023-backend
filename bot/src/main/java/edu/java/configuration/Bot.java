@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+
+
 @Component
 @SuppressWarnings({"ReturnCount", "CyclomaticComplexity", "RegexpSinglelineJava"})
 public class Bot extends TelegramBot {
