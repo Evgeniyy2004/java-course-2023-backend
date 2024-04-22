@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @EnableConfigurationProperties({ApplicationConfig.class})
 @SuppressWarnings({"ReturnCount", "CyclomaticComplexity", "RegexpSinglelineJava"})
@@ -24,7 +25,6 @@ public class Bot extends TelegramBot {
 
     private static final String BASESTACK = "https://stackoverflow.com/questions/";
     private static final String BASEGIT = "https://github.com/";
-
 
     @Autowired
     private ScrapperChatClient chat;
@@ -49,23 +49,27 @@ public class Bot extends TelegramBot {
         var id = update.message().chat().id();
         Pattern pattern1 = Pattern.compile("( *)(/list)( *)");
         Pattern pattern2 = Pattern.compile("( *)(/start)( *)");
-        Pattern pattern3 = Pattern.compile("( *)(/track)(.*)");
-        Pattern pattern4 = Pattern.compile("( *)(/untrack)(.*)");
+        Pattern pattern3 = Pattern.compile("( *)(/track)( *)(.*)");
+        Pattern pattern4 = Pattern.compile("( *)(/untrack)( *)(.*)");
         Pattern pattern5 = Pattern.compile("( *)(/help)( *)");
         var res = new SendMessage(update.message().chat().id(), "");
-        String text;
+        String text="";
         if (pattern5.matcher(command).find()) {
             res = new SendMessage(update.message().chat().id(), help());
             this.execute(res);
             return;
         } else if (pattern2.matcher(command).find()) {
-            var entity = chat.post(update.message().chat().id());
-            if (entity.getStatusCode() == HttpStatus.CONFLICT) {
-                text = "Вы не можете быть зарегистрированы повторно";
-            } else {
+            try {
+                var entity = chat.post(update.message().chat().id());
                 text = "Вы успешно зарегистрировались";
+            } catch (WebClientResponseException e) {
+                if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                    text = "Вы не можете быть зарегистрированы повторно";
+                } else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+                    text = "Непредвиденная ошибка. Повторите попытку позднее";
+                }
             }
-            res = new SendMessage(id, text);
+            res = new SendMessage(update.message().chat().id(), text);
             this.execute(res);
             return;
         }
