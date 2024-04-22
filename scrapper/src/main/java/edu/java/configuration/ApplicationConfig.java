@@ -30,6 +30,7 @@ import reactor.util.retry.RetryBackoffSpec;
 
 @ComponentScan
 @Configuration
+@ComponentScan({"io.swagger.api"})
 @PropertySource("classpath:application.yml")
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
 public class ApplicationConfig {
@@ -46,15 +47,6 @@ public class ApplicationConfig {
         EXPONENTIAL
     }
 
-    @Bean
-    public JdbcTgChatRepository chatrepo() {
-        return new JdbcTgChatRepository(template());
-    }
-
-    @Bean
-    public JdbcLinkRepository linkrepo() {
-        return new JdbcLinkRepository(template());
-    }
 
     @Bean
     public StackOverflowClient beanStack() {
