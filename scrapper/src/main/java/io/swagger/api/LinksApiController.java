@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen",
                             date = "2024-02-27T16:17:37.541889551Z[GMT]")
 @PropertySource("classpath:application.yml")
-@ConditionalOnProperty(prefix="use")
+@ConfigurationProperties(prefix="use")
 @RestController
 public class LinksApiController implements LinksApi {
 
@@ -37,7 +38,7 @@ public class LinksApiController implements LinksApi {
         JDBC, JPA,
     }
 
-    @Value("${type}")
+    @Value("${use.type}")
     private AccessType type;
     private static final Logger LOG = LoggerFactory.getLogger(LinksApiController.class);
 
