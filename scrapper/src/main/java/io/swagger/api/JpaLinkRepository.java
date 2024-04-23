@@ -1,30 +1,25 @@
 package io.swagger.api;
 
-import edu.java.model.AddLinkRequest;
 import edu.java.model.ApiException;
-import edu.java.model.RemoveLinkRequest;
 import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
-import org.springframework.stereotype.Repository;
 import java.net.URI;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
+import jakarta.persistence.Table;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
+@Table(name="id")
+@Table
 @Repository
-public class JpaLinkRepository implements LinkRepository{
+public class JpaLinkRepository implements LinkRepository {
 
     @PersistenceContext
     private EntityManager manager;
-
 
     @Autowired
     private GitHubClient git;
@@ -47,16 +42,13 @@ public class JpaLinkRepository implements LinkRepository{
 
     }
 
-
     public void remove(Long id, String link) throws ApiException {
 
     }
 
-
     public Collection<URI> findAll(Long id) throws ApiException {
         return null;
     }
-
 
     public HashMap<Long, Collection<String>> update() {
         return null;
