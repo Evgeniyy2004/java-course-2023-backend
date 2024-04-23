@@ -9,12 +9,13 @@ import java.net.URI;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
+import jakarta.persistence.SecondaryTable;
 import jakarta.persistence.Table;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Table(name="id")
-@Table
+@SecondaryTable(name="connect")
 @Repository
 public class JpaLinkRepository implements LinkRepository {
 
@@ -29,21 +30,45 @@ public class JpaLinkRepository implements LinkRepository {
 
     public void save(Long id, String link) throws ApiException {
         var q = manager.createQuery("SELECT distinct FROM id WHERE id=:id");
-        if (first.length == 0) {
+        q.setParameter("id",id);
+        var first = q.getResultList();
+        if (first.isEmpty()) {
             throw new ApiException(404, "Чат не существует");
         }
         var time = new Timestamp(System.currentTimeMillis());
-        var check = jdbcTemplate.queryForList("select id from connect where link=? and id=?", link, id).toArray();
-        if (check.length > 0) {
-            throw new ApiException(400, "Ссылка уже добавлена");
+        var check = manager.createQuery("select * from connect where link=:link and id=:id");
+        check.setParameter("id",id);
+        check.setParameter("link",link);
+        var two = check.getResultList();
+        if (!two.isEmpty()) {
+            throw new ApiException(409, "Ссылка уже добавлена");
         }
-        var action = "insert into connect  values (?, ?, ?)";
-        jdbcTemplate.update(action, link, id, time);
+        var action = manager.createQuery( "insert into connect  values (?, ?, ?)");
+        action.setParameter(1,link);
+        action.setParameter(2,id);
+        action.setParameter(3,time);
+        action.executeUpdate();
 
     }
 
     public void remove(Long id, String link) throws ApiException {
-
+        var q = manager.createQuery("SELECT distinct FROM id WHERE id=:id");
+        q.setParameter("id",id);
+        var first = q.getResultList();
+        if (first.isEmpty()) {
+            throw new ApiException(404, "Чат не существует");
+        }
+        var check = manager.createQuery("select * from connect where link=:link and id=:id");
+        check.setParameter("id",id);
+        check.setParameter("link",link);
+        var two = check.getResultList();
+        if (two.isEmpty()) {
+            throw new ApiException(409, "Ссылка не отслеживается");
+        }
+        var action = manager.createQuery( "delete from  connect  where id =? and link=?");
+        action.setParameter(1,id);
+        action.setParameter(2,link);
+        action.executeUpdate();
     }
 
     public Collection<URI> findAll(Long id) throws ApiException {
