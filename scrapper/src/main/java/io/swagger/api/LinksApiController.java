@@ -75,6 +75,7 @@ public class LinksApiController implements LinksApi {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+
     public ResponseEntity<ListLinksResponse> linksGet(
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
         @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId
