@@ -7,6 +7,7 @@ import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +22,9 @@ import java.util.HashMap;
 @Repository
 public class JpaLinkRepository implements LinkRepository{
 
-    @Autowired
+    @PersistenceContext
     private EntityManager manager;
+
 
     @Autowired
     private GitHubClient git;
