@@ -6,9 +6,12 @@ import edu.java.siteclients.StackOverflowClient;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import jakarta.persistence.SecondaryTable;
 import jakarta.persistence.Table;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +51,6 @@ public class JpaLinkRepository implements LinkRepository {
         action.setParameter(2,id);
         action.setParameter(3,time);
         action.executeUpdate();
-
     }
 
     public void remove(Long id, String link) throws ApiException {
@@ -72,10 +74,63 @@ public class JpaLinkRepository implements LinkRepository {
     }
 
     public Collection<URI> findAll(Long id) throws ApiException {
-        return null;
+        try {
+            String query = ("select * from id where id=?");
+            var act = manager.createQuery(query);
+            act.setParameter(1,id);
+            var doo = act.getResultList();
+            if (doo.isEmpty()) {
+                throw new ApiException(404, "Чат не существует");
+            }
+            var another =
+                manager.createQuery("select link from connect where id=" + id + ";");
+            var res = another.getResultList();
+            var result = new URI[res.size()];
+            for (int i = 0; i < res.size(); i++) {
+                result[i] = new URI(res.get(i).toString());
+            }
+            return List.of(result);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public HashMap<Long, Collection<String>> update() {
-        return null;
+        var time = new Timestamp(System.currentTimeMillis() - 3600000);
+        var now = new Timestamp(System.currentTimeMillis());
+        var query =
+            manager.createQuery("select (id,link,updated) from connect where updated<"+time, ArrayList.class);
+        var query1 = manager.createQuery("update connect set update=? where update<?");
+        query1.setParameter(1,time);
+        query1.setParameter(2,now);
+        query1.executeUpdate();
+        var res = query.getResultList();
+        HashMap<Long, Collection<String>> result = new HashMap<>();
+        for (ArrayList i : res) {
+            var current = i.get(1).toString();
+            var id = Long.parseLong(i.get(0).toString());
+            if (current.startsWith("https://stackoverflow.com/questions/")) {
+                current = current.replace("https://stackoverflow.com/questions/", "");
+                var question = Long.parseLong(current.split("/")[0]);
+                var response = stack.fetchQuestion(question);
+                if (Timestamp.valueOf(response.time.toLocalDateTime()).after((Timestamp) i.get(2))) {
+                    if (!result.containsKey(id)) {
+                        result.put(id, new ArrayList<>());
+                    }
+                    result.get(id).add(i.get(1).toString());
+                }
+            } else {
+                current = current.replace("https://github.com/", "");
+                var repoAuthor = current.split("/");
+                var response = git.fetchRepository(repoAuthor[0], repoAuthor[1]);
+                if (Timestamp.valueOf(response.time.toLocalDateTime()).after((Timestamp) i.get(2))) {
+                    if (!result.containsKey(id)) {
+                        result.put(id, new ArrayList<>());
+                    }
+                    result.get(id).add(i.get(1).toString());
+                }
+            }
+        }
+        return result;
     }
 }
