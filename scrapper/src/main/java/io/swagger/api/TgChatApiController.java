@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
@@ -38,8 +39,10 @@ public class TgChatApiController implements TgChatApi {
     private HttpServletRequest request;
 
 
+    @Autowired
     private JdbcTgChatService jdbcService;
 
+    @Autowired
     private JpaChatService jpaService;
 
     public enum AccessType {
@@ -49,8 +52,7 @@ public class TgChatApiController implements TgChatApi {
     @Value("${chat.use}")
     private AccessType type;
     private final Bucket bucket;
-    @Autowired
-    private JdbcTgChatService chatService;
+
 
 
     @org.springframework.beans.factory.annotation.Autowired

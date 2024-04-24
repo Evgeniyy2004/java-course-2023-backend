@@ -5,20 +5,15 @@ import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import io.swagger.api.JdbcLinkRepository;
 import io.swagger.api.JdbcTgChatRepository;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Properties;
-import javax.sql.DataSource;
-
 import io.swagger.api.JpaChatRepository;
 import io.swagger.api.JpaChatService;
 import io.swagger.api.JpaLinkRepository;
 import io.swagger.api.JpaLinkService;
-import jakarta.persistence.EntityManager;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Properties;
+import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Value;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -165,7 +160,7 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public JpaChatService jpaChatService(JpaChatRepository repo){
+    public JpaChatService jpaChatService(JpaChatRepository repo) {
         return new JpaChatService(repo);
     }
 
@@ -175,7 +170,7 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public JpaLinkService jpaChatService(JpaLinkRepository repo){
+    public JpaLinkService jpaChatService(JpaLinkRepository repo) {
         return new JpaLinkService(repo);
     }
 

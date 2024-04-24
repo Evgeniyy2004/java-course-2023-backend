@@ -13,8 +13,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
-import java.util.Collection;
 import java.time.Duration;
+import java.util.Collection;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
@@ -83,10 +83,10 @@ public class LinksApiController implements LinksApi {
         if (bucket.tryConsume(1)) {
             try {
                 if (type == AccessType.JDBC) {
-                jdbcService.remove(tgChatId, body.getLink());
-            } else {
-                jpaService.remove(tgChatId, body.getLink());
-            }
+                    jdbcService.remove(tgChatId, body.getLink());
+                } else {
+                    jpaService.remove(tgChatId, body.getLink());
+                }
             } catch (ApiException e) {
                 if (e.getCode() == ERROR) {
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -107,11 +107,11 @@ public class LinksApiController implements LinksApi {
         if (bucket.tryConsume(1)) {
             try {
                 Collection<URI> res;
-            if (type == AccessType.JDBC) {
-                res = jdbcService.listAll(tgChatId);
-            } else {
-                res = jpaService.listAll(tgChatId);
-            }
+                if (type == AccessType.JDBC) {
+                    res = jdbcService.listAll(tgChatId);
+                } else {
+                    res = jpaService.listAll(tgChatId);
+                }
                 ListLinksResponse response = new ListLinksResponse();
                 for (URI uri : res) {
                     var curr = new LinkResponse();
@@ -141,10 +141,10 @@ public class LinksApiController implements LinksApi {
         if (bucket.tryConsume(1)) {
             try {
                 if (type == AccessType.JDBC) {
-                jdbcService.add(tgChatId, body.getLink());
-            } else {
-                jpaService.add(tgChatId, body.getLink());
-            }
+                    jdbcService.add(tgChatId, body.getLink());
+                } else {
+                    jpaService.add(tgChatId, body.getLink());
+                }
             } catch (ApiException e) {
                 if (e.getCode() == ERROR) {
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);

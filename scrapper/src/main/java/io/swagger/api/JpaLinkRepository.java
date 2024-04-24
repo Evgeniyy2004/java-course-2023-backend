@@ -5,6 +5,8 @@ import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.SecondaryTable;
+import jakarta.persistence.Table;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
@@ -12,14 +14,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import jakarta.persistence.SecondaryTable;
-import jakarta.persistence.Table;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-@Table(name="id")
-@SecondaryTable(name="connect")
+@Table(name = "id")
+@SecondaryTable(name = "connect")
 @Repository
+@SuppressWarnings("all")
 public class JpaLinkRepository implements LinkRepository {
 
     @PersistenceContext
@@ -31,50 +32,49 @@ public class JpaLinkRepository implements LinkRepository {
     @Autowired
     private StackOverflowClient stack;
 
-
-    public JpaLinkRepository(EntityManager manager){
+    public JpaLinkRepository(EntityManager manager) {
         this.manager = manager;
     }
 
     public void save(Long id, String link) throws ApiException {
         var q = manager.createNativeQuery("SELECT distinct FROM id WHERE id=:id");
-        q.setParameter("id",id);
+        q.setParameter("id", id);
         var first = q.getResultList();
         if (first.isEmpty()) {
             throw new ApiException(404, "Чат не существует");
         }
         var time = new Timestamp(System.currentTimeMillis());
         var check = manager.createNativeQuery("select distinct from connect where link=:link and id=:id");
-        check.setParameter("id",id);
-        check.setParameter("link",link);
+        check.setParameter("id", id);
+        check.setParameter("link", link);
         var two = check.getResultList();
         if (!two.isEmpty()) {
             throw new ApiException(409, "Ссылка уже добавлена");
         }
-        var action = manager.createNativeQuery( "insert into connect values (?, ?, ?)");
-        action.setParameter(1,link);
-        action.setParameter(2,id);
-        action.setParameter(3,time);
+        var action = manager.createNativeQuery("insert into connect values (?, ?, ?)");
+        action.setParameter(1, link);
+        action.setParameter(2, id);
+        action.setParameter(3, time);
         action.executeUpdate();
     }
 
     public void remove(Long id, String link) throws ApiException {
         var q = manager.createNativeQuery("SELECT distinct FROM id WHERE id=:id");
-        q.setParameter("id",id);
+        q.setParameter("id", id);
         var first = q.getResultList();
         if (first.isEmpty()) {
             throw new ApiException(404, "Чат не существует");
         }
         var check = manager.createNativeQuery("select * from connect where link=? and id=?");
-        check.setParameter(2,id);
-        check.setParameter(1,link);
+        check.setParameter(2, id);
+        check.setParameter(1, link);
         var two = check.getResultList();
         if (two.isEmpty()) {
             throw new ApiException(409, "Ссылка не отслеживается");
         }
-        var action = manager.createNativeQuery( "delete from  connect  where id =? and link=?");
-        action.setParameter(1,id);
-        action.setParameter(2,link);
+        var action = manager.createNativeQuery("delete from  connect  where id =? and link=?");
+        action.setParameter(1, id);
+        action.setParameter(2, link);
         action.executeUpdate();
     }
 
@@ -82,7 +82,7 @@ public class JpaLinkRepository implements LinkRepository {
         try {
             String query = ("select * from id where id=?");
             var act = manager.createNativeQuery(query);
-            act.setParameter(1,id);
+            act.setParameter(1, id);
             var doo = act.getResultList();
             if (doo.isEmpty()) {
                 throw new ApiException(404, "Чат не существует");
@@ -104,15 +104,15 @@ public class JpaLinkRepository implements LinkRepository {
         var time = new Timestamp(System.currentTimeMillis() - 3600000);
         var now = new Timestamp(System.currentTimeMillis());
         var query =
-            manager.createNativeQuery("select (id,link,updated) from connect where updated<"+time, ArrayList.class);
+            manager.createNativeQuery("select (id,link,updated) from connect where updated<" + time, ArrayList.class);
         var query1 = manager.createNativeQuery("update connect set update=? where update<?");
-        query1.setParameter(1,time);
-        query1.setParameter(2,now);
+        query1.setParameter(1, time);
+        query1.setParameter(2, now);
         query1.executeUpdate();
         var res = query.getResultList();
         HashMap<Long, Collection<String>> result = new HashMap<>();
         for (Object i : res) {
-            var list = (ArrayList)i;
+            var list = (ArrayList) i;
             var current = list.get(1).toString();
             var id = Long.parseLong(list.get(0).toString());
             if (current.startsWith("https://stackoverflow.com/questions/")) {

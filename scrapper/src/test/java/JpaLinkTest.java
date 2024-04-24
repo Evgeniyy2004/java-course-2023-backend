@@ -16,9 +16,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @EnableTransactionManagement
 public class JpaLinkTest extends IntegrationTest {
 
-    SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
-    Session session = sessionFactory.openSession();
-    EntityManager em = session.getEntityManagerFactory().createEntityManager();
 
     private final JpaChatRepository chatRepository = new JpaChatRepository(em);
 

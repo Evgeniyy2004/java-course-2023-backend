@@ -1,6 +1,8 @@
 import java.io.File;
+import java.io.IOException;
 import java.sql.DriverManager;
 import java.util.Properties;
+import jakarta.persistence.EntityManager;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
 import liquibase.Liquibase;
@@ -24,6 +26,8 @@ public abstract class IntegrationTest {
 
     static DriverManagerDataSource data;
     static HibernateTransactionManager MANAGER ;
+
+    static   EntityManager em;
     public static LocalSessionFactoryBean FACTORY;
     static {
         POSTGRES = new PostgreSQLContainer<>("postgres:15")
@@ -35,13 +39,21 @@ public abstract class IntegrationTest {
             "hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         PROPERTIES= hibernateProperties;
         POSTGRES.start();
-        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         data = new DriverManagerDataSource(POSTGRES.getJdbcUrl(),POSTGRES.getUsername(),POSTGRES.getPassword());
-        sessionFactory.setDataSource(data);
+        hibernateProperties.setProperty("jakarta.persistence.url",POSTGRES.getJdbcUrl());
+        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setHibernateProperties(hibernateProperties);
+        sessionFactory.setDataSource(data);
+        try {
+            sessionFactory.afterPropertiesSet();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         FACTORY = sessionFactory;
         HibernateTransactionManager txManager = new HibernateTransactionManager();
         txManager.setSessionFactory(sessionFactory.getObject());
+        em = sessionFactory.getObject().createEntityManager();
         MANAGER = txManager;
         try {
             runMigrations(POSTGRES);
@@ -63,9 +75,9 @@ public abstract class IntegrationTest {
 
     @DynamicPropertySource
     static void jdbcProperties(DynamicPropertyRegistry registry) {
-        var url = POSTGRES.getJdbcUrl();
         registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
         registry.add("spring.datasource.username", POSTGRES::getUsername);
         registry.add("spring.datasource.password", POSTGRES::getPassword);
+        registry.add("jakarta.persistence.url",POSTGRES::getJdbcUrl);
     }
 }
