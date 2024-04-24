@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen",
                             date = "2024-02-27T16:17:37.541889551Z[GMT]")
 @PropertySource("classpath:application.yml")
-@ConfigurationProperties(prefix="use")
+@ConfigurationProperties(prefix="link")
 @RestController
 public class LinksApiController implements LinksApi {
 
@@ -38,7 +38,7 @@ public class LinksApiController implements LinksApi {
         JDBC, JPA,
     }
 
-    @Value("${use.type}")
+    @Value("${link.use}")
     private AccessType type;
     private static final Logger LOG = LoggerFactory.getLogger(LinksApiController.class);
 

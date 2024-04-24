@@ -11,6 +11,9 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Validated
+@PropertySource("classpath:application.yml")
+@ConfigurationProperties(prefix="chat")
 public class TgChatApiController implements TgChatApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(TgChatApiController.class);
@@ -36,6 +41,9 @@ public class TgChatApiController implements TgChatApi {
     public enum AccessType {
         JDBC, JPA,
     }
+
+    @Value("${chat.use}")
+    private AccessType type;
 
     @org.springframework.beans.factory.annotation.Autowired
     public TgChatApiController(ObjectMapper objectMapper, HttpServletRequest request) {

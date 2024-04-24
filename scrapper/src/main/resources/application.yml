@@ -11,8 +11,10 @@ spring:
 
   liquibase:
     enabled: false
-use:
-  type: JDBC
+link:
+  use: JDBC
+chat:
+  use: JDBC
 server:
   port: 8080
 
