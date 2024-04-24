@@ -14,9 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
@@ -40,19 +38,25 @@ public class LinksApiController implements LinksApi {
 
     @Value("${link.use}")
     private AccessType type;
+
+
     private static final Logger LOG = LoggerFactory.getLogger(LinksApiController.class);
 
     private static final int NOT_FOUND = 404;
-    @Autowired
-    private JdbcLinkService linkService;
+
+    private JdbcLinkService jdbcService;
+
+    private JpaLinkService jpaService;
     private final ObjectMapper objectMapper;
 
     private final HttpServletRequest request;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public LinksApiController(ObjectMapper objectMapper, HttpServletRequest request) {
+    public LinksApiController(ObjectMapper objectMapper, HttpServletRequest request, JdbcLinkService jdbc, JpaLinkService jpa) {
         this.objectMapper = objectMapper;
         this.request = request;
+        this.jdbcService = jdbc;
+        this.jpaService = jpa;
     }
 
 
@@ -64,7 +68,7 @@ public class LinksApiController implements LinksApi {
         RemoveLinkRequest body
     ) {
         try {
-            linkService.remove(tgChatId, body.getLink());
+            jdbcService.remove(tgChatId, body.getLink());
         } catch (ApiException e) {
             if (e.code == NOT_FOUND) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -81,7 +85,7 @@ public class LinksApiController implements LinksApi {
         @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId
     ) {
         try {
-            var res = linkService.listAll(tgChatId);
+            var res = jdbcService.listAll(tgChatId);
             ListLinksResponse response = new ListLinksResponse();
             for (URI uri : res) {
                 var curr = new LinkResponse();
@@ -105,7 +109,7 @@ public class LinksApiController implements LinksApi {
         AddLinkRequest body
     ) {
         try {
-            linkService.add(tgChatId, body.getLink());
+            jdbcService.add(tgChatId, body.getLink());
         } catch (ApiException e) {
             if (e.code == NOT_FOUND) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

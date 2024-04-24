@@ -36,7 +36,10 @@ public class TgChatApiController implements TgChatApi {
     private HttpServletRequest request;
 
 
-    private JdbcTgChatService chatService;
+    private JdbcTgChatService jdbcService;
+
+
+    private JpaChatService jpaService;
 
     public enum AccessType {
         JDBC, JPA,
@@ -46,9 +49,11 @@ public class TgChatApiController implements TgChatApi {
     private AccessType type;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public TgChatApiController(ObjectMapper objectMapper, HttpServletRequest request) {
+    public TgChatApiController(ObjectMapper objectMapper, HttpServletRequest request, JpaChatService jpa, JdbcTgChatService jdbc) {
         this.objectMapper = objectMapper;
         this.request = request;
+        this.jpaService = jpa;
+        this.jdbcService = jdbc;
     }
 
     @Valid
@@ -57,7 +62,9 @@ public class TgChatApiController implements TgChatApi {
         Long id
     ) {
         try {
-            chatService.unregister(id);
+            if (type == AccessType.JDBC)
+            jdbcService.unregister(id);
+            else jpaService.unregister(id);
         } catch (ApiException e) {
             var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.NOT_FOUND);
             return res;
@@ -71,7 +78,9 @@ public class TgChatApiController implements TgChatApi {
         Long id
     ) {
         try {
-            chatService.register(id);
+            if (type == AccessType.JDBC)
+                jdbcService.register(id);
+            else jpaService.register(id);
         } catch (ApiException e) {
             var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.CONFLICT);
             return res;
