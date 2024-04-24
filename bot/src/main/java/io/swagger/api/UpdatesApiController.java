@@ -25,7 +25,6 @@ public class UpdatesApiController implements UpdatesApi {
     private static final Logger LOG = LoggerFactory.getLogger(UpdatesApiController.class);
 
     private final ObjectMapper objectMapper;
-
     private final HttpServletRequest request;
 
     @Autowired
@@ -35,6 +34,7 @@ public class UpdatesApiController implements UpdatesApi {
     public UpdatesApiController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.request = request;
+
     }
 
     public ResponseEntity updatesPost(
