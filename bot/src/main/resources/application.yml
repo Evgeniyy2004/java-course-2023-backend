@@ -1,5 +1,8 @@
 app1:
-  telegram-token: ${APP_TELEGRAM_TOKEN}
+  token: ${APP_TELEGRAM_TOKEN}
+  codes: 429, 503
+  strategy: CONSTANT
+
 spring:
   application:
     name: bot
