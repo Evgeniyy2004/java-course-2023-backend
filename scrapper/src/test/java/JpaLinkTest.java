@@ -22,9 +22,7 @@ public class JpaLinkTest extends IntegrationTest {
     private final JpaLinkRepository linkRepository = new JpaLinkRepository(em);
 
     @Test
-    @Transactional
     @DirtiesContext
-    @Rollback
     void addTest() {
         try {
             chatRepository.save(1L);
@@ -39,9 +37,7 @@ public class JpaLinkTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
     @DirtiesContext
-    @Rollback
     void findAllTest() {
         try {
             chatRepository.save(1L);
@@ -56,9 +52,7 @@ public class JpaLinkTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
     @DirtiesContext
-    @Rollback
     void failedRemoveTest() {
         try {
             chatRepository.save(1L);

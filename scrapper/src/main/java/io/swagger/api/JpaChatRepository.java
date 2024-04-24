@@ -2,12 +2,14 @@ package io.swagger.api;
 
 import edu.java.model.ApiException;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class JpaChatRepository {
 
+    @PersistenceContext
     private EntityManager manager;
 
     private static final int CONFLICT = 409;
@@ -29,8 +31,9 @@ public class JpaChatRepository {
             throw new ApiException(CONFLICT, "Вы не можете повторно зарегистрировать чат");
         }
         var insert = manager.createNativeQuery("insert into id (id) values " + "(" + id + ")");
-        manager.joinTransaction();
+        manager.getTransaction().begin();
         insert.executeUpdate();
+        manager.getTransaction().commit();
     }
 
     @Transactional
@@ -42,6 +45,8 @@ public class JpaChatRepository {
             throw new ApiException(NOTFOUND, "Чат не существует");
         }
         var insert = manager.createNativeQuery("delete from id where id=" + id);
+        manager.getTransaction().begin();
         insert.executeUpdate();
+        manager.getTransaction().commit();
     }
 }
