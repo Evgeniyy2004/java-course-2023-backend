@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
@@ -23,21 +22,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Validated
 @PropertySource("classpath:application.yml")
-@ConfigurationProperties(prefix="chat")
+@ConfigurationProperties(prefix = "chat")
 public class TgChatApiController implements TgChatApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(TgChatApiController.class);
 
     private static final String HEADER = "Accept";
 
-
     private ObjectMapper objectMapper;
 
     private HttpServletRequest request;
 
-
     private JdbcTgChatService jdbcService;
-
 
     private JpaChatService jpaService;
 
@@ -49,7 +45,12 @@ public class TgChatApiController implements TgChatApi {
     private AccessType type;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public TgChatApiController(ObjectMapper objectMapper, HttpServletRequest request, JpaChatService jpa, JdbcTgChatService jdbc) {
+    public TgChatApiController(
+        ObjectMapper objectMapper,
+        HttpServletRequest request,
+        JpaChatService jpa,
+        JdbcTgChatService jdbc
+    ) {
         this.objectMapper = objectMapper;
         this.request = request;
         this.jpaService = jpa;
@@ -62,9 +63,11 @@ public class TgChatApiController implements TgChatApi {
         Long id
     ) {
         try {
-            if (type == AccessType.JDBC)
-            jdbcService.unregister(id);
-            else jpaService.unregister(id);
+            if (type == AccessType.JDBC) {
+                jdbcService.unregister(id);
+            } else {
+                jpaService.unregister(id);
+            }
         } catch (ApiException e) {
             var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.NOT_FOUND);
             return res;
@@ -78,9 +81,11 @@ public class TgChatApiController implements TgChatApi {
         Long id
     ) {
         try {
-            if (type == AccessType.JDBC)
+            if (type == AccessType.JDBC) {
                 jdbcService.register(id);
-            else jpaService.register(id);
+            } else {
+                jpaService.register(id);
+            }
         } catch (ApiException e) {
             var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.CONFLICT);
             return res;

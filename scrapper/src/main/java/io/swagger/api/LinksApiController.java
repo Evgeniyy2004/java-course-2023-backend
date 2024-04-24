@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
+import java.util.Collection;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
@@ -26,11 +27,9 @@ import org.springframework.web.bind.annotation.RestController;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen",
                             date = "2024-02-27T16:17:37.541889551Z[GMT]")
 @PropertySource("classpath:application.yml")
-@ConfigurationProperties(prefix="link")
+@ConfigurationProperties(prefix = "link")
 @RestController
 public class LinksApiController implements LinksApi {
-
-
 
     public enum AccessType {
         JDBC, JPA,
@@ -38,7 +37,6 @@ public class LinksApiController implements LinksApi {
 
     @Value("${link.use}")
     private AccessType type;
-
 
     private static final Logger LOG = LoggerFactory.getLogger(LinksApiController.class);
 
@@ -52,13 +50,17 @@ public class LinksApiController implements LinksApi {
     private final HttpServletRequest request;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public LinksApiController(ObjectMapper objectMapper, HttpServletRequest request, JdbcLinkService jdbc, JpaLinkService jpa) {
+    public LinksApiController(
+        ObjectMapper objectMapper,
+        HttpServletRequest request,
+        JdbcLinkService jdbc,
+        JpaLinkService jpa
+    ) {
         this.objectMapper = objectMapper;
         this.request = request;
         this.jdbcService = jdbc;
         this.jpaService = jpa;
     }
-
 
     @SuppressWarnings("MultipleStringLiterals")
     public ResponseEntity<LinkResponse> linksDelete(
@@ -68,7 +70,11 @@ public class LinksApiController implements LinksApi {
         RemoveLinkRequest body
     ) {
         try {
-            jdbcService.remove(tgChatId, body.getLink());
+            if (type == AccessType.JDBC) {
+                jdbcService.remove(tgChatId, body.getLink());
+            } else {
+                jpaService.remove(tgChatId, body.getLink());
+            }
         } catch (ApiException e) {
             if (e.code == NOT_FOUND) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -79,13 +85,17 @@ public class LinksApiController implements LinksApi {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-
     public ResponseEntity<ListLinksResponse> linksGet(
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
         @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId
     ) {
         try {
-            var res = jdbcService.listAll(tgChatId);
+            Collection<URI> res;
+            if (type == AccessType.JDBC) {
+                res = jdbcService.listAll(tgChatId);
+            } else {
+                res = jpaService.listAll(tgChatId);
+            }
             ListLinksResponse response = new ListLinksResponse();
             for (URI uri : res) {
                 var curr = new LinkResponse();
@@ -109,7 +119,11 @@ public class LinksApiController implements LinksApi {
         AddLinkRequest body
     ) {
         try {
-            jdbcService.add(tgChatId, body.getLink());
+            if (type == AccessType.JDBC) {
+                jdbcService.add(tgChatId, body.getLink());
+            } else {
+                jpaService.add(tgChatId, body.getLink());
+            }
         } catch (ApiException e) {
             if (e.code == NOT_FOUND) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

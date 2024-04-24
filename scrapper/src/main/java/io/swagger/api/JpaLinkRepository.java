@@ -31,6 +31,11 @@ public class JpaLinkRepository implements LinkRepository {
     @Autowired
     private StackOverflowClient stack;
 
+
+    public JpaLinkRepository(EntityManager manager){
+        this.manager = manager;
+    }
+
     public void save(Long id, String link) throws ApiException {
         var q = manager.createNativeQuery("SELECT distinct FROM id WHERE id=:id");
         q.setParameter("id",id);

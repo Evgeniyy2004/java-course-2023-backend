@@ -10,14 +10,17 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class JpaChatRepository{
-    @PersistenceContext
+
+
+
     private EntityManager manager;
 
     private static final String QUERY = "select * from id where id=?";
 
-
+    public JpaChatRepository(EntityManager manager){
+        this.manager = manager;
+    }
     public void save(Long id) throws ApiException {
-        String query = (QUERY);
         var act = manager.createNativeQuery(QUERY);
         act.setParameter(1,id);
          var res =   act.getResultList();

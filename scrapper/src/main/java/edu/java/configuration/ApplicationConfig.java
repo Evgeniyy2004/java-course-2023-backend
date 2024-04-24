@@ -7,6 +7,13 @@ import io.swagger.api.JdbcLinkRepository;
 import io.swagger.api.JdbcTgChatRepository;
 import java.util.Properties;
 import javax.sql.DataSource;
+import io.swagger.api.JpaChatRepository;
+import io.swagger.api.JpaChatService;
+import io.swagger.api.JpaLinkRepository;
+import io.swagger.api.JpaLinkService;
+import jakarta.persistence.EntityManager;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -92,6 +99,32 @@ public class ApplicationConfig {
         hibernateProperties.setProperty(
             "hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         return hibernateProperties;
+    }
+
+    @Bean
+    public JpaChatRepository jpaChat() {
+        SessionFactory sessionFactory = new org.hibernate.cfg.Configuration().configure().buildSessionFactory();
+        Session session = sessionFactory.openSession();
+        EntityManager em = session.getEntityManagerFactory().createEntityManager();
+        return new JpaChatRepository(em);
+    }
+
+    @Bean
+    public JpaChatService jpaChatService(JpaChatRepository repo){
+        return new JpaChatService(repo);
+    }
+
+    @Bean
+    public JpaLinkRepository jpaLink() {
+        SessionFactory sessionFactory = new org.hibernate.cfg.Configuration().configure().buildSessionFactory();
+        Session session = sessionFactory.openSession();
+        EntityManager em = session.getEntityManagerFactory().createEntityManager();
+        return new JpaLinkRepository(em,beanGit(),beanStack());
+    }
+
+    @Bean
+    public JpaLinkService jpaChatService(JpaLinkRepository repo){
+        return new JpaLinkService(repo);
     }
 
     @Bean
