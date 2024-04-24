@@ -119,7 +119,7 @@ public class ApplicationConfig {
         SessionFactory sessionFactory = new org.hibernate.cfg.Configuration().configure().buildSessionFactory();
         Session session = sessionFactory.openSession();
         EntityManager em = session.getEntityManagerFactory().createEntityManager();
-        return new JpaLinkRepository(em,beanGit(),beanStack());
+        return new JpaLinkRepository(em);
     }
 
     @Bean
