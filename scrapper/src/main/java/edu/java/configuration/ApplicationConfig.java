@@ -159,10 +159,6 @@ public class ApplicationConfig {
         return new JpaChatRepository(sessionFactory().getObject().createEntityManager());
     }
 
-    @Bean
-    public JpaChatService jpaChatService(JpaChatRepository repo) {
-        return new JpaChatService(repo);
-    }
 
     @Bean
     public JpaLinkRepository jpaLink() {
