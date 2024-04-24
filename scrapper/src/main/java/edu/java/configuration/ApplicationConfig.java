@@ -14,6 +14,7 @@ import io.swagger.api.JpaLinkService;
 import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -32,6 +33,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 public class ApplicationConfig {
 
     private static final String BASE = "http://localhost:8081/";
+
 
     @Bean
     public JdbcTgChatRepository chatrepo() {
@@ -103,23 +105,14 @@ public class ApplicationConfig {
 
     @Bean
     public JpaChatRepository jpaChat() {
-        SessionFactory sessionFactory = new org.hibernate.cfg.Configuration().configure().buildSessionFactory();
-        Session session = sessionFactory.openSession();
-        EntityManager em = session.getEntityManagerFactory().createEntityManager();
-        return new JpaChatRepository(em);
+
+        return new JpaChatRepository(sessionFactory().getObject().createEntityManager());
     }
 
-    @Bean
-    public JpaChatService jpaChatService(JpaChatRepository repo){
-        return new JpaChatService(repo);
-    }
 
     @Bean
     public JpaLinkRepository jpaLink() {
-        SessionFactory sessionFactory = new org.hibernate.cfg.Configuration().configure().buildSessionFactory();
-        Session session = sessionFactory.openSession();
-        EntityManager em = session.getEntityManagerFactory().createEntityManager();
-        return new JpaLinkRepository(em);
+        return new JpaLinkRepository(sessionFactory().getObject().createEntityManager());
     }
 
     @Bean
