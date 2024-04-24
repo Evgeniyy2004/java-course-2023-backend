@@ -6,7 +6,6 @@ import edu.java.siteclients.StackOverflowClient;
 import io.swagger.api.JdbcLinkRepository;
 import io.swagger.api.JdbcTgChatRepository;
 import io.swagger.api.JpaChatRepository;
-import io.swagger.api.JpaChatService;
 import io.swagger.api.JpaLinkRepository;
 import io.swagger.api.JpaLinkService;
 import java.time.Duration;
@@ -158,7 +157,6 @@ public class ApplicationConfig {
 
         return new JpaChatRepository(sessionFactory().getObject().createEntityManager());
     }
-
 
     @Bean
     public JpaLinkRepository jpaLink() {
