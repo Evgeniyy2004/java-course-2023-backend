@@ -21,6 +21,7 @@ public class JpaLinkTest extends IntegrationTest {
 
     private final JpaLinkRepository linkRepository = new JpaLinkRepository(em);
 
+
     @Test
     @DirtiesContext
     void addTest() {

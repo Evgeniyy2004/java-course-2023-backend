@@ -1,10 +1,7 @@
 package io.swagger.api;
 
 import edu.java.model.ApiException;
-import edu.java.siteclients.GitHubClient;
-import edu.java.siteclients.StackOverflowClient;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import edu.java.model.LinkResponse;
 import jakarta.persistence.SecondaryTable;
 import jakarta.persistence.Table;
 import java.net.URI;
@@ -14,51 +11,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Optional;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Table(name = "id")
 @SecondaryTable(name = "connect")
 @Repository
 @SuppressWarnings("all")
-public class JpaLinkRepository implements LinkRepository {
+public interface JpaLinkRepository extends CrudRepository<LinkResponse,Long> {
 
-    @PersistenceContext
-    private EntityManager manager;
-
-    @Autowired
-    private GitHubClient git;
-
-    @Autowired
-    private StackOverflowClient stack;
-
-    public JpaLinkRepository(EntityManager manager) {
-        this.manager = manager;
-    }
-
-    public void save(Long id, String link) throws ApiException {
-        var q = manager.createNativeQuery("select * from id where id=?");
-        q.setParameter(1, id);
-        var first = q.getResultList();
-        if (first.isEmpty()) {
-            throw new ApiException(404, "Чат не существует");
-        }
-        var time = new Timestamp(System.currentTimeMillis());
-        var check = manager.createNativeQuery("select * from connect where link=? and id=?");
-        check.setParameter(2, id);
-        check.setParameter(1, link);
-        var two = check.getResultList();
-        if (!two.isEmpty()) {
-            throw new ApiException(409, "Ссылка уже добавлена");
-        }
-        var action = manager.createNativeQuery("insert into connect values (?, ?, ?)");
-        action.setParameter(1, link);
-        action.setParameter(2, id);
-        action.setParameter(3, time);
-        manager.getTransaction().begin();
-        action.executeUpdate();
-        manager.getTransaction().commit();
-    }
 
     public void remove(Long id, String link) throws ApiException {
         var q = manager.createNativeQuery("select * FROM id WHERE id=?");
@@ -145,4 +107,13 @@ public class JpaLinkRepository implements LinkRepository {
         }
         return result;
     }
+
+
+    void save(Long id, String link, Timestamp time);
+    List<LinkResponse> findAllById(Long id) ;
+
+
+    void delete(Long id, String link);
+
+
 }
