@@ -110,6 +110,8 @@ public interface JpaLinkRepository extends CrudRepository<LinkResponse,Long> {
 
 
     void save(Long id, String link, Timestamp time);
+
+
     List<LinkResponse> findAllById(Long id) ;
 
 
