@@ -18,17 +18,21 @@ import org.springframework.stereotype.Repository;
 @SuppressWarnings("all")
 public class JdbcLinkRepository implements LinkRepository {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
+
 
     @Autowired
-    private GitHubClient git;
+    private  GitHubClient git;
+
 
     @Autowired
-    private StackOverflowClient stack;
+    private  StackOverflowClient stack;
 
+    @Autowired
     public JdbcLinkRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
 
     public void save(Long id, String link) throws ApiException {
         String query = ("select * from id where id=?");
