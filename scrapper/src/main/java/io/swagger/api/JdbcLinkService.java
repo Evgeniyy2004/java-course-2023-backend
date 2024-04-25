@@ -9,9 +9,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class JdbcLinkService implements LinkService {
+    private final JdbcLinkRepository repo;
 
     @Autowired
-    private JdbcLinkRepository repo;
+    public JdbcLinkService(JdbcLinkRepository repo) {
+        this.repo = repo;
+    }
 
     @Override
     public void add(long tgChatId, String url) throws ApiException {

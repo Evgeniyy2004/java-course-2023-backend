@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Duration;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,17 +32,14 @@ TgChatApiController implements TgChatApi {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private HttpServletRequest request;
-
     private final Bucket bucket;
+
     @Autowired
     private JdbcTgChatService chatService;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public TgChatApiController(ObjectMapper objectMapper, HttpServletRequest request) {
+    public TgChatApiController(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        this.request = request;
         Bandwidth limit =
             Bandwidth.classic(2 * 2 * 2 * 2 + 2 * 2, Refill.greedy(2 * 2 * 2 * 2 + 2 * 2, Duration.ofMinutes(1)));
         this.bucket = Bucket.builder()
@@ -63,9 +59,9 @@ TgChatApiController implements TgChatApi {
                 var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.NOT_FOUND);
                 return res;
             }
-            return new ResponseEntity(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            return new ResponseEntity(HttpStatus.TOO_MANY_REQUESTS);
+            return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
         }
     }
 
@@ -81,9 +77,9 @@ TgChatApiController implements TgChatApi {
                 var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.CONFLICT);
                 return res;
             }
-            return new ResponseEntity(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            return new ResponseEntity(HttpStatus.TOO_MANY_REQUESTS);
+            return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
         }
     }
 

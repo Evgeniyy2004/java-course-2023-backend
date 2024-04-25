@@ -1,18 +1,18 @@
 package edu.java.configuration;
 
-import com.pengrad.telegrambot.UpdatesListener;
-import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.request.GetUpdates;
 import edu.java.scrapperclient.ScrapperChatClient;
 import edu.java.scrapperclient.ScrapperLinksClient;
 import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import java.time.Duration;
 import java.util.ArrayList;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
@@ -26,6 +26,7 @@ import reactor.util.retry.RetryBackoffSpec;
 
 @Configuration
 @Validated
+@ComponentScan(basePackages = "io.swagger.api")
 @SuppressWarnings("RegexpSinglelineJava")
 @PropertySource("classpath:application.yml")
 @ConfigurationProperties(prefix = "app1", ignoreUnknownFields = false)
@@ -38,6 +39,10 @@ public class ClientConfiguration {
     @Value("${app1.strategy}")
     STRATEGY strategy;
 
+    @Value("${app1.topic}")
+    @Getter
+    private static String topic;
+
     @Value("${app1.token}")
     String token;
 
@@ -47,6 +52,7 @@ public class ClientConfiguration {
     }
 
     @Bean
+
     public ScrapperChatClient beanChat() {
         WebClient restClient = WebClient.builder().baseUrl(base).filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
@@ -63,18 +69,20 @@ public class ClientConfiguration {
     }
 
     @Bean
+    @Primary
     public GitHubClient beanGit() {
         WebClient restClient =
-            WebClient.builder().baseUrl("https://github.com/").filter(withRetryableRequests()).build();
+            WebClient.builder().baseUrl("https://api.github.com/").filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(GitHubClient.class);
     }
 
     @Bean
+    @Primary
     public StackOverflowClient beanStack() {
         WebClient restClient =
-            WebClient.builder().baseUrl("https://stackoverflow.com/").filter(withRetryableRequests()).build();
+            WebClient.builder().baseUrl("https://api.stackexchange.com/").filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(StackOverflowClient.class);
@@ -110,28 +118,6 @@ public class ClientConfiguration {
         return (Retry.fixedDelay(2 + 1, Duration.ofSeconds(2 + 2 + 1)))
             .filter(throwable -> throwable instanceof WebClientResponseException)
             .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> retrySignal.failure());
-    }
-
-    @Bean
-    public Bot makeBot() {
-        var conf = new ApplicationConfig(token);
-        var bot = new Bot(conf);
-        bot.setUpdatesListener(updates -> {
-            for (Update update : updates) {
-                bot.handle(update);
-            }
-            return UpdatesListener.CONFIRMED_UPDATES_ALL;
-        }, e -> {
-            if (e.response() != null) {
-                // god bad response from telegram
-                e.response().errorCode();
-                e.response().description();
-            } else {
-                // probably network error
-                e.printStackTrace();
-            }
-        }, new GetUpdates().limit(2 * 2 * 2 * 2 * 2 * 2 + 2 * 2 * 2 * 2 * 2 + 2 * 2).offset(0).timeout(0));
-        return bot;
     }
 
 }

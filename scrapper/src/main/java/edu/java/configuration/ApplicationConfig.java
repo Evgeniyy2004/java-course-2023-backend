@@ -3,12 +3,11 @@ package edu.java.configuration;
 import edu.java.botclient.UpdatesClient;
 import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
-import io.swagger.api.JdbcLinkRepository;
-import io.swagger.api.JdbcTgChatRepository;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Properties;
 import javax.sql.DataSource;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +27,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import reactor.util.retry.RetryBackoffSpec;
 
-@ComponentScan
+@ComponentScan(basePackages = "io.swagger.api")
 @Configuration
 @PropertySource("classpath:application.yml")
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
@@ -36,10 +35,18 @@ public class ApplicationConfig {
 
     private static final String BASE = "http://localhost:8081/";
     @Value("${app.codes}")
-    ArrayList<Integer> codes;
+    public ArrayList<Integer> codes;
+
+    @Value("${app.topic}")
+    @Getter
+    private static String topic;
+
+    @Value("${app.use-queue}")
+    @Getter
+    private static boolean useQueue;
 
     @Value("${app.strategy}")
-    STRATEGY strategy;
+    public STRATEGY strategy;
 
     public enum STRATEGY {
         CONSTANT,
@@ -47,17 +54,7 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public JdbcTgChatRepository chatrepo() {
-        return new JdbcTgChatRepository(template());
-    }
-
-    @Bean
-    public JdbcLinkRepository linkrepo() {
-        return new JdbcLinkRepository(template());
-    }
-
-    @Bean
-    public StackOverflowClient beanStack() {
+    public StackOverflowClient beanStack1() {
         WebClient restClient =
             WebClient.builder().baseUrl("https://api.stackexchange.com/").filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
@@ -67,7 +64,7 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public GitHubClient beanGit() {
+    public GitHubClient beanGit1() {
         WebClient restClient =
             WebClient.builder().baseUrl("https://api.github.com/").filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);

@@ -10,9 +10,9 @@ import org.springframework.web.service.annotation.PostExchange;
 public interface ScrapperChatClient {
 
     @PostExchange
-    ResponseEntity post(@PathVariable Long id);
+    ResponseEntity<?> post(@PathVariable Long id);
 
     @DeleteExchange
-    ResponseEntity delete(@PathVariable Long id);
+    ResponseEntity<?> delete(@PathVariable Long id);
 
 }

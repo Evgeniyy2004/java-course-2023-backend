@@ -54,16 +54,15 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.github.pengrad</groupId>
-                <artifactId>java-telegram-bot-api</artifactId>
-                <version>${java-telegram-bot-api.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.wiremock</groupId>
                 <artifactId>wiremock-standalone</artifactId>
                 <version>${wiremock.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.github.pengrad</groupId>
+                <artifactId>java-telegram-bot-api</artifactId>
+                <version>${java-telegram-bot-api.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>testcontainers-bom</artifactId>
@@ -130,7 +129,6 @@
             <artifactId>hibernate-core</artifactId>
             <version>6.4.1.Final</version>
         </dependency>
-
 
 
     </dependencies>
