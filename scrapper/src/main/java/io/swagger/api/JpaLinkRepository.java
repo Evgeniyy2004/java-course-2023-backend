@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -71,7 +72,7 @@ public interface JpaLinkRepository extends CrudRepository<LinkResponse,Long> {
         var now = new Timestamp(System.currentTimeMillis());
         var query =
             manager.createNativeQuery("select (id,link,updated) from connect where updated<" + time, ArrayList.class);
-        var query1 = manager.createNativeQuery("update connect set update=? where update<?");
+        var query1 = manager.createNativeQuery("update connect set updated=? where update<?");
         query1.setParameter(1, time);
         query1.setParameter(2, now);
         manager.getTransaction().begin();
@@ -109,13 +110,18 @@ public interface JpaLinkRepository extends CrudRepository<LinkResponse,Long> {
     }
 
 
+    @Query(value = "insert into connect (id,link,updated) values (:id,:link,:time)", nativeQuery = true)
     void save(Long id, String link, Timestamp time);
 
+    @Query(value = "update connect set updated=:time where id=:id and link =: link")
+    void update (Long id, String link, Timestamp time);
 
+    @Query("select u from  connect u where u.id=:id")
     List<LinkResponse> findAllById(Long id) ;
 
-
+    @Query("delete from  connect  where id=:id and link=:link")
     void delete(Long id, String link);
 
-
+    @Query("select u from connect where updated<time")
+    List<LinkResponse> findByTime(Timestamp time);
 }
