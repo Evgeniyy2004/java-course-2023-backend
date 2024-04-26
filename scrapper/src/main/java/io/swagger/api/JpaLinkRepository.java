@@ -18,7 +18,6 @@ import org.springframework.stereotype.Repository;
 
 @Table(name = "id")
 @SecondaryTable(name = "connect")
-@Repository
 @SuppressWarnings("all")
 public interface JpaLinkRepository extends CrudRepository<LinkResponse,Long> {
 
@@ -116,11 +115,15 @@ public interface JpaLinkRepository extends CrudRepository<LinkResponse,Long> {
     @Query(value = "update connect set updated=:time where id=:id and link =: link")
     void update (Long id, String link, Timestamp time);
 
+
+
     @Query("select u from  connect u where u.id=:id")
     List<LinkResponse> findAllById(Long id) ;
 
+
     @Query("delete from  connect  where id=:id and link=:link")
     void delete(Long id, String link);
+
 
     @Query("select u from connect where updated<time")
     List<LinkResponse> findByTime(Timestamp time);

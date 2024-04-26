@@ -4,6 +4,7 @@ import edu.java.botclient.UpdatesClient;
 import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import io.swagger.api.JdbcLinkRepository;
+import io.swagger.api.JdbcLinkService;
 import io.swagger.api.JdbcTgChatRepository;
 import io.swagger.api.JpaChatRepository;
 import io.swagger.api.JpaLinkRepository;
@@ -18,6 +19,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
@@ -31,8 +33,9 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import reactor.util.retry.RetryBackoffSpec;
 
-@ComponentScan
+@ComponentScan({"io.swagger.api"})
 @Configuration
+@EnableJpaRepositories({"io.swagger.api"})
 @PropertySource("classpath:application.yml")
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
 public class ApplicationConfig {
@@ -49,15 +52,8 @@ public class ApplicationConfig {
         EXPONENTIAL
     }
 
-    @Bean
-    public JdbcTgChatRepository chatrepo() {
-        return new JdbcTgChatRepository(template());
-    }
 
-    @Bean
-    public JdbcLinkRepository linkrepo() {
-        return new JdbcLinkRepository(template());
-    }
+
 
     @Bean
     public StackOverflowClient beanStack() {
@@ -151,13 +147,6 @@ public class ApplicationConfig {
             "hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         return hibernateProperties;
     }
-
-    @Bean
-    public JpaChatRepository jpaChat() {
-
-        return new JpaChatRepository(sessionFactory().getObject().createEntityManager());
-    }
-
 
 
     @Bean

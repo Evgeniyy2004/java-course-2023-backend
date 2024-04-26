@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.Collection;
 import javax.servlet.http.HttpServletRequest;
@@ -137,13 +138,13 @@ public class LinksApiController implements LinksApi {
         @Parameter(in = ParameterIn.DEFAULT, description = "", required = true, schema = @Schema()) @Valid @RequestBody
         AddLinkRequest body
     ) {
-
         if (bucket.tryConsume(1)) {
             try {
+                var time = new Timestamp(System.currentTimeMillis());
                 if (type == AccessType.JDBC) {
-                    jdbcService.add(tgChatId, body.getLink());
+                    jdbcService.add(tgChatId, body.getLink(),time);
                 } else {
-                    jpaService.add(tgChatId, body.getLink());
+                    jpaService.add(tgChatId, body.getLink(),time);
                 }
             } catch (ApiException e) {
                 if (e.getCode() == ERROR) {
