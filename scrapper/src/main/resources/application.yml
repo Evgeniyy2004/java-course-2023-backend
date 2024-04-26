@@ -14,6 +14,9 @@ link:
   use: JDBC
 chat:
   use: JDBC
+scheduler:
+  use: JDBC
+
 app:
   codes: 429, 503
   strategy: CONSTANT

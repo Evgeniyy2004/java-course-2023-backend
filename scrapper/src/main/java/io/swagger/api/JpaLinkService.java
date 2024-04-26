@@ -31,7 +31,7 @@ public class JpaLinkService implements LinkService {
         var check = repo.existsByIdAndUrl(tgChatId,  url);
         if (!check){
             throw  new ApiException(409,"Ссылка не отслеживается");
-        } repo.remove(tgChatId, url.toString());
+        } repo.delete(tgChatId, url);
     }
 
     @Override
