@@ -1,52 +1,28 @@
 package io.swagger.api;
 
 import edu.java.model.ApiException;
+import edu.java.model.LinkResponse;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Table;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+@Table(name="id")
 @Repository
-public class JpaChatRepository {
+public interface JpaChatRepository extends JpaRepository<LinkResponse,Long> {
 
-    @PersistenceContext
-    private EntityManager manager;
+    @Override
+    boolean existsById(@NotNull Long id);
 
-    private static final int CONFLICT = 409;
+    @Query(value = "insert into id (id) values (:id)", nativeQuery = true)
+    void save(Long id);
 
-    private static final int NOTFOUND = 404;
 
-    private static final String QUERY = "select * from id where id=?";
-
-    public JpaChatRepository(EntityManager manager) {
-        this.manager = manager;
-    }
-
-    @Transactional
-    public void save(Long id) throws ApiException {
-        var act = manager.createNativeQuery(QUERY);
-        act.setParameter(1, id);
-        var res = act.getResultList();
-        if (res.size() != 0) {
-            throw new ApiException(CONFLICT, "Вы не можете повторно зарегистрировать чат");
-        }
-        var insert = manager.createNativeQuery("insert into id (id) values " + "(" + id + ")");
-        manager.getTransaction().begin();
-        insert.executeUpdate();
-        manager.getTransaction().commit();
-    }
-
-    @Transactional
-    public void remove(Long id) throws ApiException {
-        var act = manager.createNativeQuery(QUERY);
-        act.setParameter(1, id);
-        var res = act.getResultList();
-        if (res.isEmpty()) {
-            throw new ApiException(NOTFOUND, "Чат не существует");
-        }
-        var insert = manager.createNativeQuery("delete from id where id=" + id);
-        manager.getTransaction().begin();
-        insert.executeUpdate();
-        manager.getTransaction().commit();
-    }
+    @Query(value = "delete from id where id=:id", nativeQuery = true)
+    void remove(Long id);
 }

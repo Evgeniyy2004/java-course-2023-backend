@@ -150,8 +150,8 @@ public class ApplicationConfig {
 
 
     @Bean
-    public JpaLinkService jpaChatService(JpaLinkRepository repo) {
-        return new JpaLinkService(repo);
+    public JpaLinkService jpaChatService(JpaLinkRepository repo, JpaChatRepository repo1) {
+        return new JpaLinkService(repo, repo1);
     }
 
     @Bean

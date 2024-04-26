@@ -115,7 +115,8 @@ public interface JpaLinkRepository extends CrudRepository<LinkResponse,Long> {
     @Query(value = "update connect set updated=:time where id=:id and link =: link")
     void update (Long id, String link, Timestamp time);
 
-
+    @Query("select count(e)>0 from connect e where e.id=:id and e.link=:link")
+    boolean existsByIdAndUrl(Long id, String link);
 
     @Query("select u from  connect u where u.id=:id")
     List<LinkResponse> findAllById(Long id) ;

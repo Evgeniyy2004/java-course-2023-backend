@@ -17,7 +17,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 public class JpaLinkTest extends IntegrationTest {
 
 
-    private final JpaChatRepository chatRepository = new JpaChatRepository(em);
+    private final JpaChatRepository chatRepository = new JpaChatRepository();
 
     private final JpaLinkRepository linkRepository = new JpaLinkRepository(em);
 

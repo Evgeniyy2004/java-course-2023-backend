@@ -2,6 +2,8 @@ package listener;
 
 import edu.java.botclient.UpdatesClient;
 import edu.java.model.LinkUpdate;
+import io.swagger.api.JdbcLinkRepository;
+import io.swagger.api.JpaLinkRepository;
 import io.swagger.api.LinkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -16,7 +18,10 @@ public class LinkUpdaterScheduler {
     UpdatesClient client;
 
     @Autowired
-    LinkRepository repo;
+    JdbcLinkRepository repo;
+
+    @Autowired
+    JpaLinkRepository repo1;
 
     @Scheduled(fixedDelayString = "86400s")
     public void update() {
