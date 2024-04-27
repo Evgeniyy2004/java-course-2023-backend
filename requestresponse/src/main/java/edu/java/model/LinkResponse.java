@@ -17,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 @Table(name="connect")
 @Entity
 public class LinkResponse {
+
     @JsonProperty("id")
     @Id
     @Column(name="id")
@@ -43,6 +44,10 @@ public class LinkResponse {
 
     public Long getId() {
         return id;
+    }
+
+    public Timestamp getTime() {
+        return time;
     }
 
     public void setTime(Timestamp time){
