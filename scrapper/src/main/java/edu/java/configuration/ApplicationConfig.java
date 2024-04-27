@@ -7,6 +7,7 @@ import io.swagger.api.JdbcLinkRepository;
 import io.swagger.api.JdbcLinkService;
 import io.swagger.api.JdbcTgChatRepository;
 import io.swagger.api.JpaChatRepository;
+import io.swagger.api.JpaChatService;
 import io.swagger.api.JpaLinkRepository;
 import io.swagger.api.JpaLinkService;
 import java.time.Duration;
@@ -150,9 +151,16 @@ public class ApplicationConfig {
 
 
     @Bean
-    public JpaLinkService jpaChatService(JpaLinkRepository repo, JpaChatRepository repo1) {
+    public JpaLinkService jpaLinkService(JpaLinkRepository repo, JpaChatRepository repo1) {
         return new JpaLinkService(repo, repo1);
     }
+
+    @Bean
+    public JpaChatService jpaChatService(JpaChatRepository repo) {
+        return new JpaChatService(repo);
+    }
+
+
 
     @Bean
     public JdbcTemplate template() {
