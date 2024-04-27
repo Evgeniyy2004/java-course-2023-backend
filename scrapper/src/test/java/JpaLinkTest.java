@@ -8,16 +8,20 @@ import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,22 +29,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.sql.Timestamp;
 
 @Testcontainers
+@ContextConfiguration(classes = TestConfig.class)
+@RunWith(SpringRunner.class)
 public class JpaLinkTest extends IntegrationTest {
 
-    @TestConfiguration
-    @EnableJpaRepositories({"io.swagger.api"})
-    static class TestConfig {
-        @Bean
-        public JpaLinkService jpaLinkService(JpaLinkRepository repo, JpaChatRepository repo1) {
-            return new JpaLinkService(repo, repo1);
-        }
-
-        @Bean
-        public JpaChatService jpaChatService(JpaChatRepository repo) {
-            return new JpaChatService(repo);
-        }
-
-    }
     @Autowired
     private JpaChatService chatService;
 
@@ -49,7 +41,7 @@ public class JpaLinkTest extends IntegrationTest {
 
 
 
-    @org.junit.jupiter.api.Test
+    @org.junit.Test
     @DirtiesContext
     public void addTest() {
         try {
@@ -65,7 +57,7 @@ public class JpaLinkTest extends IntegrationTest {
         }
     }
 
-    @org.junit.jupiter.api.Test
+    @org.junit.Test
     @DirtiesContext
     public void findAllTest() throws ApiException {
             chatService.register(1L);
@@ -79,7 +71,7 @@ public class JpaLinkTest extends IntegrationTest {
 
     }
 
-    @org.junit.jupiter.api.Test
+    @org.junit.Test
     @DirtiesContext
     public void failedRemoveTest() {
         try {

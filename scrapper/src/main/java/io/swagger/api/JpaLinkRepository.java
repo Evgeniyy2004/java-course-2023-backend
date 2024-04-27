@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Repository;
 @Table(name = "id")
 @SecondaryTable(name = "connect")
 @SuppressWarnings("all")
-public interface JpaLinkRepository extends CrudRepository<LinkResponse,Long> {
+public interface JpaLinkRepository extends JpaRepository<LinkResponse,Long> {
 
     @Query(value = "insert into connect (id,link,updated) values (:id,:link,:time)", nativeQuery = true)
     void save(Long id, String link, Timestamp time);

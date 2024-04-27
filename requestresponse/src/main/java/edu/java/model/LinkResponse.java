@@ -2,20 +2,30 @@ package edu.java.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.sql.Timestamp;
 import java.util.Objects;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import org.springframework.validation.annotation.Validated;
 
 /**
  * LinkResponse
  */
 @Validated
-
+@Entity
 public class LinkResponse {
     @JsonProperty("id")
+    @Id
+    @Column(name="id")
     private Long id = null;
 
     @JsonProperty("url")
+    @Column(name="link")
     private String url = null;
+
+    @Column(name="updated")
+    private Timestamp time;
 
     public LinkResponse id(Long id) {
         this.id = id;
@@ -33,6 +43,9 @@ public class LinkResponse {
         return id;
     }
 
+    public void setTime(Timestamp time){
+        this.time= time;
+    }
     public void setId(Long id) {
         this.id = id;
     }

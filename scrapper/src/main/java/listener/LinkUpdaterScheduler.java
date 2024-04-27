@@ -7,7 +7,7 @@ import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import io.swagger.api.JdbcLinkRepository;
 import io.swagger.api.JpaLinkRepository;
-import io.swagger.api.LinkRepository;
+import java.sql.Timestamp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -15,11 +15,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 
 @Service
 @PropertySource("classpath:application.yml")
@@ -27,13 +22,12 @@ import java.util.List;
 @EnableScheduling
 public class LinkUpdaterScheduler {
 
-    public enum AccessType{
+    public enum AccessType {
         JPA, JDBC
     }
 
     @Value("scheduler.use")
     private AccessType type;
-
 
     @Autowired
     private UpdatesClient client;
@@ -55,6 +49,12 @@ public class LinkUpdaterScheduler {
         var time = new Timestamp(System.currentTimeMillis() - 3600000);
         if (type == AccessType.JPA) {
             var res = repo1.findByTime(time);
+            for (LinkResponse lr : res) {
+                var request = new LinkUpdate();
+                request.setId(lr.getId());
+                request.setUrl(lr.getUrl());
+                client.post(request);
+            }
         } else {
             var result = repo.update();
             for (Long id : result.keySet()) {
