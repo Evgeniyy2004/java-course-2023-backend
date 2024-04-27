@@ -7,12 +7,14 @@ import java.util.Objects;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import org.springframework.validation.annotation.Validated;
 
 /**
  * LinkResponse
  */
 @Validated
+@Table(name="connect")
 @Entity
 public class LinkResponse {
     @JsonProperty("id")
