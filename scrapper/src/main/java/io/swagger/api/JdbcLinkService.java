@@ -8,9 +8,13 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class JdbcLinkService implements LinkService {
-
-
     private JdbcLinkRepository repo;
+
+    @Autowired
+    public JdbcLinkService(JdbcLinkRepository repo) {
+        this.repo = repo;
+    }
+
 
     @Override
     public void add(long tgChatId, String url, Timestamp time) throws ApiException {

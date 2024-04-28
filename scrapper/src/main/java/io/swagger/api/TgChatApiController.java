@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Duration;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,9 +34,10 @@ public class TgChatApiController implements TgChatApi {
     private static final String HEADER = "Accept";
 
     private ObjectMapper objectMapper;
-
+  
     private HttpServletRequest request;
 
+    private final Bucket bucket;
 
     @Autowired
     private JdbcTgChatService jdbcService;
@@ -90,9 +90,9 @@ public class TgChatApiController implements TgChatApi {
                 var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.NOT_FOUND);
                 return res;
             }
-            return new ResponseEntity(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            return new ResponseEntity(HttpStatus.TOO_MANY_REQUESTS);
+            return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
         }
     }
 
@@ -113,9 +113,9 @@ public class TgChatApiController implements TgChatApi {
                 var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.CONFLICT);
                 return res;
             }
-            return new ResponseEntity(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            return new ResponseEntity(HttpStatus.TOO_MANY_REQUESTS);
+            return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
         }
     }
 

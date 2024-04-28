@@ -8,8 +8,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class JdbcTgChatService implements TgChatService {
 
+
+    private final JdbcTgChatRepository repo;
+
+
     @Autowired
-    private JdbcTgChatRepository repo;
+    public JdbcTgChatService(JdbcTgChatRepository repo) {
+        this.repo = repo;
+    }
 
     @Override
     public void register(long tgChatId) throws ApiException {

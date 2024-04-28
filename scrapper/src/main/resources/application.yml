@@ -1,6 +1,7 @@
 spring:
   application:
     name: scrapper
+
   datasource:
 
     driver-class-name: org.postgresql.Driver
@@ -16,10 +17,27 @@ chat:
   use: JDBC
 scheduler:
   use: JDBC
+management:
+  metrics:
+      tags:
+        application:
+          ${spring.application.name}
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info
+  server:
+    port: 53518
+
 
 app:
   codes: 429, 503
   strategy: CONSTANT
+  topic: 1
+  use-queue: false
+
+app1:
+  server: localhost:9092
 server:
   port: 8080
 

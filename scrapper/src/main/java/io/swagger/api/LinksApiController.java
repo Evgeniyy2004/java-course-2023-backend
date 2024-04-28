@@ -25,8 +25,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen",
@@ -50,9 +50,9 @@ public class LinksApiController implements LinksApi {
     private JdbcLinkService jdbcService;
 
     private JpaLinkService jpaService;
+
     private final ObjectMapper objectMapper;
     private final Bucket bucket;
-    private final HttpServletRequest request;
 
     private static final int ERROR = 404;
 
@@ -75,9 +75,9 @@ public class LinksApiController implements LinksApi {
     }
 
     @SuppressWarnings("MultipleStringLiterals")
-    public ResponseEntity<LinkResponse> linksDelete(
+    public ResponseEntity<?> linksDelete(
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
-        @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId,
+        @PathVariable("id") Long tgChatId,
         @Parameter(in = ParameterIn.DEFAULT, description = "", required = true, schema = @Schema()) @Valid @RequestBody
         RemoveLinkRequest body
     ) {
@@ -101,9 +101,9 @@ public class LinksApiController implements LinksApi {
         }
     }
 
-    public ResponseEntity<ListLinksResponse> linksGet(
+    public ResponseEntity<?> linksGet(
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
-        @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId
+        @PathVariable("id") Long tgChatId
     ) {
         if (bucket.tryConsume(1)) {
             try {
@@ -132,9 +132,9 @@ public class LinksApiController implements LinksApi {
         }
     }
 
-    public ResponseEntity<LinkResponse> linksPost(
+    public ResponseEntity<?> linksPost(
         @Parameter(in = ParameterIn.HEADER, description = "", required = true, schema = @Schema())
-        @RequestHeader(value = "Tg-Chat-Id", required = true) Long tgChatId,
+        @PathVariable("id") Long tgChatId,
         @Parameter(in = ParameterIn.DEFAULT, description = "", required = true, schema = @Schema()) @Valid @RequestBody
         AddLinkRequest body
     ) {

@@ -8,6 +8,10 @@ import edu.java.siteclients.StackOverflowClient;
 import io.swagger.api.JdbcLinkRepository;
 import io.swagger.api.JpaLinkRepository;
 import java.sql.Timestamp;
+import edu.java.configuration.ApplicationConfig;
+import edu.java.model.LinkUpdate;
+import io.swagger.api.LinkRepository;
+import io.swagger.api.ScrapperQueueProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -54,6 +58,7 @@ public class LinkUpdaterScheduler {
                 request.setId(lr.getId());
                 request.setUrl(lr.getUrl());
                 client.post(request);
+
             }
         } else {
             var result = repo.update();

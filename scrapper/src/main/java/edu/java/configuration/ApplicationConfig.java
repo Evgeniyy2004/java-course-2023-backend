@@ -14,6 +14,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Properties;
 import javax.sql.DataSource;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -43,21 +44,26 @@ public class ApplicationConfig {
 
     private static final String BASE = "http://localhost:8081/";
     @Value("${app.codes}")
-    ArrayList<Integer> codes;
+    public ArrayList<Integer> codes;
+
+    @Value("${app.topic}")
+    @Getter
+    private static String topic;
+
+    @Value("${app.use-queue}")
+    @Getter
+    private static boolean useQueue;
 
     @Value("${app.strategy}")
-    STRATEGY strategy;
+    public STRATEGY strategy;
 
     public enum STRATEGY {
         CONSTANT,
         EXPONENTIAL
     }
 
-
-
-
     @Bean
-    public StackOverflowClient beanStack() {
+    public StackOverflowClient beanStack1() {
         WebClient restClient =
             WebClient.builder().baseUrl("https://api.stackexchange.com/").filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
@@ -66,7 +72,7 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public GitHubClient beanGit() {
+    public GitHubClient beanGit1() {
         WebClient restClient =
             WebClient.builder().baseUrl("https://api.github.com/").filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
