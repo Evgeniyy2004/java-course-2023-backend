@@ -148,22 +148,20 @@ public class Bot extends TelegramBot {
                 this.execute(res);
             } else {
                 if (pattern3.matcher(command).find()) {
-                    var link = Arrays.stream(command.replace(" ","").split("/track"))
-                        .filter(x -> !Objects.equals(x, "")).toArray(String[]::new);
-                    if (link.length == 0) {
+                    var link = command.replaceFirst("/track","").replace(" ","");
+                    if (link.length() == 0) {
                         incorrect(id);
                     } else {
-                        check(update.message().chat().id(), link[0]);
+                        check(update.message().chat().id(), link);
                     }
                 } else {
-                    var link = Arrays.stream(command.replace(" ","").split("/untrack"))
-                        .filter(x -> !Objects.equals(x, "")).toArray(String[]::new);
-                    if (link.length == 0) {
+                    var link = command.replaceFirst("/untrack","").replace(" ","");
+                    if (link.length()== 0) {
                         incorrect(id);
                         return;
                     }
                     var req = new RemoveLinkRequest();
-                    req.setLink(link[0]);
+                    req.setLink(link);
                     try {
                         links.delete(id, req);
                         text = "Ссылка удалена.";

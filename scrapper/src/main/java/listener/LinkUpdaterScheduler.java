@@ -28,7 +28,7 @@ public class LinkUpdaterScheduler {
         this.client = client;
     }
 
-    @Scheduled(fixedDelayString = "86400s")
+    @Scheduled(fixedDelayString = "PT01s")
     public void update() {
         var allChanges = repo.update();
         for (Long id : allChanges.keySet()) {
