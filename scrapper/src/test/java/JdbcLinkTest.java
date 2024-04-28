@@ -30,9 +30,7 @@ public class JdbcLinkTest extends IntegrationTest {
     private final JdbcLinkRepository linkRepository = new JdbcLinkRepository(new JdbcTemplate(data));
 
     @Test
-    @Transactional
     @DirtiesContext
-    @Rollback
     void addTest() {
         try {
             chatRepository.save(1L);
@@ -49,9 +47,7 @@ public class JdbcLinkTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
     @DirtiesContext
-    @Rollback
     void findAllTest() {
         try {
             chatRepository.save(1L);
@@ -68,9 +64,7 @@ public class JdbcLinkTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
     @DirtiesContext
-    @Rollback
     void failedRemoveTest() throws ApiException {
         try {
             chatRepository.save(1L);

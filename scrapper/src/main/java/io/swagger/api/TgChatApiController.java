@@ -14,6 +14,9 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -22,24 +25,47 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Validated
-public class
-TgChatApiController implements TgChatApi {
+@PropertySource("classpath:application.yml")
+@ConfigurationProperties(prefix = "chat")
+public class TgChatApiController implements TgChatApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(TgChatApiController.class);
 
     private static final String HEADER = "Accept";
 
-    @Autowired
     private ObjectMapper objectMapper;
+  
+    private HttpServletRequest request;
 
     private final Bucket bucket;
 
     @Autowired
-    private JdbcTgChatService chatService;
+    private JdbcTgChatService jdbcService;
+
+    @Autowired
+    private JpaChatService jpaService;
+
+    public enum AccessType {
+        JDBC, JPA,
+    }
+
+    @Value("${chat.use}")
+    private AccessType type;
+    private final Bucket bucket;
+
+
 
     @org.springframework.beans.factory.annotation.Autowired
-    public TgChatApiController(ObjectMapper objectMapper) {
+    public TgChatApiController(
+        ObjectMapper objectMapper,
+        HttpServletRequest request,
+        JpaChatService jpa,
+        JdbcTgChatService jdbc
+    ) {
         this.objectMapper = objectMapper;
+        this.request = request;
+        this.jpaService = jpa;
+        this.jdbcService = jdbc;
         Bandwidth limit =
             Bandwidth.classic(2 * 2 * 2 * 2 + 2 * 2, Refill.greedy(2 * 2 * 2 * 2 + 2 * 2, Duration.ofMinutes(1)));
         this.bucket = Bucket.builder()
@@ -52,9 +78,14 @@ TgChatApiController implements TgChatApi {
         @Parameter(in = ParameterIn.PATH, description = "", required = true, schema = @Schema()) @PathVariable("id")
         Long id
     ) {
+
         if (bucket.tryConsume(1)) {
             try {
-                chatService.unregister(id);
+                if (type == AccessType.JDBC) {
+                jdbcService.unregister(id);
+            } else {
+                jpaService.unregister(id);
+            }
             } catch (ApiException e) {
                 var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.NOT_FOUND);
                 return res;
@@ -70,9 +101,14 @@ TgChatApiController implements TgChatApi {
         @Parameter(in = ParameterIn.PATH, description = "", required = true, schema = @Schema()) @PathVariable("id")
         Long id
     ) {
+
         if (bucket.tryConsume(1)) {
             try {
-                chatService.register(id);
+                if (type == AccessType.JDBC) {
+                jdbcService.register(id);
+            } else {
+                jpaService.register(id);
+            }
             } catch (ApiException e) {
                 var res = new ResponseEntity<ApiErrorResponse>(HttpStatus.CONFLICT);
                 return res;

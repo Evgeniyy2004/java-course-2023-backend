@@ -120,7 +120,7 @@ public class Bot extends TelegramBot {
                     } else {
                         text = "Текущий список отслеживаемых ссылок:\n";
                         for (LinkResponse l : body) {
-                            text += l.getUrl() + "\n";
+                            text += l.getKey().getUrl() + "\n";
                         }
                     }
                 }

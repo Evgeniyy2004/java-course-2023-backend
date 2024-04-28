@@ -13,10 +13,16 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
+import java.sql.Timestamp;
 import java.time.Duration;
+import java.util.Collection;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,24 +31,43 @@ import org.springframework.web.bind.annotation.RestController;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen",
                             date = "2024-02-27T16:17:37.541889551Z[GMT]")
+@PropertySource("classpath:application.yml")
+@ConfigurationProperties(prefix = "link")
 @RestController
 public class LinksApiController implements LinksApi {
+
+    public enum AccessType {
+        JDBC, JPA,
+    }
+
+    @Value("${link.use}")
+    private AccessType type;
 
     private static final Logger LOG = LoggerFactory.getLogger(LinksApiController.class);
 
     private static final int NOT_FOUND = 404;
 
-    private final JdbcLinkService linkService;
+    private JdbcLinkService jdbcService;
 
+    private JpaLinkService jpaService;
+
+    private final HttpServletRequest request;
     private final ObjectMapper objectMapper;
     private final Bucket bucket;
 
     private static final int ERROR = 404;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public LinksApiController(ObjectMapper objectMapper, JdbcLinkService service) {
-        this.linkService = service;
+    public LinksApiController(
+        ObjectMapper objectMapper,
+        HttpServletRequest request,
+        JdbcLinkService jdbc,
+        JpaLinkService jpa
+    ) {
         this.objectMapper = objectMapper;
+        this.request = request;
+        this.jdbcService = jdbc;
+        this.jpaService = jpa;
         Bandwidth limit =
             Bandwidth.classic(2 * 2 * 2 * 2 + 2 * 2, Refill.greedy(2 * 2 * 2 * 2 + 2 * 2, Duration.ofMinutes(1)));
         this.bucket = Bucket.builder()
@@ -59,7 +84,11 @@ public class LinksApiController implements LinksApi {
     ) {
         if (bucket.tryConsume(1)) {
             try {
-                linkService.remove(tgChatId, body.getLink());
+                if (type == AccessType.JDBC) {
+                    jdbcService.remove(tgChatId, body.getLink());
+                } else {
+                    jpaService.remove(tgChatId, body.getLink());
+                }
             } catch (ApiException e) {
                 if (e.getCode() == ERROR) {
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -79,11 +108,16 @@ public class LinksApiController implements LinksApi {
     ) {
         if (bucket.tryConsume(1)) {
             try {
-                var res = linkService.listAll(tgChatId);
+                Collection<URI> res;
+                if (type == AccessType.JDBC) {
+                    res = jdbcService.listAll(tgChatId);
+                } else {
+                    res = jpaService.listAll(tgChatId);
+                }
                 ListLinksResponse response = new ListLinksResponse();
                 for (URI uri : res) {
                     var curr = new LinkResponse();
-                    curr.setUrl(uri.toString());
+                    curr.getKey().setUrl(uri.toString());
                     response.addLinksItem(curr);
                 }
                 return new ResponseEntity<ListLinksResponse>(response, HttpStatus.OK);
@@ -107,7 +141,12 @@ public class LinksApiController implements LinksApi {
     ) {
         if (bucket.tryConsume(1)) {
             try {
-                linkService.add(tgChatId, body.getLink());
+                var time = new Timestamp(System.currentTimeMillis());
+                if (type == AccessType.JDBC) {
+                    jdbcService.add(tgChatId, body.getLink(),time);
+                } else {
+                    jpaService.add(tgChatId, body.getLink(),time);
+                }
             } catch (ApiException e) {
                 if (e.getCode() == ERROR) {
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);

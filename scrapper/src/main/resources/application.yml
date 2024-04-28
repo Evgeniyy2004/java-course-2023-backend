@@ -1,14 +1,26 @@
 spring:
+  data:
+    jpa:
+      repositories:
+        enabled: true
   application:
     name: scrapper
 
   datasource:
+
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5433/scrapper
     username: postgres
     password: postgres
+
   liquibase:
     enabled: false
+link:
+  use: JDBC
+chat:
+  use: JDBC
+scheduler:
+  use: JDBC
 management:
   metrics:
       tags:

@@ -3,22 +3,27 @@ package io.swagger.api;
 import edu.java.model.ApiException;
 import io.swagger.services.LinkService;
 import java.net.URI;
+import java.sql.Timestamp;
 import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
 public class JdbcLinkService implements LinkService {
-    private final JdbcLinkRepository repo;
+    private JdbcLinkRepository repo;
 
     @Autowired
     public JdbcLinkService(JdbcLinkRepository repo) {
         this.repo = repo;
     }
 
+
     @Override
-    public void add(long tgChatId, String url) throws ApiException {
+    public void add(long tgChatId, String url, Timestamp time) throws ApiException {
         repo.save(tgChatId, url.toString());
+    }
+
+    @Autowired
+    public JdbcLinkService(JdbcLinkRepository repo){
+        this.repo = repo;
     }
 
     @Override

@@ -3,6 +3,13 @@ package edu.java.configuration;
 import edu.java.botclient.UpdatesClient;
 import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
+import io.swagger.api.JdbcLinkRepository;
+import io.swagger.api.JdbcLinkService;
+import io.swagger.api.JdbcTgChatRepository;
+import io.swagger.api.JpaChatRepository;
+import io.swagger.api.JpaChatService;
+import io.swagger.api.JpaLinkRepository;
+import io.swagger.api.JpaLinkService;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -14,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
@@ -27,8 +35,9 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import reactor.util.retry.RetryBackoffSpec;
 
-@ComponentScan(basePackages = "io.swagger.api")
+@ComponentScan({"io.swagger.api"})
 @Configuration
+@EnableJpaRepositories({"io.swagger.api"})
 @PropertySource("classpath:application.yml")
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
 public class ApplicationConfig {
@@ -59,7 +68,6 @@ public class ApplicationConfig {
             WebClient.builder().baseUrl("https://api.stackexchange.com/").filter(withRetryableRequests()).build();
         WebClientAdapter adapter = WebClientAdapter.create(restClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
-
         return factory.createClient(StackOverflowClient.class);
     }
 
@@ -146,6 +154,19 @@ public class ApplicationConfig {
             "hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         return hibernateProperties;
     }
+
+
+    @Bean
+    public JpaLinkService jpaLinkService(JpaLinkRepository repo, JpaChatRepository repo1) {
+        return new JpaLinkService(repo, repo1);
+    }
+
+    @Bean
+    public JpaChatService jpaChatService(JpaChatRepository repo) {
+        return new JpaChatService(repo);
+    }
+
+
 
     @Bean
     public JdbcTemplate template() {
