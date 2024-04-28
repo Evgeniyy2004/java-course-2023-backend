@@ -55,8 +55,8 @@ public class LinkUpdaterScheduler {
             var res = repo1.findByTime(time);
             for (LinkResponse lr : res) {
                 var request = new LinkUpdate();
-                request.setId(lr.getId());
-                request.setUrl(lr.getUrl());
+                request.setId(lr.getKey().getId());
+                request.setUrl(lr.getKey().getUrl());
                 client.post(request);
 
             }

@@ -10,8 +10,10 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +24,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +32,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.sql.Timestamp;
 
 @Testcontainers
+@ExtendWith(SpringExtension.class)
+@EntityScan(basePackages = "edu.java.model")
 @ContextConfiguration(classes = TestConfig.class)
-@RunWith(SpringRunner.class)
 public class JpaLinkTest extends IntegrationTest {
 
     @Autowired
@@ -41,7 +45,7 @@ public class JpaLinkTest extends IntegrationTest {
 
 
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     @DirtiesContext
     public void addTest() {
         try {
@@ -57,7 +61,7 @@ public class JpaLinkTest extends IntegrationTest {
         }
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     @DirtiesContext
     public void findAllTest() throws ApiException {
             chatService.register(1L);
@@ -71,7 +75,7 @@ public class JpaLinkTest extends IntegrationTest {
 
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     @DirtiesContext
     public void failedRemoveTest() {
         try {

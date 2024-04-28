@@ -51,6 +51,7 @@ public class LinksApiController implements LinksApi {
 
     private JpaLinkService jpaService;
 
+    private final HttpServletRequest request;
     private final ObjectMapper objectMapper;
     private final Bucket bucket;
 
@@ -116,7 +117,7 @@ public class LinksApiController implements LinksApi {
                 ListLinksResponse response = new ListLinksResponse();
                 for (URI uri : res) {
                     var curr = new LinkResponse();
-                    curr.setUrl(uri.toString());
+                    curr.getKey().setUrl(uri.toString());
                     response.addLinksItem(curr);
                 }
                 return new ResponseEntity<ListLinksResponse>(response, HttpStatus.OK);

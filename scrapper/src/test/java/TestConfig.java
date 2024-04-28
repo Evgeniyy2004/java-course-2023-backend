@@ -10,8 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 
 @TestConfiguration
-@EntityScan("edu.java.model")
-@ComponentScan(basePackages="edu.java.model")
+@EntityScan(basePackages = "edu.java.model")
 @EnableJpaRepositories(basePackages = {"io.swagger.api"})
 public class TestConfig {
     @Bean

@@ -44,7 +44,7 @@ public class JpaLinkService implements LinkService {
         URI[] result = new URI[res.size()];
         for(int u=0; u < res.size();u++){
             try {
-                result[u] = new URI(res.get(u).getUrl());
+                result[u] = new URI(res.get(u).getKey().getUrl());
             } catch (URISyntaxException e){
                 throw  new ApiException(500,"Ошибка на сервере, повторите попытку позднее");
             }
