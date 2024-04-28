@@ -7,12 +7,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Repository
 @SuppressWarnings("all")
@@ -94,23 +96,31 @@ public class JdbcLinkRepository implements LinkRepository {
             var id = Long.parseLong(i.get(0).toString());
             if (current.startsWith("https://stackoverflow.com/questions/")) {
                 current = current.replace("https://stackoverflow.com/questions/", "");
-                var question = Long.parseLong(current.split("/")[0]);
-                var response = stack.fetchQuestion(question);
+                var question = Long.parseLong(Arrays.stream(current.split("/")).filter(x->!x.equals("")).toArray(x->new String[x])[0]);
+                try {
+                    var response = stack.fetchQuestion(question);
+
                 if (Timestamp.valueOf(response.time.toLocalDateTime()).after((Timestamp) i.get(2))) {
                     if (!result.containsKey(id)) {
                         result.put(id, new ArrayList<>());
                     }
                     result.get(id).add(i.get(1).toString());
                 }
+                } catch(WebClientResponseException e) {
+                    continue;
+                }
             } else {
                 current = current.replace("https://github.com/", "");
-                var repoAuthor = current.split("/");
+                var repoAuthor = Arrays.stream(current.split("/")).filter(x->!x.equals("")).toArray(x->new String[x]);
+                try {
                 var response = git.fetchRepository(repoAuthor[0], repoAuthor[1]);
                 if (Timestamp.valueOf(response.time.toLocalDateTime()).after((Timestamp) i.get(2))) {
                     if (!result.containsKey(id)) {
                         result.put(id, new ArrayList<>());
                     }
                     result.get(id).add(i.get(1).toString());
+                }} catch(WebClientResponseException e) {
+                    continue;
                 }
             }
         }

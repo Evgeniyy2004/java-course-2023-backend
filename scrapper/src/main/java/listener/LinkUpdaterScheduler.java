@@ -3,6 +3,7 @@ package listener;
 import edu.java.botclient.UpdatesClient;
 import edu.java.configuration.ApplicationConfig;
 import edu.java.model.LinkUpdate;
+import io.swagger.api.JdbcLinkRepository;
 import io.swagger.api.LinkRepository;
 import io.swagger.api.ScrapperQueueProducer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,10 @@ public class LinkUpdaterScheduler {
 
     private final ScrapperQueueProducer queue;
 
-    private final LinkRepository repo;
+    private final JdbcLinkRepository repo;
 
     @Autowired
-    public LinkUpdaterScheduler(UpdatesClient client, ScrapperQueueProducer queue, LinkRepository repo) {
+    public LinkUpdaterScheduler(UpdatesClient client, ScrapperQueueProducer queue, JdbcLinkRepository repo) {
         this.repo = repo;
         this.queue = queue;
         this.client = client;
