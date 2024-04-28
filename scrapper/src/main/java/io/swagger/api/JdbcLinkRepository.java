@@ -28,6 +28,7 @@ public class JdbcLinkRepository implements LinkRepository {
     @Autowired
     private  StackOverflowClient stack;
 
+    @Autowired
     public JdbcLinkRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }

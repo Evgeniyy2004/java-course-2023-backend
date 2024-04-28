@@ -33,6 +33,7 @@ TgChatApiController implements TgChatApi {
     private ObjectMapper objectMapper;
 
     private final Bucket bucket;
+
     @Autowired
     private JdbcTgChatService chatService;
 

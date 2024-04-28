@@ -22,10 +22,16 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
-
       - name: maven build
-        run: mvn -pl scrapper -am package
-
+        run: mvn -pl bot -am package
+      - name: create
+        run: docker build -t  scrapper . -f  scrapper/Dockerfile
+      - name: tag
+        run: docker tag scrapper ghcr.io/evgeniyy2004/spring-java-course-2023-backend:scrapper
+      - name: login
+        run: docker login ghcr.io -u Evgeniyy2004 -p ${{ secrets.GITHUB_TOKEN }}
+      - name: push
+        run: docker push ghcr.io/evgeniyy2004/spring-java-course-2023-backend:scrapper
       - id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
         if: ( github.event_name != 'workflow_dispatch' )
