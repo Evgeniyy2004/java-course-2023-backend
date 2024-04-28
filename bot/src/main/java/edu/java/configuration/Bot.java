@@ -200,10 +200,13 @@ public class Bot extends TelegramBot {
             incorrect(id);
         } else {
             try {
+                var req = new AddLinkRequest();
                 var uri = new URI(link);
                 var link1 = uri.toString();
+                req.setLink(link1);
                 if (link1.startsWith(BASEGIT)) {
-                    var userrepo = Arrays.stream(link1.replace(BASEGIT, "").split("/")).filter(x -> x != "").toArray(String[]::new);
+                    var userrepo = Arrays.stream(link1.replace(BASEGIT, "").split("/")).filter(x -> x != "")
+                        .toArray(String[]::new);
                     if (userrepo.length < 2) {
                         text = INCORRECT;
                         this.execute(new SendMessage(id, text));
@@ -211,19 +214,22 @@ public class Bot extends TelegramBot {
                     }
                     var user = userrepo[0];
                     var repo = userrepo[1];
-                    var result = git.fetchRepository(user, repo);
-                    if (result.name == null || result.owner == null || result.time == null) {
-                        incorrect(id);
+                    try {
+                        var result = git.fetchRepository(user, repo);
+                        if (result.name == null || result.owner == null || result.time == null) {
+                            incorrect(id);
+                            return;
+                        }
+                    } catch (WebClientResponseException e) {
+                        text = TOO_MANY;
+                        this.execute(new SendMessage(id, text));
                         return;
                     }
-                    var req = new AddLinkRequest();
-                    req.setLink(link1);
                     try {
                         links.post(id, req);
                         text = success;
                         counter.increment();
-                    }
-                    catch (WebClientResponseException e) {
+                    } catch (WebClientResponseException e) {
                         if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
                             text = REGISTRY;
                             counter.increment();
@@ -239,7 +245,8 @@ public class Bot extends TelegramBot {
                     this.execute(new SendMessage(id, text));
                     return;
                 }
-                var question = Arrays.stream(link1.replace(BASESTACK, "").split("/")).filter(x -> x != "").toArray(String[]::new);
+                var question =
+                    Arrays.stream(link1.replace(BASESTACK, "").split("/")).filter(x -> x != "").toArray(String[]::new);
                 if (question.length < 2) {
                     text = INCORRECT;
                     this.execute(new SendMessage(id, text));
@@ -247,42 +254,47 @@ public class Bot extends TelegramBot {
                 }
                 var id1 = Long.parseLong(question[0]);
                 var result = stack.fetchQuestion(id1);
-                if (result.time == null || result.link == null || result.title == null) {
-                    incorrect(id);
-                } else {
-                    var req = new AddLinkRequest();
-                    req.setLink(link1);
-                    try {
-                        links.post(id, req);
-                        text = success;
-                        counter.increment();
+                try {
+                    if (result.time == null || result.link == null || result.title == null) {
+                        incorrect(id);
+                        return;
                     }
-                    catch (WebClientResponseException e) {
-                        if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                            text = REGISTRY;
-                            counter.increment();
-                        } else if (e.getStatusCode() == HttpStatus.CONFLICT) {
-                            text = ALREADY;
-                            counter.increment();
-                        } else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
-                            text = TOO_MANY;
-                        } else {
-                            text = SERVER_ERROR;
-                        }
-                    }
+                } catch (WebClientResponseException e) {
+                    text = TOO_MANY;
                     this.execute(new SendMessage(id, text));
+                    return;
                 }
-            } catch (URISyntaxException e) {
-                text = INCORRECT;
+                req.setLink(link1);
+                try {
+                    links.post(id, req);
+                    text = success;
+                    counter.increment();
+                } catch (WebClientResponseException e) {
+                    if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                        text = REGISTRY;
+                        counter.increment();
+                    } else if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                        text = ALREADY;
+                        counter.increment();
+                    } else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+                        text = TOO_MANY;
+                    } else {
+                        text = SERVER_ERROR;
+                    }
+                }
                 this.execute(new SendMessage(id, text));
             }
+         catch(URISyntaxException e){
+            text = INCORRECT;
+            this.execute(new SendMessage(id, text));
         }
     }
+}
 
-    public void incorrect(Long id) {
-        var text = INCORRECT;
-        counter.increment();
-        this.execute(new SendMessage(id, text));
-    }
+public void incorrect(Long id) {
+    var text = INCORRECT;
+    counter.increment();
+    this.execute(new SendMessage(id, text));
+}
 }
 
