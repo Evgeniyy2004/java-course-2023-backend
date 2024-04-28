@@ -17,7 +17,10 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -120,13 +123,14 @@ public class Bot extends TelegramBot {
             if (pattern1.matcher(command).find()) {
                 try {
                     var all = links.get(update.message().chat().id());
-                    var body = (ListLinksResponse) all.getBody();
-                    if (body.getLinks().isEmpty()) {
+                    var map = ((LinkedHashMap)all.getBody()).get("links");
+                    var body = (ArrayList) map;
+                    if (body.isEmpty()) {
                         text = "Текущий список ссылок пуст";
                     } else {
                         text = "Текущий список отслеживаемых ссылок:\n";
-                        for (LinkResponse l : body.getLinks()) {
-                            text += l.getUrl() + "\n";
+                        for (Object l : body) {
+                            text += ((LinkedHashMap)l).get("url") + "\n";
                         }
                     }
                     res = new SendMessage(update.message().chat().id(), text);
@@ -144,14 +148,16 @@ public class Bot extends TelegramBot {
                 this.execute(res);
             } else {
                 if (pattern3.matcher(command).find()) {
-                    var link = Arrays.stream(command.split("/track")).filter(x -> x != "").toArray(String[]::new);
+                    var link = Arrays.stream(command.replace(" ","").split("/track"))
+                        .filter(x -> !Objects.equals(x, "")).toArray(String[]::new);
                     if (link.length == 0) {
                         incorrect(id);
                     } else {
                         check(update.message().chat().id(), link[0]);
                     }
                 } else {
-                    var link = Arrays.stream(command.split("/untrack")).filter(x -> x != "").toArray(String[]::new);
+                    var link = Arrays.stream(command.replace(" ","").split("/untrack"))
+                        .filter(x -> !Objects.equals(x, "")).toArray(String[]::new);
                     if (link.length == 0) {
                         incorrect(id);
                         return;
@@ -205,7 +211,7 @@ public class Bot extends TelegramBot {
                 var link1 = uri.toString();
                 req.setLink(link1);
                 if (link1.startsWith(BASEGIT)) {
-                    var userrepo = Arrays.stream(link1.replace(BASEGIT, "").split("/")).filter(x -> x != "")
+                    var userrepo = Arrays.stream(link1.replace(BASEGIT, "").split("/")).filter(x -> !Objects.equals(x, ""))
                         .toArray(String[]::new);
                     if (userrepo.length < 2) {
                         text = INCORRECT;
@@ -246,7 +252,7 @@ public class Bot extends TelegramBot {
                     return;
                 }
                 var question =
-                    Arrays.stream(link1.replace(BASESTACK, "").split("/")).filter(x -> x != "").toArray(String[]::new);
+                    Arrays.stream(link1.replace(BASESTACK, "").split("/")).filter(x -> !Objects.equals(x, "")).toArray(String[]::new);
                 if (question.length < 2) {
                     text = INCORRECT;
                     this.execute(new SendMessage(id, text));

@@ -29,7 +29,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import reactor.util.retry.RetryBackoffSpec;
 
-@ComponentScan(basePackages = "io.swagger.api")
+@ComponentScan(basePackages = "io.swagger")
 @Configuration
 @PropertySource("classpath:application.yml")
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
