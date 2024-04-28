@@ -36,8 +36,10 @@ import reactor.util.retry.RetryBackoffSpec;
 public class ApplicationConfig {
 
     private static final String BASE = "http://localhost:8081/";
+
     @Value("${app.codes}")
     public ArrayList<Integer> codes;
+
 
     @Value("${app.topic}")
     @Getter
@@ -55,6 +57,8 @@ public class ApplicationConfig {
         EXPONENTIAL
     }
 
+
+
     @Bean
     public StackOverflowClient beanStack1() {
         WebClient restClient =
@@ -64,6 +68,8 @@ public class ApplicationConfig {
 
         return factory.createClient(StackOverflowClient.class);
     }
+
+
 
     @Bean
     public GitHubClient beanGit1() {

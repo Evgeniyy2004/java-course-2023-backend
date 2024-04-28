@@ -231,7 +231,6 @@ public class Bot extends TelegramBot {
                     }
                     this.execute(new SendMessage(id, text));
                 }
-
             } catch (URISyntaxException e) {
                 text = INCORRECT;
                 this.execute(new SendMessage(id, text));
