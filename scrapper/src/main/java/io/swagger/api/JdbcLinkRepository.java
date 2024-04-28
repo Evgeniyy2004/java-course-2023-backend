@@ -58,7 +58,7 @@ public class JdbcLinkRepository implements LinkRepository {
         }
         var check = jdbcTemplate.queryForList("select id from connect where link=? and id=?", link, id).toArray();
         if (check.length == 0) {
-            throw new ApiException(400, "Ссылка не отслеживается");
+            throw new ApiException(409, "Ссылка не отслеживается");
         }
         jdbcTemplate.update("delete from connect where link =? and id = ?", link, id);
     }

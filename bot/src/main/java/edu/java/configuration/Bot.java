@@ -7,8 +7,8 @@ import com.pengrad.telegrambot.request.GetUpdates;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.model.AddLinkRequest;
 import edu.java.model.LinkResponse;
-import edu.java.model.RemoveLinkRequest;
 import edu.java.model.ListLinksResponse;
+import edu.java.model.RemoveLinkRequest;
 import edu.java.scrapperclient.ScrapperChatClient;
 import edu.java.scrapperclient.ScrapperLinksClient;
 import edu.java.siteclients.GitHubClient;
@@ -17,12 +17,12 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-
-
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Component
 @SuppressWarnings({"ReturnCount", "CyclomaticComplexity", "RegexpSinglelineJava"})
@@ -31,6 +31,10 @@ public class Bot extends TelegramBot {
     private static final String BASESTACK = "https://stackoverflow.com/questions/";
     private static final String BASEGIT = "https://github.com/";
 
+    private static final String SERVER_ERROR = "Ошибка на сервере. Повторите попытку позднее.";
+
+    private static final String SUCCESSREGISTER = "Чат зарегистрирован";
+    private static final String TOO_MANY = "Слишком большая нагрузка на сервер. Повторите попытку позднее.";
     private Counter counter;
 
     @Autowired
@@ -86,14 +90,20 @@ public class Bot extends TelegramBot {
             counter.increment();
             return;
         } else if (pattern2.matcher(command).find()) {
-            var entity = chat.post(update.message().chat().id());
-            if (entity.getStatusCode() == HttpStatus.CONFLICT) {
-                text = "Вы не можете быть зарегистрированы повторно";
-            } else {
-                text = "Вы успешно зарегистрировались";
+            try {
+                chat.post(update.message().chat().id());
+                res = new SendMessage(id, SUCCESSREGISTER);
+                counter.increment();
+            } catch (WebClientResponseException e) {
+                if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                    res = new SendMessage(id, "Вы уже зарегистрированы");
+                    counter.increment();
+                } else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+                    res = new SendMessage(id, TOO_MANY);
+                } else {
+                    res = new SendMessage(id, SERVER_ERROR);
+                }
             }
-            res = new SendMessage(id, text);
-            counter.increment();
             this.execute(res);
             return;
         }
@@ -105,12 +115,11 @@ public class Bot extends TelegramBot {
                 + "Введите /help, чтобы ознакомиться с допустимыми командами.";
             res = new SendMessage(update.message().chat().id(), text);
             this.execute(res);
+            counter.increment();
         } else {
             if (pattern1.matcher(command).find()) {
-                var all = links.get(update.message().chat().id());
-                if (all.getStatusCode() == HttpStatus.NOT_FOUND) {
-                    text = REGISTRY;
-                } else {
+                try {
+                    var all = links.get(update.message().chat().id());
                     var body = (ListLinksResponse) all.getBody();
                     if (body.getLinks().isEmpty()) {
                         text = "Текущий список ссылок пуст";
@@ -120,37 +129,54 @@ public class Bot extends TelegramBot {
                             text += l.getUrl() + "\n";
                         }
                     }
+                    res = new SendMessage(update.message().chat().id(), text);
+                    counter.increment();
+                } catch (WebClientResponseException e) {
+                    if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                        res = new SendMessage(id, REGISTRY);
+                        counter.increment();
+                    } else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+                        res = new SendMessage(id, TOO_MANY);
+                    } else {
+                        res = new SendMessage(id, SERVER_ERROR);
+                    }
                 }
-                res = new SendMessage(update.message().chat().id(), text);
                 this.execute(res);
-
             } else {
                 if (pattern3.matcher(command).find()) {
-                    var link = command.split("/track");
+                    var link = Arrays.stream(command.split("/track")).filter(x -> x != "").toArray(String[]::new);
                     if (link.length == 0) {
                         incorrect(id);
                     } else {
                         check(update.message().chat().id(), link[0]);
                     }
                 } else {
-                    var link = command.split("/untrack");
+                    var link = Arrays.stream(command.split("/untrack")).filter(x -> x != "").toArray(String[]::new);
                     if (link.length == 0) {
                         incorrect(id);
                         return;
                     }
                     var req = new RemoveLinkRequest();
                     req.setLink(link[0]);
-                    var done = links.delete(id, req);
-                    if (done.getStatusCode() == HttpStatus.NOT_FOUND) {
-                        text = REGISTRY;
-                        this.execute(new SendMessage(id, text));
-                    } else if (done.getStatusCode() == HttpStatus.CONFLICT) {
-                        text = "Ссылка не отслеживается.";
-                        this.execute(new SendMessage(id, text));
-                    } else {
+                    try {
+                        links.delete(id, req);
                         text = "Ссылка удалена.";
-                        this.execute(new SendMessage(id, text));
+                        counter.increment();
+                    } catch (WebClientResponseException e) {
+                        if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                            text = REGISTRY;
+                            counter.increment();
+                        } else if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                            text = "Ссылка не отслеживается.";
+                            counter.increment();
+                        } else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+                            text = TOO_MANY;
+                        } else {
+                            text = SERVER_ERROR;
+                        }
                     }
+
+                    this.execute(new SendMessage(id, text));
                 }
             }
 
@@ -177,7 +203,7 @@ public class Bot extends TelegramBot {
                 var uri = new URI(link);
                 var link1 = uri.toString();
                 if (link1.startsWith(BASEGIT)) {
-                    var userrepo = link1.replace(BASEGIT, "").split("/");
+                    var userrepo = Arrays.stream(link1.replace(BASEGIT, "").split("/")).filter(x -> x != "").toArray(String[]::new);
                     if (userrepo.length < 2) {
                         text = INCORRECT;
                         this.execute(new SendMessage(id, text));
@@ -192,23 +218,28 @@ public class Bot extends TelegramBot {
                     }
                     var req = new AddLinkRequest();
                     req.setLink(link1);
-                    var done = links.post(id, req);
-                    if (done.getStatusCode() == HttpStatus.NOT_FOUND) {
-                        text = REGISTRY;
-                        this.execute(new SendMessage(id, text));
-                    }
-                    if (done.getStatusCode() == HttpStatus.CONFLICT) {
-                        text = ALREADY;
-                        this.execute(new SendMessage(id, text));
-                    }
-                    if (done.getStatusCode() == HttpStatus.OK) {
+                    try {
+                        links.post(id, req);
                         text = success;
-                        this.execute(new SendMessage(id, text));
+                        counter.increment();
                     }
+                    catch (WebClientResponseException e) {
+                        if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                            text = REGISTRY;
+                            counter.increment();
+                        } else if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                            text = ALREADY;
+                            counter.increment();
+                        } else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+                            text = TOO_MANY;
+                        } else {
+                            text = SERVER_ERROR;
+                        }
+                    }
+                    this.execute(new SendMessage(id, text));
                     return;
-
                 }
-                var question = link1.replace(BASESTACK, "").split("/");
+                var question = Arrays.stream(link1.replace(BASESTACK, "").split("/")).filter(x -> x != "").toArray(String[]::new);
                 if (question.length < 2) {
                     text = INCORRECT;
                     this.execute(new SendMessage(id, text));
@@ -221,13 +252,23 @@ public class Bot extends TelegramBot {
                 } else {
                     var req = new AddLinkRequest();
                     req.setLink(link1);
-                    var response = links.post(id, req);
-                    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-                        text = REGISTRY;
-                    } else if (response.getStatusCode() == HttpStatus.CONFLICT) {
-                        text = ALREADY;
-                    } else {
+                    try {
+                        links.post(id, req);
                         text = success;
+                        counter.increment();
+                    }
+                    catch (WebClientResponseException e) {
+                        if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                            text = REGISTRY;
+                            counter.increment();
+                        } else if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                            text = ALREADY;
+                            counter.increment();
+                        } else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+                            text = TOO_MANY;
+                        } else {
+                            text = SERVER_ERROR;
+                        }
                     }
                     this.execute(new SendMessage(id, text));
                 }
@@ -240,6 +281,7 @@ public class Bot extends TelegramBot {
 
     public void incorrect(Long id) {
         var text = INCORRECT;
+        counter.increment();
         this.execute(new SendMessage(id, text));
     }
 }
