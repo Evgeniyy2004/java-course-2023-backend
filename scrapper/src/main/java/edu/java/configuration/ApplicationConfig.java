@@ -23,6 +23,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -34,10 +35,13 @@ import reactor.util.retry.RetryBackoffSpec;
 
 @ComponentScan(basePackages = "io.swagger")
 @Configuration
+@EnableScheduling
 @PropertySource("classpath:application.yml")
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
 public class ApplicationConfig {
     private static final String BASE = "http://localhost:8081/";
+
+
 
     @Value("${app.codes}")
     public ArrayList<Integer> codes;
@@ -59,7 +63,10 @@ public class ApplicationConfig {
         EXPONENTIAL
     }
 
-
+    @Bean
+    public LinkUpdaterScheduler scheduler(UpdatesClient client, ScrapperQueueProducer queue, JdbcLinkRepository repo) {
+        return new LinkUpdaterScheduler(client,queue,repo);
+    }
 
     @Bean
     public StackOverflowClient beanStack1() {

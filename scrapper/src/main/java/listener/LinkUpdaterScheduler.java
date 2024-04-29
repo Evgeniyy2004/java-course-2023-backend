@@ -21,14 +21,14 @@ public class LinkUpdaterScheduler {
 
     private final JdbcLinkRepository repo;
 
-    @Autowired
+
     public LinkUpdaterScheduler(UpdatesClient client, ScrapperQueueProducer queue, JdbcLinkRepository repo) {
         this.repo = repo;
         this.queue = queue;
         this.client = client;
     }
 
-    @Scheduled(fixedDelayString = "PT01s")
+    @Scheduled(fixedDelay = 3600000)
     public void update() {
         var allChanges = repo.update();
         for (Long id : allChanges.keySet()) {

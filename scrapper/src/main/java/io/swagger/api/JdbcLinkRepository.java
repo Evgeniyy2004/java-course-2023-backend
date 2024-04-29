@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import listener.LinkUpdaterScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -89,7 +90,7 @@ public class JdbcLinkRepository implements LinkRepository {
         var now = new Timestamp(System.currentTimeMillis());
         var res =
             jdbcTemplate.queryForList("select (id,link,updated) from connect where updated<?", ArrayList.class, time);
-        jdbcTemplate.update("update connect set update=? where update<?", now, time);
+        jdbcTemplate.update("update connect set updated=? where updated<?", now, time);
         HashMap<Long, Collection<String>> result = new HashMap<>();
         for (ArrayList i : res) {
             var current = i.get(1).toString();
