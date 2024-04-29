@@ -6,7 +6,6 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.GetUpdates;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.model.AddLinkRequest;
-import edu.java.model.LinkResponse;
 import edu.java.model.RemoveLinkRequest;
 import edu.java.scrapperclient.ScrapperChatClient;
 import edu.java.scrapperclient.ScrapperLinksClient;
@@ -16,9 +15,10 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +32,10 @@ public class Bot extends TelegramBot {
     private static final String BASESTACK = "https://stackoverflow.com/questions/";
     private static final String BASEGIT = "https://github.com/";
 
+    private static final String SERVER_ERROR = "Ошибка на сервере. Повторите попытку позднее.";
+
+    private static final String SUCCESSREGISTER = "Чат зарегистрирован";
+    private static final String TOO_MANY = "Слишком большая нагрузка на сервер. Повторите попытку позднее.";
     private Counter counter;
 
     @Autowired
@@ -87,14 +91,20 @@ public class Bot extends TelegramBot {
             counter.increment();
             return;
         } else if (pattern2.matcher(command).find()) {
-            var entity = chat.post(update.message().chat().id());
-            if (entity.getStatusCode() == HttpStatus.CONFLICT) {
-                text = "Вы не можете быть зарегистрированы повторно";
-            } else {
-                text = "Вы успешно зарегистрировались";
+            try {
+                chat.post(update.message().chat().id());
+                res = new SendMessage(id, SUCCESSREGISTER);
+                counter.increment();
+            } catch (WebClientResponseException e) {
+                if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                    res = new SendMessage(id, "Вы уже зарегистрированы");
+                    counter.increment();
+                } else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+                    res = new SendMessage(id, TOO_MANY);
+                } else {
+                    res = new SendMessage(id, SERVER_ERROR);
+                }
             }
-            res = new SendMessage(id, text);
-            counter.increment();
             this.execute(res);
             return;
         }
@@ -105,60 +115,70 @@ public class Bot extends TelegramBot {
             text = "Команда не распознана."
                 + "Введите /help, чтобы ознакомиться с допустимыми командами.";
             res = new SendMessage(update.message().chat().id(), text);
-            counter.increment();
             this.execute(res);
+            counter.increment();
         } else {
             if (pattern1.matcher(command).find()) {
-                var all = links.get(update.message().chat().id());
-                if (all.getStatusCode() == HttpStatus.NOT_FOUND) {
-                    text = REGISTRY;
-                } else {
-                    var map = (LinkedHashMap) all.getBody();
-                    var body = (List<LinkResponse>) (map.get("links"));
-                    if (body == null || (body).isEmpty()) {
+                try {
+                    var all = links.get(update.message().chat().id());
+                    var map = ((LinkedHashMap) all.getBody()).get("links");
+                    var body = (ArrayList) map;
+                    if (body.isEmpty()) {
                         text = "Текущий список ссылок пуст";
                     } else {
                         text = "Текущий список отслеживаемых ссылок:\n";
-                        for (LinkResponse l : body) {
-                            text += l.getUrl() + "\n";
+                        for (Object l : body) {
+                            text += ((LinkedHashMap) l).get("url") + "\n";
                         }
                     }
+                    res = new SendMessage(update.message().chat().id(), text);
+                    counter.increment();
+                } catch (WebClientResponseException e) {
+                    if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                        res = new SendMessage(id, REGISTRY);
+                        counter.increment();
+                    } else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+                        res = new SendMessage(id, TOO_MANY);
+                    } else {
+                        res = new SendMessage(id, SERVER_ERROR);
+                    }
                 }
-                res = new SendMessage(update.message().chat().id(), text);
-                counter.increment();
                 this.execute(res);
-
             } else {
                 if (pattern3.matcher(command).find()) {
-                    var link = Arrays.stream(command.split("/track| ")).filter(r -> !r.equals("")).toArray();
-                    if (link.length == 0) {
-
+                    var link = command.replaceFirst("/track", "").replace(" ", "");
+                    if (link.length() == 0) {
                         incorrect(id);
                     } else {
-                        check(update.message().chat().id(), link[0].toString());
+                        check(update.message().chat().id(), link);
                     }
                 } else {
-                    var link = Arrays.stream(command.split("/untrack| ")).filter(r -> !r.equals("")).toArray();
-                    if (link.length == 0) {
+                    var link = command.replaceFirst("/untrack", "").replace(" ", "");
+                    if (link.length() == 0) {
                         incorrect(id);
                         return;
                     }
                     var req = new RemoveLinkRequest();
-                    req.setLink(link[0].toString());
-                    var done = links.delete(id, req);
-                    if (done.getStatusCode() == HttpStatus.NOT_FOUND) {
-                        text = REGISTRY;
-                        counter.increment();
-                        this.execute(new SendMessage(id, text));
-                    } else if (done.getStatusCode() == HttpStatus.CONFLICT) {
-                        text = "Ссылка не отслеживается.";
-                        counter.increment();
-                        this.execute(new SendMessage(id, text));
-                    } else {
+                    req.setLink(link);
+                    try {
+                        links.delete(id, req);
                         text = "Ссылка удалена.";
                         counter.increment();
-                        this.execute(new SendMessage(id, text));
+                    } catch (WebClientResponseException e) {
+                        if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                            text = REGISTRY;
+                            counter.increment();
+                        } else if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                            text = "Ссылка не отслеживается.";
+                            counter.increment();
+                        } else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+                            text = TOO_MANY;
+                        } else {
+                            text = SERVER_ERROR;
+                        }
                     }
+
+                    this.execute(new SendMessage(id, text));
                 }
             }
 
@@ -176,90 +196,102 @@ public class Bot extends TelegramBot {
     }
 
     public void check(Long id, String link) {
-        try {
-            String text;
-            var uri = new URI(link);
-            var link1 = uri.toString();
-            var success = "Ссылка успешно добавлена";
-            if (!link1.startsWith(BASEGIT) && !link1.startsWith(BASESTACK)) {
-                incorrect(id);
-            }
-            if (link1.startsWith(BASEGIT)) {
-                var userrepo = Arrays.stream(link1.replace(BASEGIT, "")
-                    .split("/")).filter(r -> !r.equals("")).toArray();
-                if (userrepo.length < 2) {
-                    text = INCORRECT;
-                    counter.increment();
+        String text;
+        var success = "Ссылка успешно добавлена";
+        if (!link.startsWith(BASEGIT) && !link.startsWith(BASESTACK)) {
+            incorrect(id);
+        } else {
+            try {
+                var req = new AddLinkRequest();
+                var uri = new URI(link);
+                var link1 = uri.toString();
+                req.setLink(link1);
+                if (link1.startsWith(BASEGIT)) {
+                    var userrepo =
+                        Arrays.stream(link1.replace(BASEGIT, "").split("/")).filter(x -> !Objects.equals(x, ""))
+                            .toArray(String[]::new);
+                    if (userrepo.length < 2) {
+                        text = INCORRECT;
+                        this.execute(new SendMessage(id, text));
+                        return;
+                    }
+                    var user = userrepo[0];
+                    var repo = userrepo[1];
+                    try {
+                        var result = git.fetchRepository(user, repo);
+                        if (result.name == null || result.owner == null || result.time == null) {
+                            incorrect(id);
+                            return;
+                        }
+                    } catch (WebClientResponseException e) {
+                        text = TOO_MANY;
+                        this.execute(new SendMessage(id, text));
+                        return;
+                    }
+                    try {
+                        links.post(id, req);
+                        text = success;
+                        counter.increment();
+                    } catch (WebClientResponseException e) {
+                        if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                            text = REGISTRY;
+                            counter.increment();
+                        } else if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                            text = ALREADY;
+                            counter.increment();
+                        } else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+                            text = TOO_MANY;
+                        } else {
+                            text = SERVER_ERROR;
+                        }
+                    }
                     this.execute(new SendMessage(id, text));
                     return;
                 }
-                var user = userrepo[0];
-                var repo = userrepo[1];
+                var question =
+                    Arrays.stream(link1.replace(BASESTACK, "").split("/")).filter(x -> !Objects.equals(x, ""))
+                        .toArray(String[]::new);
+                if (question.length < 2) {
+                    text = INCORRECT;
+                    this.execute(new SendMessage(id, text));
+                    return;
+                }
+                var id1 = Long.parseLong(question[0]);
+                var result = stack.fetchQuestion(id1);
                 try {
-                    var result = git.fetchRepository(user.toString(), repo.toString());
-                    if (result.name == null || result.owner == null || result.time == null) {
+                    if (result.time == null || result.link == null || result.title == null) {
                         incorrect(id);
                         return;
                     }
-                    var req = new AddLinkRequest();
-                    req.setLink(link1);
-                    var done = links.post(id, req);
-                    if (done.getStatusCode() == HttpStatus.NOT_FOUND) {
+                } catch (WebClientResponseException e) {
+                    text = TOO_MANY;
+                    this.execute(new SendMessage(id, text));
+                    return;
+                }
+                req.setLink(link1);
+                try {
+                    links.post(id, req);
+                    text = success;
+                    counter.increment();
+                } catch (WebClientResponseException e) {
+                    if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
                         text = REGISTRY;
                         counter.increment();
-                        this.execute(new SendMessage(id, text));
-                    }
-                    if (done.getStatusCode() == HttpStatus.CONFLICT) {
+                    } else if (e.getStatusCode() == HttpStatus.CONFLICT) {
                         text = ALREADY;
                         counter.increment();
-                        this.execute(new SendMessage(id, text));
+                    } else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+                        text = TOO_MANY;
+                    } else {
+                        text = SERVER_ERROR;
                     }
-                    if (done.getStatusCode() == HttpStatus.OK) {
-                        text = success;
-                        counter.increment();
-                        this.execute(new SendMessage(id, text));
-                    }
-                } catch (WebClientResponseException e) {
-                    text = "Недостаточно прав для доступа";
-                    counter.increment();
-                    this.execute(new SendMessage(id, text));
                 }
-                return;
-
-            }
-            var question = Arrays.stream(link1.replace(BASESTACK, "")
-                .split("/")).filter(r -> !r.equals("")).toArray();
-            if (question.length == 0) {
+                this.execute(new SendMessage(id, text));
+            } catch (URISyntaxException e) {
                 text = INCORRECT;
-                counter.increment();
-                this.execute(new SendMessage(id, text));
-                return;
-            }
-            var id1 = Long.parseLong(question[0].toString());
-            var result = stack.fetchQuestion(id1);
-            if (result.time == null || result.link == null || result.title == null) {
-                incorrect(id);
-            } else {
-                var req = new AddLinkRequest();
-                req.setLink(link);
-                var response = links.post(id, req);
-                if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-                    text = REGISTRY;
-                } else if (response.getStatusCode() == HttpStatus.CONFLICT) {
-                    text = ALREADY;
-                } else {
-                    text = success;
-                }
-                counter.increment();
                 this.execute(new SendMessage(id, text));
             }
-
-        } catch (URISyntaxException e) {
-            var text = INCORRECT;
-            counter.increment();
-            this.execute(new SendMessage(id, text));
         }
-
     }
 
     public void incorrect(Long id) {

@@ -15,8 +15,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.time.Duration;
 import javax.validation.Valid;
+import listener.LinkUpdaterScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen",
                             date = "2024-02-27T16:17:37.541889551Z[GMT]")
 @RestController
+@ComponentScan(basePackages = "io.swagger")
 public class LinksApiController implements LinksApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(LinksApiController.class);
@@ -40,7 +43,7 @@ public class LinksApiController implements LinksApi {
     private static final int ERROR = 404;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public LinksApiController(ObjectMapper objectMapper, JdbcLinkService service) {
+    public LinksApiController(ObjectMapper objectMapper, JdbcLinkService service, LinkUpdaterScheduler scheduler) {
         this.linkService = service;
         this.objectMapper = objectMapper;
         Bandwidth limit =
