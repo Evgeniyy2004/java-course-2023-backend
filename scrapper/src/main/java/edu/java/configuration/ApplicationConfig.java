@@ -4,15 +4,13 @@ import edu.java.botclient.UpdatesClient;
 import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
 import io.swagger.api.JdbcLinkRepository;
-import io.swagger.api.JdbcTgChatRepository;
+import io.swagger.api.ScrapperQueueProducer;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Properties;
 import javax.sql.DataSource;
-import io.swagger.api.ScrapperQueueProducer;
 import listener.LinkUpdaterScheduler;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +18,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -41,11 +38,8 @@ import reactor.util.retry.RetryBackoffSpec;
 public class ApplicationConfig {
     private static final String BASE = "http://localhost:8081/";
 
-
-
     @Value("${app.codes}")
     public ArrayList<Integer> codes;
-
 
     @Value("${app.topic}")
     @Getter
@@ -65,7 +59,7 @@ public class ApplicationConfig {
 
     @Bean
     public LinkUpdaterScheduler scheduler(UpdatesClient client, ScrapperQueueProducer queue, JdbcLinkRepository repo) {
-        return new LinkUpdaterScheduler(client,queue,repo);
+        return new LinkUpdaterScheduler(client, queue, repo);
     }
 
     @Bean
@@ -77,8 +71,6 @@ public class ApplicationConfig {
 
         return factory.createClient(StackOverflowClient.class);
     }
-
-
 
     @Bean
     public GitHubClient beanGit1() {

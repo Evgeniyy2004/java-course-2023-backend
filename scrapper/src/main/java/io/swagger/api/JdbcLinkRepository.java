@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import listener.LinkUpdaterScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -23,19 +22,16 @@ public class JdbcLinkRepository implements LinkRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private GitHubClient git;
 
     @Autowired
-    private  GitHubClient git;
-
-
-    @Autowired
-    private  StackOverflowClient stack;
+    private StackOverflowClient stack;
 
     @Autowired
     public JdbcLinkRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
 
     public void save(Long id, String link) throws ApiException {
         String query = ("select * from id where id=?");
@@ -97,30 +93,33 @@ public class JdbcLinkRepository implements LinkRepository {
             var id = Long.parseLong(i.get(0).toString());
             if (current.startsWith("https://stackoverflow.com/questions/")) {
                 current = current.replace("https://stackoverflow.com/questions/", "");
-                var question = Long.parseLong(Arrays.stream(current.split("/")).filter(x->!x.equals("")).toArray(x->new String[x])[0]);
+                var question = Long.parseLong(Arrays.stream(current.split("/")).filter(x -> !x.equals(""))
+                    .toArray(x -> new String[x])[0]);
                 try {
                     var response = stack.fetchQuestion(question);
 
-                if (Timestamp.valueOf(response.time.toLocalDateTime()).after((Timestamp) i.get(2))) {
-                    if (!result.containsKey(id)) {
-                        result.put(id, new ArrayList<>());
+                    if (Timestamp.valueOf(response.time.toLocalDateTime()).after((Timestamp) i.get(2))) {
+                        if (!result.containsKey(id)) {
+                            result.put(id, new ArrayList<>());
+                        }
+                        result.get(id).add(i.get(1).toString());
                     }
-                    result.get(id).add(i.get(1).toString());
-                }
-                } catch(WebClientResponseException e) {
+                } catch (WebClientResponseException e) {
                     continue;
                 }
             } else {
                 current = current.replace("https://github.com/", "");
-                var repoAuthor = Arrays.stream(current.split("/")).filter(x->!x.equals("")).toArray(x->new String[x]);
+                var repoAuthor =
+                    Arrays.stream(current.split("/")).filter(x -> !x.equals("")).toArray(x -> new String[x]);
                 try {
-                var response = git.fetchRepository(repoAuthor[0], repoAuthor[1]);
-                if (Timestamp.valueOf(response.time.toLocalDateTime()).after((Timestamp) i.get(2))) {
-                    if (!result.containsKey(id)) {
-                        result.put(id, new ArrayList<>());
+                    var response = git.fetchRepository(repoAuthor[0], repoAuthor[1]);
+                    if (Timestamp.valueOf(response.time.toLocalDateTime()).after((Timestamp) i.get(2))) {
+                        if (!result.containsKey(id)) {
+                            result.put(id, new ArrayList<>());
+                        }
+                        result.get(id).add(i.get(1).toString());
                     }
-                    result.get(id).add(i.get(1).toString());
-                }} catch(WebClientResponseException e) {
+                } catch (WebClientResponseException e) {
                     continue;
                 }
             }

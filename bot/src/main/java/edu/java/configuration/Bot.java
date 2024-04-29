@@ -6,8 +6,6 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.GetUpdates;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.model.AddLinkRequest;
-import edu.java.model.LinkResponse;
-import edu.java.model.ListLinksResponse;
 import edu.java.model.RemoveLinkRequest;
 import edu.java.scrapperclient.ScrapperChatClient;
 import edu.java.scrapperclient.ScrapperLinksClient;
@@ -123,14 +121,14 @@ public class Bot extends TelegramBot {
             if (pattern1.matcher(command).find()) {
                 try {
                     var all = links.get(update.message().chat().id());
-                    var map = ((LinkedHashMap)all.getBody()).get("links");
+                    var map = ((LinkedHashMap) all.getBody()).get("links");
                     var body = (ArrayList) map;
                     if (body.isEmpty()) {
                         text = "Текущий список ссылок пуст";
                     } else {
                         text = "Текущий список отслеживаемых ссылок:\n";
                         for (Object l : body) {
-                            text += ((LinkedHashMap)l).get("url") + "\n";
+                            text += ((LinkedHashMap) l).get("url") + "\n";
                         }
                     }
                     res = new SendMessage(update.message().chat().id(), text);
@@ -148,15 +146,15 @@ public class Bot extends TelegramBot {
                 this.execute(res);
             } else {
                 if (pattern3.matcher(command).find()) {
-                    var link = command.replaceFirst("/track","").replace(" ","");
+                    var link = command.replaceFirst("/track", "").replace(" ", "");
                     if (link.length() == 0) {
                         incorrect(id);
                     } else {
                         check(update.message().chat().id(), link);
                     }
                 } else {
-                    var link = command.replaceFirst("/untrack","").replace(" ","");
-                    if (link.length()== 0) {
+                    var link = command.replaceFirst("/untrack", "").replace(" ", "");
+                    if (link.length() == 0) {
                         incorrect(id);
                         return;
                     }
@@ -209,8 +207,9 @@ public class Bot extends TelegramBot {
                 var link1 = uri.toString();
                 req.setLink(link1);
                 if (link1.startsWith(BASEGIT)) {
-                    var userrepo = Arrays.stream(link1.replace(BASEGIT, "").split("/")).filter(x -> !Objects.equals(x, ""))
-                        .toArray(String[]::new);
+                    var userrepo =
+                        Arrays.stream(link1.replace(BASEGIT, "").split("/")).filter(x -> !Objects.equals(x, ""))
+                            .toArray(String[]::new);
                     if (userrepo.length < 2) {
                         text = INCORRECT;
                         this.execute(new SendMessage(id, text));
@@ -250,7 +249,8 @@ public class Bot extends TelegramBot {
                     return;
                 }
                 var question =
-                    Arrays.stream(link1.replace(BASESTACK, "").split("/")).filter(x -> !Objects.equals(x, "")).toArray(String[]::new);
+                    Arrays.stream(link1.replace(BASESTACK, "").split("/")).filter(x -> !Objects.equals(x, ""))
+                        .toArray(String[]::new);
                 if (question.length < 2) {
                     text = INCORRECT;
                     this.execute(new SendMessage(id, text));
@@ -287,18 +287,17 @@ public class Bot extends TelegramBot {
                     }
                 }
                 this.execute(new SendMessage(id, text));
+            } catch (URISyntaxException e) {
+                text = INCORRECT;
+                this.execute(new SendMessage(id, text));
             }
-         catch(URISyntaxException e){
-            text = INCORRECT;
-            this.execute(new SendMessage(id, text));
         }
     }
-}
 
-public void incorrect(Long id) {
-    var text = INCORRECT;
-    counter.increment();
-    this.execute(new SendMessage(id, text));
-}
+    public void incorrect(Long id) {
+        var text = INCORRECT;
+        counter.increment();
+        this.execute(new SendMessage(id, text));
+    }
 }
 
