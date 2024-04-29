@@ -6,11 +6,12 @@ import edu.java.siteclients.StackOverflowClient;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -85,12 +86,12 @@ public class JdbcLinkRepository implements LinkRepository {
         var time = new Timestamp(System.currentTimeMillis() - 3600000);
         var now = new Timestamp(System.currentTimeMillis());
         var res =
-            jdbcTemplate.queryForList("select (id,link,updated) from connect where updated<?", ArrayList.class, time);
+            jdbcTemplate.queryForList("select (id,link,updated) from connect where updated<?", time);
         jdbcTemplate.update("update connect set updated=? where updated<?", now, time);
         HashMap<Long, Collection<String>> result = new HashMap<>();
-        for (ArrayList i : res) {
-            var current = i.get(1).toString();
-            var id = Long.parseLong(i.get(0).toString());
+        for (Map i : res) {
+            var current = i.get("link").toString();
+            var id = Long.parseLong(i.get("id").toString());
             if (current.startsWith("https://stackoverflow.com/questions/")) {
                 current = current.replace("https://stackoverflow.com/questions/", "");
                 var question = Long.parseLong(Arrays.stream(current.split("/")).filter(x -> !x.equals(""))
@@ -98,11 +99,11 @@ public class JdbcLinkRepository implements LinkRepository {
                 try {
                     var response = stack.fetchQuestion(question);
 
-                    if (Timestamp.valueOf(response.time.toLocalDateTime()).after((Timestamp) i.get(2))) {
+                    if (Timestamp.valueOf(response.time.toLocalDateTime()).after((Timestamp) i.get("updated"))) {
                         if (!result.containsKey(id)) {
-                            result.put(id, new ArrayList<>());
+                            result.put(id, new HashSet<>());
                         }
-                        result.get(id).add(i.get(1).toString());
+                        result.get(id).add(i.get("link").toString());
                     }
                 } catch (WebClientResponseException e) {
                     continue;
@@ -113,11 +114,11 @@ public class JdbcLinkRepository implements LinkRepository {
                     Arrays.stream(current.split("/")).filter(x -> !x.equals("")).toArray(x -> new String[x]);
                 try {
                     var response = git.fetchRepository(repoAuthor[0], repoAuthor[1]);
-                    if (Timestamp.valueOf(response.time.toLocalDateTime()).after((Timestamp) i.get(2))) {
+                    if (Timestamp.valueOf(response.time.toLocalDateTime()).after((Timestamp) i.get("updated"))) {
                         if (!result.containsKey(id)) {
-                            result.put(id, new ArrayList<>());
+                            result.put(id, new HashSet<>());
                         }
-                        result.get(id).add(i.get(1).toString());
+                        result.get(id).add(i.get("link").toString());
                     }
                 } catch (WebClientResponseException e) {
                     continue;
