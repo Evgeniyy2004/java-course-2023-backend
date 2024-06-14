@@ -43,8 +43,6 @@ public class LinksApiController implements LinksApi {
     @Value("${link.use}")
     private AccessType type;
 
-    private static final Logger LOG = LoggerFactory.getLogger(LinksApiController.class);
-
     private static final int NOT_FOUND = 404;
 
     private JdbcLinkService jdbcService;
