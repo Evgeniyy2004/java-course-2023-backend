@@ -31,7 +31,7 @@ public class Bot extends TelegramBot {
     private static final String BASESTACK = "https://stackoverflow.com/questions/";
     private static final String BASEGIT = "https://github.com/";
 
-    private Counter counter;
+    private final Counter counter;
 
     @Autowired
     private ScrapperChatClient chat;
