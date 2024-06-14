@@ -16,7 +16,6 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -39,6 +38,7 @@ public class Bot extends TelegramBot {
 
     private static final String REGISTRY = "Для отслеживания ссылок вам необходимо зарегистрироваться.";
     private static final String INCORRECT = "Некорректные параметры запроса";
+    private static final String SUCCESS_ADD = "Ссылка успешно добавлена";
 
     @Autowired
     private ScrapperLinksClient links;
@@ -74,96 +74,61 @@ public class Bot extends TelegramBot {
     public void handle(Update update) {
         var command = update.message().text();
         var id = update.message().chat().id();
-        Pattern pattern1 = Pattern.compile("(\\s*)(/list)(\\s*)");
-        Pattern pattern2 = Pattern.compile("(\\s*)(/start)(\\s*)");
-        Pattern pattern3 = Pattern.compile("(\\s*)(/track\\s+)(.*)");
-        Pattern pattern4 = Pattern.compile("(\\s*)(/untrack\\s+)(.*)");
-        Pattern pattern5 = Pattern.compile("(\\s*)(/help)(\\s*)");
-        var res = new SendMessage(update.message().chat().id(), "");
+        Pattern pattern3 = Pattern.compile("(/track\\s+)(.+)");
+        Pattern pattern4 = Pattern.compile("(/untrack\\s+)(.+)");
         String text;
-        if (pattern5.matcher(command).find()) {
-            res = new SendMessage(update.message().chat().id(), help());
-            this.execute(res);
-            counter.increment();
-            return;
-        } else if (pattern2.matcher(command).find()) {
-            var entity = chat.post(update.message().chat().id());
-            if (entity.getStatusCode() == HttpStatus.CONFLICT) {
-                text = "Вы не можете быть зарегистрированы повторно";
-            } else {
-                text = "Вы успешно зарегистрировались";
-            }
-            res = new SendMessage(id, text);
-            counter.increment();
-            this.execute(res);
-            return;
-        }
-
-        if (!pattern1.matcher(command).find() && !pattern2.matcher(command).find()
-            && !pattern3.matcher(command).find() && !pattern4.matcher(command).find()
-            && !pattern5.matcher(command).find()) {
-            text = "Команда не распознана."
-                + "Введите /help, чтобы ознакомиться с допустимыми командами.";
-            res = new SendMessage(update.message().chat().id(), text);
-            counter.increment();
-            this.execute(res);
+        if (command.equals("/help")) {
+            this.execute(new SendMessage(id, help()));
+        } else if (command.equals("/start")) {
+            start(id);
+        } else if (!pattern3.matcher(command).find() && !pattern4.matcher(command).find()) {
+            text = "Команда не распознана. Введите /help, чтобы ознакомиться с допустимыми командами.";
+            this.execute(new SendMessage(id, text));
         } else {
-            if (pattern1.matcher(command).find()) {
-                var all = links.get(update.message().chat().id());
-                if (all.getStatusCode() == HttpStatus.NOT_FOUND) {
-                    text = REGISTRY;
-                } else {
-                    var map = (LinkedHashMap) all.getBody();
-                    var body = (List<LinkResponse>) (map.get("links"));
-                    if (body == null || (body).isEmpty()) {
-                        text = "Текущий список ссылок пуст";
-                    } else {
-                        text = "Текущий список отслеживаемых ссылок:\n";
-                        for (LinkResponse l : body) {
-                            text += l.getUrl() + "\n";
-                        }
-                    }
-                }
-                res = new SendMessage(update.message().chat().id(), text);
-                counter.increment();
-                this.execute(res);
-
+            if (command.equals("/list")) {
+                list(id);
             } else {
-                if (pattern3.matcher(command).find()) {
-                    var link = Arrays.stream(command.split("/track| ")).filter(r -> !r.equals("")).toArray();
-                    if (link.length == 0) {
-
-                        incorrect(id);
-                    } else {
-                        check(update.message().chat().id(), link[0].toString());
-                    }
+                var link = command.split("/untrack|/track| ");
+                if (link.length == 0) {
+                    this.execute(new SendMessage(id, INCORRECT));
                 } else {
-                    var link = Arrays.stream(command.split("/untrack| ")).filter(r -> !r.equals("")).toArray();
-                    if (link.length == 0) {
-                        incorrect(id);
-                        return;
-                    }
-                    var req = new RemoveLinkRequest();
-                    req.setLink(link[0].toString());
-                    var done = links.delete(id, req);
-                    if (done.getStatusCode() == HttpStatus.NOT_FOUND) {
-                        text = REGISTRY;
-                        counter.increment();
-                        this.execute(new SendMessage(id, text));
-                    } else if (done.getStatusCode() == HttpStatus.CONFLICT) {
-                        text = "Ссылка не отслеживается.";
-                        counter.increment();
-                        this.execute(new SendMessage(id, text));
+                    link = command.split(" ");
+                    if (pattern3.matcher(command).find()) {
+                        add(id, link[1]);
                     } else {
-                        text = "Ссылка удалена.";
-                        counter.increment();
-                        this.execute(new SendMessage(id, text));
+                        remove(id, link[1]);
                     }
                 }
             }
-
         }
+        counter.increment();
+    }
 
+    public void remove(Long id, String link) {
+        String text;
+        var req = new RemoveLinkRequest();
+        req.setLink(link);
+        var done = links.delete(id, req);
+        if (done.getStatusCode() == HttpStatus.NOT_FOUND) {
+            text = REGISTRY;
+        } else if (done.getStatusCode() == HttpStatus.CONFLICT) {
+            text = "Ссылка не отслеживается.";
+        } else {
+            text = "Ссылка удалена.";
+        }
+        this.execute(new SendMessage(id, text));
+    }
+
+    public void start(Long id) {
+        String text;
+        var entity = chat.post(id);
+        if (entity.getStatusCode() == HttpStatus.CONFLICT) {
+            text = "Вы не можете быть зарегистрированы повторно";
+        } else {
+            text = "Вы успешно зарегистрировались";
+        }
+        var res = new SendMessage(id, text);
+        this.execute(res);
     }
 
     public String help() {
@@ -175,97 +140,104 @@ public class Bot extends TelegramBot {
             /list - список отслеживаемых ресурсов""";
     }
 
-    public void check(Long id, String link) {
+    public void add(Long id, String link) {
         try {
-            String text;
             var uri = new URI(link);
             var link1 = uri.toString();
-            var success = "Ссылка успешно добавлена";
             if (!link1.startsWith(BASEGIT) && !link1.startsWith(BASESTACK)) {
-                incorrect(id);
+                this.execute(new SendMessage(id, INCORRECT));
             }
             if (link1.startsWith(BASEGIT)) {
-                var userrepo = Arrays.stream(link1.replace(BASEGIT, "")
-                    .split("/")).filter(r -> !r.equals("")).toArray();
-                if (userrepo.length < 2) {
-                    text = INCORRECT;
-                    counter.increment();
-                    this.execute(new SendMessage(id, text));
-                    return;
-                }
-                var user = userrepo[0];
-                var repo = userrepo[1];
-                try {
-                    var result = git.fetchRepository(user.toString(), repo.toString());
-                    if (result.name == null || result.owner == null || result.time == null) {
-                        incorrect(id);
-                        return;
-                    }
-                    var req = new AddLinkRequest();
-                    req.setLink(link1);
-                    var done = links.post(id, req);
-                    if (done.getStatusCode() == HttpStatus.NOT_FOUND) {
-                        text = REGISTRY;
-                        counter.increment();
-                        this.execute(new SendMessage(id, text));
-                    }
-                    if (done.getStatusCode() == HttpStatus.CONFLICT) {
-                        text = ALREADY;
-                        counter.increment();
-                        this.execute(new SendMessage(id, text));
-                    }
-                    if (done.getStatusCode() == HttpStatus.OK) {
-                        text = success;
-                        counter.increment();
-                        this.execute(new SendMessage(id, text));
-                    }
-                } catch (WebClientResponseException e) {
-                    text = "Недостаточно прав для доступа";
-                    counter.increment();
-                    this.execute(new SendMessage(id, text));
-                }
-                return;
-
-            }
-            var question = Arrays.stream(link1.replace(BASESTACK, "")
-                .split("/")).filter(r -> !r.equals("")).toArray();
-            if (question.length == 0) {
-                text = INCORRECT;
-                counter.increment();
-                this.execute(new SendMessage(id, text));
-                return;
-            }
-            var id1 = Long.parseLong(question[0].toString());
-            var result = stack.fetchQuestion(id1);
-            if (result.time == null || result.link == null || result.title == null) {
-                incorrect(id);
+                repo(link1, id);
             } else {
-                var req = new AddLinkRequest();
-                req.setLink(link);
-                var response = links.post(id, req);
-                if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-                    text = REGISTRY;
-                } else if (response.getStatusCode() == HttpStatus.CONFLICT) {
-                    text = ALREADY;
-                } else {
-                    text = success;
-                }
-                counter.increment();
-                this.execute(new SendMessage(id, text));
+                question(link1, id, link);
             }
 
         } catch (URISyntaxException e) {
-            var text = INCORRECT;
-            counter.increment();
-            this.execute(new SendMessage(id, text));
+            this.execute(new SendMessage(id, INCORRECT));
         }
-
     }
 
-    public void incorrect(Long id) {
-        var text = INCORRECT;
-        counter.increment();
-        this.execute(new SendMessage(id, text));
+    public void list(Long id) {
+        StringBuilder text;
+        var all = links.get(id);
+        if (all.getStatusCode() == HttpStatus.NOT_FOUND) {
+            text = new StringBuilder(REGISTRY);
+        } else {
+            var map = (LinkedHashMap) all.getBody();
+            var body = (List<LinkResponse>) (map.get("links"));
+            if (body == null || (body).isEmpty()) {
+                text = new StringBuilder("Текущий список ссылок пуст");
+            } else {
+                text = new StringBuilder("Текущий список отслеживаемых ссылок:\n");
+                for (LinkResponse l : body) {
+                    text.append(l.getUrl()).append("\n");
+                }
+            }
+        }
+        var res = new SendMessage(id, text.toString());
+        this.execute(res);
+    }
+
+    public void question(String link1, Long id, String link) {
+        String text;
+        var question = link1.replace(BASESTACK, "")
+            .split("/");
+        if (question.length == 0) {
+            text = INCORRECT;
+            this.execute(new SendMessage(id, text));
+            return;
+        }
+        var id1 = Long.parseLong(question[0].toString());
+        var result = stack.fetchQuestion(id1);
+        if (result.time == null || result.link == null || result.title == null) {
+            this.execute(new SendMessage(id, INCORRECT));
+        } else {
+            var req = new AddLinkRequest();
+            req.setLink(link);
+            var response = links.post(id, req);
+            if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+                text = REGISTRY;
+            } else if (response.getStatusCode() == HttpStatus.CONFLICT) {
+                text = ALREADY;
+            } else {
+                text = SUCCESS_ADD;
+            }
+            this.execute(new SendMessage(id, text));
+        }
+    }
+
+    public void repo(String link1, Long id) {
+        String text;
+        var userRepo = link1.strip().replace(BASEGIT, "")
+            .split("/");
+        if (userRepo.length < 2) {
+            this.execute(new SendMessage(id, INCORRECT));
+            return;
+        }
+        var user = userRepo[0];
+        var repo = userRepo[1];
+        try {
+            git.fetchRepository(user, repo);
+            var req = new AddLinkRequest();
+            req.setLink(link1);
+            var done = links.post(id, req);
+            if (done.getStatusCode() == HttpStatus.NOT_FOUND) {
+                text = REGISTRY;
+                this.execute(new SendMessage(id, text));
+            }
+            if (done.getStatusCode() == HttpStatus.CONFLICT) {
+                text = ALREADY;
+                this.execute(new SendMessage(id, text));
+            }
+            if (done.getStatusCode() == HttpStatus.OK) {
+                text = SUCCESS_ADD;
+                this.execute(new SendMessage(id, text));
+            }
+        } catch (WebClientResponseException e) {
+            text = "Недостаточно прав для доступа";
+            this.execute(new SendMessage(id, text));
+        }
     }
 }
 
