@@ -3,10 +3,13 @@ package edu.java.configuration;
 import edu.java.botclient.UpdatesClient;
 import edu.java.siteclients.GitHubClient;
 import edu.java.siteclients.StackOverflowClient;
+import io.swagger.api.JdbcLinkRepository;
+import io.swagger.api.ScrapperQueueProducer;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Properties;
 import javax.sql.DataSource;
+import listener.LinkUpdaterScheduler;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -15,9 +18,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -27,13 +30,14 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import reactor.util.retry.RetryBackoffSpec;
 
-@ComponentScan(basePackages = "io.swagger.api")
+@ComponentScan(basePackages = "io.swagger")
 @Configuration
+@EnableScheduling
 @PropertySource("classpath:application.yml")
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
 public class ApplicationConfig {
-
     private static final String BASE = "http://localhost:8081/";
+
     @Value("${app.codes}")
     public ArrayList<Integer> codes;
 
@@ -46,11 +50,16 @@ public class ApplicationConfig {
     private static boolean useQueue;
 
     @Value("${app.strategy}")
-    public STRATEGY strategy;
+    STRATEGY strategy;
 
     public enum STRATEGY {
         CONSTANT,
         EXPONENTIAL
+    }
+
+    @Bean
+    public LinkUpdaterScheduler scheduler(UpdatesClient client, ScrapperQueueProducer queue, JdbcLinkRepository repo) {
+        return new LinkUpdaterScheduler(client, queue, repo);
     }
 
     @Bean
@@ -113,7 +122,7 @@ public class ApplicationConfig {
         return factory.createClient(UpdatesClient.class);
     }
 
-    @Bean
+    /*@Bean
     public DataSource dataSource() {
         var namePassword = "postgres";
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -122,20 +131,20 @@ public class ApplicationConfig {
         dataSource.setUsername(namePassword);
         dataSource.setPassword(namePassword);
         return dataSource;
-    }
+    }*/
 
     @Bean(name = "entityManagerFactory")
-    public LocalSessionFactoryBean sessionFactory() {
+    public LocalSessionFactoryBean sessionFactory(DataSource source) {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-        sessionFactory.setDataSource(dataSource());
+        sessionFactory.setDataSource(source);
         sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }
 
     @Bean
-    public HibernateTransactionManager transactionManager() {
+    public HibernateTransactionManager transactionManager(DataSource source) {
         HibernateTransactionManager txManager = new HibernateTransactionManager();
-        txManager.setSessionFactory(sessionFactory().getObject());
+        txManager.setSessionFactory(sessionFactory(source).getObject());
         return txManager;
     }
 
@@ -148,7 +157,7 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public JdbcTemplate template() {
-        return new JdbcTemplate(dataSource());
+    public JdbcTemplate template(DataSource source) {
+        return new JdbcTemplate(source);
     }
 }
